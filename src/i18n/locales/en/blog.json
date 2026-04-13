@@ -1,0 +1,16 @@
+{
+  "notFoundTitle": "Blog Not Found",
+  "notFoundMessage": "The Blog Post You Are Looking For Does Not Exist.",
+  "backToBlogs": "Back To Blogs",
+  "title": "Latest Articles",
+  "readMore": "Read More",
+  "readTime": "Min Read",
+  "minute": "Minut",
+  "publishedAt": "Published At",
+  "featured": "Featured",
+  "shortLink": "Short Link",
+  "searchPlaceholder": "Search In Blog",
+  "AllBlog": "More Blogs",
+  "blog": "Blogs",
+  "noContent": "No Content"
+}

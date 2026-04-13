@@ -1,0 +1,57 @@
+{
+    "returnPolicy": {
+        "title": "Return Policy",
+        "description": "Your satisfaction is important to us. If you are not completely satisfied with your purchase, you may be eligible for a return under the terms outlined below.",
+        "imageAlt": "Return policy illustration",
+        "rulesList": "Return policy rules",
+        "rules": [
+            "Items must be returned within 7 days of delivery.",
+            "Products must be unused and in original packaging.",
+            "Customized or special-order items are not eligible for return.",
+            "Return shipping costs are the responsibility of the customer.",
+            "Refunds will be processed within 5–7 business days after inspection.",
+            "Damaged items must be reported within 24 hours of delivery."
+        ],
+        "contactTitle": "Have questions about returns?",
+        "contactButton": "Contact Support"
+    },
+    "privacyPolicy": {
+        "title": "Privacy Policy",
+        "description": "We respect your privacy. Your information will never be shared with third parties.",
+        "imageAlt": "Privacy policy illustration",
+        "rulesList": "Privacy rules",
+        "rules": [
+            "Your personal information will remain confidential.",
+            "We do not share any information without your consent.",
+            "Information is used only to improve our services.",
+            "Payment information is secure and encrypted."
+        ],
+        "contactTitle": "Questions about privacy?",
+        "contactButton": "Contact Support"
+    },
+    "termsPolicy": {
+        "title": "Terms & Conditions",
+        "description": "Your use of the website is subject to the following terms and conditions.",
+        "imageAlt": "Terms & conditions illustration",
+        "rulesList": "Site rules",
+        "rules": [
+            "Users must follow the site rules.",
+            "Any misuse of the website is prohibited.",
+            "Users are responsible for the information they provide.",
+            "The site reserves the right to change the terms."
+        ],
+        "contactTitle": "Questions about terms?",
+        "contactButton": "Contact Support"
+    },
+    "catalogs": {
+        "title": "Catalogs",
+        "description": "You can download our product catalogs from the links below.",
+        "catalogs": [
+            {
+                "title": "Catalog 1",
+                "description": "General Products",
+                "fileUrl": "/assets/catalogs/1.pdf"
+            }
+        ]
+    }
+}

@@ -1,0 +1,262 @@
+{
+  "nav": {
+    "home": "Home",
+    "categories": "Categories",
+    "allCategories": "All Categories",
+    "products": "Products",
+    "blog": "Blog",
+    "about": "About",
+    "contact": "Contact",
+    "search": "...Search",
+    "cart": "Cart",
+    "language": "Language",
+    "login": "Login/Register",
+    "logout": "Logout",
+    "recentSearches": "Recent Searches",
+    "trendingNow": "Trending Now",
+    "AboutUs": "AboutUs",
+    "ContactUs": "ContactUs",
+    "discount": "Discount",
+    "deliverTo": "Deliver to: Tehran, Valiasr...",
+    "tagline": "Best Digital Market",
+    "all": "All",
+    "mobile": "Mobile",
+    "laptop": "Laptop",
+    "smartwatch": "Smartwatch",
+    "headphones": "Headphones"
+  },
+  "hero": {
+    "title": "Welcome to Our Shop",
+    "shopName": "GammaTeb",
+    "shopNameTwo": "Asia",
+    "caption": "Gamma Teb Asia Company, as one of the leading manufacturers in the field of medical equipment, began its activities in 2002. Since 2021, with an innovative approach and focusing on hygiene products used in the food and pharmaceutical industries, the company has, for the first time, specialized in producing oral freshening sprays.",
+    "subtitle": "Best Products with Best Prices",
+    "cta": "View Products",
+    "ctaSecondary": "About Us"
+  },
+  "testimonials": {
+    "title": "Customer Reviews",
+    "subtitle": "Our Customers' Shopping Experience"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "tryAgain": "Try Again",
+    "back": "Back",
+    "backToShop": "Back to Shop",
+    "cancel": "Cancel",
+    "continueShopping": "Continue Shopping"
+  },
+  "comment": {
+    "title": "Comments",
+    "placeholder": "Write a comment...",
+    "hint": "Press Ctrl+Enter to submit",
+    "loginRequired": "Please log in to leave a comment",
+    "noComments": "No comments yet. Be the first to comment!",
+    "error": {
+      "create": "Failed to create comment. Please try again.",
+      "reply": "Failed to reply. Please try again.",
+      "update": "Failed to update comment. Please try again.",
+      "delete": "Failed to delete comment. Please try again.",
+      "sessionExpired": "Your session has expired. Please log in again."
+    },
+    "confirm": {
+      "delete": "Are you sure you want to delete this comment?"
+    },
+    "justNow": "Just now",
+    "minutesAgo": "minutes ago",
+    "hoursAgo": "hours ago",
+    "daysAgo": "days ago",
+    "reply": "Reply",
+    "hideReplies": "Hide replies",
+    "showReplies": "Show replies",
+    "save": "Save",
+    "cancel": "Cancel",
+    "replyPlaceholder": "Write a reply...",
+    "submit": "Submit",
+    "success": {
+      "create": "Comment posted successfully!",
+      "reply": "Reply posted successfully!",
+      "update": "Comment updated successfully!",
+      "delete": "Comment deleted successfully!"
+    }
+  },
+  "cart": {
+    "orderSummary": "Order Summary",
+    "specialSale": "Special Sale",
+    "addedToCart": "Added to Cart!",
+    "itemAddedSuccessfully": "Item has been added to your cart successfully",
+    "viewCart": "View Cart"
+  },
+  "payment": {
+    "title": "Payment",
+    "selectPaymentMethod": "Select Payment Method",
+    "backToCheckout": "Back to Checkout",
+    "onlinePayment": "Online Payment",
+    "onlinePaymentDescription": "Online payment with all bank cards",
+    "onlinePaymentInfo": "The payment gateway limit is 195 million Tomans. You can complete the remaining amount in a separate transaction.",
+    "wallet": "Wallet",
+    "walletBalance": "Wallet Balance",
+    "insufficientWalletBalance": "Your wallet balance is not sufficient for this order.",
+    "discountCode": "Discount Code",
+    "selectOrEnterCode": "Select or enter discount code",
+    "hide": "Hide",
+    "discountCodeDescription": "You can select from saved codes if available, or enter a code yourself.",
+    "enterDiscountCode": "Enter discount code",
+    "apply": "Apply",
+    "remove": "Remove",
+    "invalidCoupon": "Invalid coupon code",
+    "couponError": "Failed to apply coupon",
+    "priceOfItems": "Price of items",
+    "shippingCost": "Shipping Cost",
+    "discount": "Discount",
+    "amountPayable": "Amount payable",
+    "pay": "Pay",
+    "successTitle": "Payment Successful",
+    "successMessage": "Your payment was completed successfully.",
+    "backToHome": "Back to Home",
+    "failureTitle": "Payment Failed",
+    "failureMessage": "Your payment could not be completed. Please try again.",
+    "tryAgain": "Try Again"
+  },
+  "review": {
+    "title": "Customer Reviews",
+    "review": "review",
+    "reviews": "reviews",
+    "writeReview": "Write a Review",
+    "basedOn": "Based on",
+    "ratingBreakdown": "Rating Breakdown",
+    "stars": "stars",
+    "verifiedPurchase": "Verified Purchase",
+    "rating": "Rating",
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "email": "Email",
+    "emailPlaceholder": "your.email@example.com",
+    "titleLabel": "Title",
+    "titlePlaceholder": "Review title",
+    "optional": "optional",
+    "content": "Review",
+    "contentPlaceholder": "Share your thoughts about this product...",
+    "submitting": "Submitting...",
+    "submit": "Submit Review",
+    "noReviews": "No reviews yet. Be the first to review this product!",
+    "helpful": "Helpful",
+    "error": {
+      "load": "Failed to load reviews",
+      "required": "Please fill in all required fields",
+      "rating": "Please select a rating",
+      "create": "Failed to submit review"
+    },
+    "success": {
+      "create": "Review submitted successfully! It will be visible after approval."
+    }
+  },
+  "login": {
+    "email": "Email",
+    "password": "Password",
+    "enterMobile": "Enter your phone number please",
+    "welcome": "Login or Register into GammaTeb ",
+    "enterOtp": "Enter the code",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
+    "forgotPassword": "Forgot Password?",
+    "signIn": "Sign In",
+    "signInWithGoogle": "Sign in with Google",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign Up",
+    "termsOfService": "Terms of Service",
+    "loadingSettings": "Loading login settings...",
+    "settingsError": "Failed to load login settings",
+    "signingIn": "Signing in...",
+    "rememberMe": "Remember me",
+    "mobile": "Mobile",
+    "otpCode": "Verification Code",
+    "otpSent": "Verification code has been sent to your mobile number",
+    "sending": "Sending...",
+    "resendOtp": "Resend Code",
+    "sendingOtp": "Sending code...",
+    "getCode": "Get Verification Code",
+    "mobileInvalid": "Please enter a valid mobile number (09xxxxxxxxx)",
+    "otpInvalid": "Please enter the 5-digit verification code",
+    "error": {
+      "loginFailed": "Login failed. Please try again.",
+      "invalidEmailOrPassword": "Invalid email or password",
+      "userInactive": "User account is inactive",
+      "invalidMobileFormat": "Invalid Iranian mobile number format. Expected format: 09xxxxxxxxx",
+      "sendOtpFailed": "Failed to send OTP code. Please try again.",
+      "sendOtpFailedLater": "Failed to send OTP code. Please try again later.",
+      "invalidOtp": "Invalid OTP code. Please try again.",
+      "invalidOrExpiredOtp": "Invalid or expired OTP code",
+      "failedToFindOrCreateUser": "Failed to find or create user",
+      "userNotFound": "User not found",
+      "failedToCreateUser": "Failed to create user account",
+      "userNotFoundContactAdmin": "This mobile number is not registered. Please sign up first."
+    },
+    "captcha": "Security Code",
+    "captchaPlaceholder": "Enter the code above",
+    "loadingCaptcha": "Loading...",
+    "refreshCaptcha": "Refresh captcha"
+  },
+  "register": {
+    "email": "Email",
+    "mobile": "Mobile",
+    "emailPlaceholder": "Enter your email",
+    "mobileInvalid": "Please enter a valid mobile number (09xxxxxxxxx)",
+    "emailInvalid": "Please enter a valid email address",
+    "otpCode": "Verification Code",
+    "otpSentMobile": "Verification code has been sent to your mobile number",
+    "otpSentEmail": "Verification code has been sent to your email",
+    "sending": "Sending...",
+    "resendOtp": "Resend Code",
+    "sendingOtp": "Sending code...",
+    "getCode": "Get Verification Code",
+    "otpInvalid": "Please enter the 5-digit verification code",
+    "rememberMe": "Remember me",
+    "createAccount": "Create Account",
+    "registering": "Creating account...",
+    "haveAccount": "Already have an account?",
+    "signIn": "Sign In",
+    "loadingSettings": "Loading registration settings...",
+    "settingsError": "Failed to load registration settings",
+    "error": {
+      "invalidOrExpiredOtp": "Invalid or expired OTP code",
+      "invalidMobileFormat": "Invalid Iranian mobile number format. Expected format: 09xxxxxxxxx",
+      "sendOtpFailed": "Failed to send OTP code. Please try again.",
+      "sendOtpFailedLater": "Failed to send OTP code. Please try again later.",
+      "invalidOtp": "Invalid OTP code. Please try again.",
+      "userAlreadyExists": "A user with this information already exists",
+      "registrationDisabled": "Registration is not enabled",
+      "invalidEmailFormat": "Invalid email format",
+      "registrationFailed": "Registration failed. Please try again."
+    }
+  },
+  "categories": {
+    "productsCategories": "Products Categories",
+    "viewMore": "View More",
+    "moreCategories": "More Categories",
+    "products": "Products"
+  },
+  "whyUs": {
+    "title": "Why Gamma Teb",
+    "imageAlt": "Gamma Teb medical products",
+    "features": {
+      "production": {
+        "title": "Our Production",
+        "description": "All strile products are manufactured and supplied in our Class C clean room located at the Gamma Teb Asia factory."
+      },
+      "certification": {
+        "title": "Reliable Supply",
+        "description": "Gamma Teb provides the highest-quality products in raw material sourcing due to its ISO 13485 certification."
+      },
+      "delivery": {
+        "title": "Fast Delivery",
+        "description": "After your order, Gamma Teb makes every effort to deliver it as quickly as possible."
+      },
+      "experience": {
+        "title": "Experience",
+        "description": "Since 2002, Gamma Teb has been producing disposable covers and prioritizes quality in all products."
+      }
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "title": "Frequently Asked Questions",
+  "subtitle": "Answers to common questions about the company's products and services",
+  "items": [
+    {
+      "question": "Do your products have official Ministry of Health approvals?",
+      "answer": "Yes, all products produced by the company have the necessary approvals from the Ministry of Health, Treatment, and Medical Education, and are manufactured according to national and international standards."
+    },
+    {
+      "question": "How are sterile products manufactured?",
+      "answer": "According to Food and Drug regulations and international standards, operating room packs must be produced in a Class C cleanroom, which is currently how production is carried out in the facility."
+    },
+    {
+      "question": "How is the sterilization process performed?",
+      "answer": "The sterilization process is carried out using ethylene oxide gas under the strict supervision of the quality control unit."
+    },
+    {
+      "question": "Is it possible to place bulk orders for medical centers?",
+      "answer": "Yes, bulk orders and long-term collaboration with hospitals, clinics, pharmacies, and other medical centers are available."
+    },
+    {
+      "question": "Are products quality-checked before market release?",
+      "answer": "Due to ISO 13485 certification, all products undergo quality, safety, and performance tests before being released to the market."
+    },
+    {
+      "question": "What are the features of the company's mouth freshener spray?",
+      "answer": "The mouth freshener spray is produced with a safe and approved formulation that provides a long-lasting sense of freshness without harming oral tissues."
+    },
+    {
+      "question": "Does the mouth freshener spray have health approvals?",
+      "answer": "Yes, this product is manufactured according to the regulations of the Food and Drug Organization and has the necessary health approvals."
+    },
+    {
+      "question": "How can one apply for sales representation or partnership?",
+      "answer": "To obtain sales representation or start a business collaboration, please contact the company's sales unit through the 'Contact Us' section."
+    }
+  ]
+}

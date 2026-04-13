@@ -1,0 +1,16 @@
+{
+  "notFoundTitle": "بلاگ پیدا نشد",
+  "notFoundMessage": "پستی که دنبال آن هستید وجود ندارد.",
+  "backToBlogs": "بازگشت به بلاگ‌ها",
+  "title": "آخرین مقالات",
+  "AllBlog": "مقالات بیشتر",
+  "readMore": "ادامه مطلب",
+  "readTime": "زمان مطالعه",
+  "minute": "دقیقه",
+  "publishedAt": "تاریخ انتشار",
+  "searchPlaceholder": "جستجو در مقاله",
+  "shortLink": "لینک کوتاه مقاله",
+  "featured": "ویژه",
+  "blog": "مقالات",
+  "noContent": "محتوای پیدا نشد"
+}

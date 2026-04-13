@@ -1,0 +1,551 @@
+@import "tailwindcss";
+
+a,
+Link,
+button {
+  cursor: pointer;
+}
+
+@theme {
+  --breakpoint-xs: 360px;
+  --breakpoint-3xl: 1792px;
+  --color-first-50: #f1fcfb;
+  --color-first-100: #cff8f4;
+  --color-first-200: #9ff0ec;
+  --color-first-300: #66e2de;
+  --color-first-400: #37c9ca;
+  --color-first: #1b9a9d;
+  --color-first-600: #15878c;
+  --color-first-700: #156b70;
+  --color-first-800: #165459;
+  --color-first-900: #17464a;
+  ----color-first-950: #07272c;
+  --color-secound-50: #f0f7ff;
+  --color-secound-100: #dfeeff;
+  --color-secound-200: #b8dfff;
+  --color-secound-300: #7ac5ff;
+  --color-secound-400: #33a9fd;
+  --color-secound: #0a4377;
+  --color-secound-600: #088eef;
+  --color-secound-700: #0070cc;
+  --color-secound-800: #0058a5;
+  --color-secound-900: #044c88;
+  --color-secound-950: #06274b;
+  --color-third-50: #fff1fe;
+  --color-third-100: #ffe1fe;
+  --color-third-200: #ffc3fe;
+  --color-third-300: #ff94f9;
+  --color-third-400: #ff54f6;
+  --color-third: #800080;
+  --color-third-600: #ff16f4;
+  --color-third-700: #f500ff;
+  --color-third-800: #d100d9;
+  --color-third-900: #ad00b1;
+  --color-third-950: #620063;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@font-face {
+  font-family: "firstFont-light";
+  src: url("assets/fonts/firstFont/firstFontLight.woff2") format("woff2"),
+    url("assets/fonts/firstFont/firstFont-light.woff") format("woff"),
+    url("assets/fonts/firstFont/firstFont-light.ttf") format("truetype");
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "firstFont-normal";
+  src: url("assets/fonts/firstFont/firstFontRegular.woff2") format("woff2"),
+    url("assets/fonts/firstFont/firstFont-Regular.woff") format("woff"),
+    url("assets/fonts/firstFont/firstFont-Regular.ttf") format("truetype");
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "firstFont-sbold";
+  src: url("assets/fonts/firstFont/firstFont-SemiBold.woff2") format("woff2"),
+    url("assets/fonts/firstFont/firstFont-SemiBold.woff") format("woff"),
+    url("assets/fonts/firstFont/firstFont-SemiBold.ttf") format("truetype");
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "firstFont-bold";
+  src: url("assets/fonts/firstFont/firstFont-SemiBold.woff2") format("woff2"),
+    url("assets/fonts/firstFont/firstFont-SemiBold.woff") format("woff"),
+    url("assets/fonts/firstFont/firstFont-SemiBold.ttf") format("truetype");
+  font-style: normal;
+  font-weight: bolder;
+}
+
+@font-face {
+  font-family: "secoundFont-light";
+  src: url("assets/fonts/secoundFont/secoundFont-light.woff2") format("woff2"),
+    url("assets/fonts/secoundFont/secoundFont-light.woff") format("woff"),
+    url("assets/fonts/secoundFont/secoundFont-light.ttf") format("truetype"),
+    url("assets/fonts/secoundFont/secoundFont-light.eot");
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "secoundFont-Regular";
+  src: url("assets/fonts/secoundFont/secoundFont-Regular.woff2") format("woff2"),
+    url("assets/fonts/secoundFont/secoundFont-Regular.woff") format("woff"),
+    url("assets/fonts/secoundFont/secoundFont-Regular.ttf") format("truetype"),
+    url("assets/fonts/secoundFont/secoundFont-Regular.eot");
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "secoundFont-Medium";
+  src: url("assets/fonts/secoundFont/secoundFont-Medium.woff2") format("woff2"),
+    url("assets/fonts/secoundFont/secoundFont-Medium.woff") format("woff"),
+    url("assets/fonts/secoundFont/secoundFont-Medium.ttf") format("truetype"),
+    url("assets/fonts/secoundFont/secoundFont-Medium.eot");
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "secoundFont-sbold";
+  src: url("assets/fonts/secoundFont/secoundFont-SemiBold.woff2") format("woff2"),
+    url("assets/fonts/secoundFont/secoundFont-SemiBold.woff") format("woff"),
+    url("assets/fonts/secoundFont/secoundFont-SemiBold.ttf") format("truetype"),
+    url("assets/fonts/secoundFont/secoundFont-SemiBold.eot");
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "secoundFont-bold";
+  src: url("assets/fonts/secoundFont/secoundFont-SemiBold.woff2") format("woff2"),
+    url("assets/fonts/secoundFont/secoundFont-SemiBold.woff") format("woff"),
+    url("assets/fonts/secoundFont/secoundFont-SemiBold.ttf") format("truetype"),
+    url("assets/fonts/secoundFont/secoundFont-SemiBold.eot");
+  font-weight: 900;
+  font-style: normal;
+}
+
+body.light {
+  --color-secound-theme-950: rgb(255, 97, 6);
+  --color-secound-theme-50: rgba(255, 97, 6, 0.1);
+  /* BoxShadow */
+  --box-shadow-dark-sm: -2px 2px 8px -8px rgba(4, 4, 5, 0.04),
+    2px 2px 8px -6px rgba(0, 0, 0, 0.04),
+    inset 1px 1px 3px rgba(255, 255, 255, 0.1);
+  --box-shadow-dark-md: 0px 2px 15px rgba(4, 4, 5, 0.05);
+  --shadow-first-sm: 0px 7px 15px #1b7efb3b;
+  --shadow-first-md: 0px 5px 16px 0px #1b7efb14,
+    inset 2px 2px 5px rgba(255, 255, 255, 0.08);
+  /* Start  Color For Theme Raect Tooltip */
+  --rt-color-white: #fff;
+  --rt-color-dark: #222;
+  --rt-color-success: #8dc572;
+  --rt-color-error: #ed1d24;
+  --rt-color-warning: #f0ad4e;
+  --rt-color-info: #1b7efb;
+  --rt-opacity: 0.9;
+  --rt-transition-show-delay: 0.3s;
+  --rt-transition-closing-delay: 0.3s;
+  /* End  Color For Theme Raect Tooltip */
+  /* Start Bg Color For Theme */
+  --bg-color-for-body: #e0ecfa;
+  --bg-color-for-layer-on-body: #ffffff;
+  --bg-color-for-layer-sec: #e0ecfa;
+  --bg-color-for-layer-three: #f0f0f1;
+  --bg-color-for-layer-on-body-rotate: #e0ecfa;
+  --bg-color-for-layer-sec-return: #ffffff;
+  --bg-color-for-layer-sec-prev: #e0ecfa;
+  --bg-color-for-red: #ed1d24;
+  /* End Bg Color For Theme */
+  --first-text-color: #141d26;
+  --first-text-color-const: #141d26;
+  --first-text-color-svg: #606060;
+  --first-text-color-hr: #e0ecfa;
+  --first-text-color-hr-on-secound-layer: #60606040;
+  --first-text-color-red: #ed1d24;
+  --text-color-svg-white: #ffffff;
+  --first-text-color-svg-const: #252525;
+  --first-text-color-svg-first: #1b9a9d;
+  --first-text-color-for-paragraph: #141d26cc;
+  --first-text-color-for-paragraph-low: #606060;
+  --first-text-color-for-paragraph-const: #141d26cc;
+  /* Start Section Button */
+  --first-style-button-bg: #1b9a9d;
+  --first-style-button-bg-hover: #156b70;
+  --button-style-icon-first-bg: #e0ecfa;
+  --first-bg-gradiant-for-section-one: linear-gradient(180deg,
+      #ffffff 0%,
+      rgba(16, 185, 129, 0.05) 100%);
+}
+
+body.dark {
+  /* BoxShadow */
+  --color-secound-theme-950: rgb(255, 97, 6);
+  --color-secound-theme-50: rgba(255, 97, 6, 0.1);
+  --box-shadow-dark-sm: -2px 2px 8px -8px rgba(255, 255, 255, 0.04),
+    2px 2px 8px -6px rgba(0, 0, 0, 0.04),
+    inset 1px 1px 3px rgba(255, 255, 255, 0.1);
+  --box-shadow-dark-md: 0px 2px 15px rgba(4, 4, 5, 0.05);
+  --shadow-first-sm: 0px 7px 15px #1b7efb3b;
+  --shadow-first-md: 0px 5px 16px 0px #1b7efb14,
+    inset 2px 2px 5px rgba(255, 255, 255, 0.08);
+  /* Start Bg Color For Theme */
+  --bg-color-for-body: #101010;
+  --bg-color-for-layer-on-body: #1f2633;
+  --bg-color-for-layer-sec: #101010;
+  --bg-color-for-layer-three: #101010;
+  --bg-color-for-layer-on-body-rotate: #101010;
+  --bg-color-for-layer-sec-return: #050505;
+  --bg-color-for-layer-sec-prev: #1f2633;
+  --bg-color-for-red: #ed1d24;
+  /* End Bg Color For Theme */
+  --first-text-color: #f7f7f7;
+  --first-text-color-red: #ed1d24;
+  --first-text-color-const: #141d26;
+  --first-text-color-svg: #8c8c8c;
+  --first-text-color-svg-first: #1b9a9d;
+  --first-text-color-hr: #606060;
+  --first-text-color-hr-on-secound-layer: #f0f0f1;
+  --first-text-color-svg-const: #1d1d35;
+  --first-text-color-for-paragraph: #e5e5e5;
+  --first-text-color-for-paragraph-low: #808080;
+  --first-text-color-for-paragraph-const: #141d26cc;
+  /* Start Section Button */
+  --first-style-button-bg: #1b9a9d;
+  --first-style-button-bg-hover: #156b70;
+  --button-style-icon-first-bg: #070707;
+  --first-bg-gradiant-for-section-one: linear-gradient(180deg,
+      #1f2633 0%,
+      #1f263350 100%);
+}
+
+@utility bg-color-for-red {
+  background-color: var(--bg-color-for-red);
+}
+
+@utility bg-color-secound-theme-50 {
+  background-color: var(--color-secound-theme-50);
+}
+
+@utility bg-color-secound-theme-950 {
+  background-color: var(--color-secound-theme-950);
+}
+
+@utility text-color-secound-theme-50 {
+  color: var(--color-secound-theme-950);
+}
+
+.text-color-secound-theme-950 {
+  color: var(--color-secound-theme-50);
+}
+
+.text-color-svg-white * {
+  color: var(--text-color-svg-white);
+}
+
+@utility bg-color-for-layer-sec-return {
+  background-color: var(--bg-color-for-layer-sec-return);
+}
+
+@utility bg-color-for-layer-three {
+  background-color: var(--bg-color-for-layer-three);
+}
+
+@utility bg-color-for-layer-sec-prev {
+  background-color: var(--bg-color-for-layer-sec-prev);
+}
+
+@utility first-bg-gradiant-for-section-one {
+  background-image: var(--first-bg-gradiant-for-section-one);
+}
+
+.first-text-color-svg * {
+  color: var(--first-text-color-svg);
+}
+
+.first-text-color-svg-first * {
+  color: var(--first-text-color-svg-first);
+}
+
+@utility first-text-color-hr {
+  color: var(--first-text-color-hr);
+  background-color: var(--first-text-color-hr);
+}
+
+@utility first-text-color-hr-on-secound-layer {
+  color: var(--first-text-color-hr-on-secound-layer);
+  background-color: var(--first-text-color-hr-on-secound-layer);
+}
+
+.first-text-color-svg-const * {
+  color: var(--first-text-color-svg-const);
+}
+
+.first-text-color-red * {
+  color: var(--first-text-color-red);
+}
+
+@utility first-text-color-red {
+  color: var(--first-text-color-red);
+}
+
+.shadow-first-sm {
+  box-shadow: var(--shadow-first-sm);
+}
+
+.shadow-first-md {
+  box-shadow: var(--shadow-first-md);
+}
+
+.shadow-dark-sm {
+  box-shadow: var(--box-shadow-dark-sm);
+}
+
+.box-shadow-dark-md {
+  box-shadow: var(--box-shadow-dark-md);
+}
+
+@utility bg-color-for-layer-on-body {
+  background-color: var(--bg-color-for-layer-on-body);
+}
+
+@utility bg-color-for-layer-sec {
+  background-color: var(--bg-color-for-layer-sec);
+}
+
+@utility first-text-color-for-paragraph {
+  color: var(--first-text-color-for-paragraph);
+}
+
+@utility first-text-color-for-paragraph-const {
+  color: var(--first-text-color-for-paragraph-const);
+}
+
+@utility first-text-color-for-paragraph-low {
+  color: var(--first-text-color-for-paragraph-low);
+}
+
+@utility first-text-color {
+  color: var(--first-text-color);
+}
+
+@utility first-text-color-const {
+  color: var(--first-text-color-const);
+}
+
+@layer utilities {
+  .first-style-button-bg {
+    background-color: var(--first-style-button-bg);
+  }
+
+  .first-style-button-bg:hover {
+    background-color: var(--first-style-button-bg-hover);
+  }
+}
+
+body {
+  background-color: var(--bg-color-for-body);
+  font-family: firstFont-normal;
+}
+
+html[lang="en"] body {
+  font-family: "Inter", "Arial", "Helvetica", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Start Section Button  */
+/* End Section Button  */
+/* شروع قسمت دکمه ها   */
+/* پایان قسمت دکمه ها   */
+/* Start Section Font  */
+/* شروع قسمت فونت   */
+@utility font-f-light {
+  font-family: firstFont-light;
+}
+
+@utility font-f-normal {
+  font-family: firstFont-normal;
+}
+
+@utility font-f-sbold {
+  font-family: firstFont-sbold;
+}
+
+@utility font-f-bold {
+  font-family: firstFont-bold;
+}
+
+@utility font-s-light {
+  font-family: secoundFont-light;
+}
+
+@utility font-s-regular {
+  font-family: secoundFont-Regular;
+}
+
+@utility font-s-medium {
+  font-family: secoundFont-Medium;
+}
+
+@utility font-s-sbold {
+  font-family: secoundFont-sbold;
+}
+
+@utility font-s-bold {
+  font-family: secoundFont-bold;
+}
+
+/* پایان قسمت فونت   */
+/* End Section Font  */
+.select-search-container {
+  width: 100% !important;
+  direction: rtl !important;
+}
+
+.select-search-value .select-search-input {
+  width: 100% !important;
+  border-radius: 10px !important;
+  direction: rtl !important;
+  text-align: right !important;
+  padding: 10px !important;
+  outline: none !important;
+}
+
+@layer components {
+  .no-clear-button::-webkit-search-cancel-button {
+    display: none;
+    -webkit-appearance: none;
+  }
+}
+
+.hover\:bg-color-for-layer-sec:hover {
+  background-color: var(--bg-color-for-layer-sec);
+}
+
+/* Button Style */
+.button-with-icon-on-white-layout {
+  background-color: var(--bg-color-for-layer-on-body);
+  color: var(--first-text-color-for-paragraph);
+  transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
+}
+
+.button-with-icon-on-white-layout__svg {
+  background-color: var(--first-style-button-bg);
+  transition: background-color 0.5s ease-in-out;
+}
+
+.button-with-icon-on-white-layout__svg svg {
+  color: white;
+  transition: color 0.5s ease-in-out;
+}
+
+.button-with-icon-on-white-layout:hover {
+  background-color: var(--first-style-button-bg);
+  color: white;
+}
+
+.button-with-icon-on-white-layout:hover .button-with-icon-on-white-layout__svg {
+  background-color: white;
+}
+
+.button-with-icon-on-white-layout:hover .button-with-icon-on-white-layout__svg svg {
+  color: var(--first-style-button-bg);
+}
+
+/* style two */
+.button-with-icon-on-secound-layout {
+  background-color: var(--bg-color-for-layer-on-body);
+  color: var(--first-text-color-for-paragraph);
+  transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
+}
+
+.button-with-icon-on-secound-layout__svg {
+  background-color: var(--first-style-button-bg);
+  transition: background-color 0.5s ease-in-out;
+}
+
+.button-with-icon-on-secound-layout__svg svg {
+  color: white;
+  transition: color 0.5s ease-in-out;
+}
+
+.button-with-icon-on-secound-layout:hover {
+  background-color: var(--first-style-button-bg);
+  color: white;
+}
+
+.button-with-icon-on-secound-layout:hover .button-with-icon-on-secound-layout__svg {
+  background-color: white;
+}
+
+.button-with-icon-on-secound-layout:hover .button-with-icon-on-secound-layout__svg svg {
+  color: var(--first-style-button-bg);
+}
+
+/* Button style */
+/* اضافه کن به global.css یا Tailwind config */
+.masonry-grid {
+  display: flex;
+  /* ستون‌ها کنار هم قرار میگیرن */
+  margin-left: -16px;
+  /* فاصله منفی برای gutter */
+  width: auto;
+}
+
+.masonry-column {
+  padding-left: 16px;
+  /* فاصله بین ستون‌ها */
+  background-clip: padding-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.infinite-scroll-component__outerdiv {
+  width: 100%;
+}
+
+/* react-select__control css-13cymwt-control in busget last  */
+.react-select__control {
+  padding: 12px !important;
+  border-radius: 16px !important;
+  background-color: var(--bg-color-for-layer-on-body) !important;
+  cursor: pointer;
+}
+
+.m-rtl {
+  direction: ltr;
+}
+
+.m-ltr {
+  direction: ltr !important;
+}
+
+@keyframes scaleFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scaleFadeIn {
+  animation: scaleFadeIn 0.25s ease-out forwards;
+}
+
+.custom-dashed-border {
+  border: 2px dashed #D1D5DB;
+  /* ضخامت و رنگ خط */
+  border-radius: 8px;
+  padding: 1.5rem;
+  position: relative;
+}
+
+/* برای کنترل فاصله dash دقیق‌تر با border-image */

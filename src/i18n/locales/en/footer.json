@@ -1,0 +1,42 @@
+{
+    "about": "About Us",
+    "catalogs": "Catalogs",
+    "certifications": "Certifications",
+    "socialMedia": "socialMedia",
+    "aboutText": "Gamma Teb Asia, because it produces and supplies all three categories of strile, non-strile, and hygienic—in its factory, requires your suggestions and criticisms to provide better services to esteemed buyers. Improving the quality level will not be possible without your feedback.",
+    "quickLinks": "Quick Links",
+    "LocateIcon": "Alborz – Simin Dasht Industrial Town, 6th East Street, No. 111",
+    "categories": "Categories",
+    "contact": "Contact Us",
+    "address": "Address: Tehran, Valiasr Street",
+    "phone": "Head Office Phone: +98-21-66419417",
+    "phoneSound": " Customer Voice :09307587686",
+    "phoneFactory": "Factory Phone : 026 - 36670300 ",
+    "email": "Email: info@gammatabasia.com",
+    "newsletter": "Newsletter",
+    "newsletterPlaceholder": "Enter your email",
+    "subscribe": "Subscribe",
+    "followUs": "Follow Us",
+    "rights": "All rights reserved",
+    "serviceGuarantees": {
+        "expressDelivery": "Express Delivery",
+        "support24": "24/7 Support",
+        "securePayment": "Secure Payment",
+        "originalityGuarantee": "Originality Guarantee"
+    },
+    "quickAccess": {
+        "title": "Quick Access",
+        "myAccount": "My Account",
+        "orderTracking": "Order Tracking",
+        "wishlist": "Wishlist"
+    },
+    "customerService": {
+        "title": "Customer Service",
+        "faq": "FAQ",
+        "returnPolicy": "Return Policy",
+        "privacy": "Privacy",
+        "terms": "Terms"
+    },
+    "downloadApp": "Download our App",
+    "copyright": "© {{year}} KarinShop. All rights reserved."
+}
