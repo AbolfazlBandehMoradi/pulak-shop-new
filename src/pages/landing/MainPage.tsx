@@ -3,15 +3,14 @@ import { SpecificCategorySlider } from '@/components/reusable-components/Specifi
 import useIndex from '@/hooks/useIndex';
 import useShowcases from '@/hooks/useShowcases';
 import useSpecificCategoryProducts from '@/hooks/useSpecificCategoryProducts';
-import HeroSimple from '@/pages/landing/sections/HeroSimple';
 import { Blogs } from '../blog/Blogs';
 import ShowCasesComingSoon from '@/components/reusable-components/Showcases/ShowCasesComingSoon';
 import { DiscountProductsSliderStatic } from '@/components/reusable-components/DiscountProducts/DiscountProductsSliderStatic';
-import WhyUs from './sections/WhyUs';
 import ShowCasesNumberTwo from '@/components/reusable-components/Showcases/ShowCasesNumberTwo/ShowCasesNumberTwo';
 import ShowCasesNumberThree from '@/components/reusable-components/Showcases/ShowCasesNumberThree/ShowCasesNumberThree';
 import IndexLoading from '@/components/ui/IndexLoading';
 import ApiError from '@/pages/error/ApiError';
+import Hero from './sections/Hero';
 
 const MainPage = () => {
   const { data: index, isLoading, isError, refetch } = useIndex();
@@ -25,7 +24,7 @@ const MainPage = () => {
 
   return (
     <main>
-      <HeroSimple />
+      <Hero />
       {/* <AllCategoriesIndex categories={index?.categories ?? []} /> */}
       <ParentCategories categories={index?.categories ?? []} />
       <SpecificCategorySlider products={specificCategoryProducts} />
@@ -37,7 +36,6 @@ const MainPage = () => {
         loading={isLoading}
       /> */}
       <ShowCasesNumberTwo showCase={showcases && showcases[1]} />
-      <WhyUs />
       {/* <SpecificCategorySliderNumberTwo products={specificCategoryProducts2} /> */}
       <ShowCasesNumberThree showCase={showcases && showcases[2]} />
       {/* <SpecificCategorySliderNumberThree products={specificCategoryProducts3} /> */}
