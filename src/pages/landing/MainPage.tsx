@@ -1,22 +1,18 @@
-import ParentCategories from '@/components/reusable-components/ParentCategories/ParentCategories';
-import { SpecificCategorySlider } from '@/components/reusable-components/SpecificCategoryProducts/SpecificCategorySlider';
 import useIndex from '@/hooks/useIndex';
 import useShowcases from '@/hooks/useShowcases';
-import useSpecificCategoryProducts from '@/hooks/useSpecificCategoryProducts';
 import { Blogs } from '../blog/Blogs';
 import ShowCasesComingSoon from '@/components/reusable-components/Showcases/ShowCasesComingSoon';
-import { DiscountProductsSliderStatic } from '@/components/reusable-components/DiscountProducts/DiscountProductsSliderStatic';
 import ShowCasesNumberTwo from '@/components/reusable-components/Showcases/ShowCasesNumberTwo/ShowCasesNumberTwo';
 import ShowCasesNumberThree from '@/components/reusable-components/Showcases/ShowCasesNumberThree/ShowCasesNumberThree';
 import IndexLoading from '@/components/ui/IndexLoading';
 import ApiError from '@/pages/error/ApiError';
 import Hero from './sections/Hero';
 import CategoriesSlider from './sections/CategoriesSlider';
+import ProductSlider from './sections/ProductsSlider';
 
 const MainPage = () => {
   const { data: index, isLoading, isError, refetch } = useIndex();
   const { data: showcases } = useShowcases();
-  const { data: specificCategoryProducts } = useSpecificCategoryProducts(10, 'محصولات بهداشتی');
 
   if (isLoading && !index) return <IndexLoading />;
   if (isError) {
@@ -27,12 +23,9 @@ const MainPage = () => {
     <main>
       <Hero />
       <CategoriesSlider categories={index?.categories ?? []} />
-      {/* <AllCategoriesIndex categories={index?.categories ?? []} /> */}
-      <ParentCategories categories={index?.categories ?? []} />
-      <SpecificCategorySlider products={specificCategoryProducts} />
+      <ProductSlider showCase={showcases && showcases[1]} />
+
       <ShowCasesComingSoon showCase={showcases && showcases[0]} />
-      {/* TODO: discount products slider   */}
-      <DiscountProductsSliderStatic products={index?.discountProducts || []} loading={isLoading} />
       {/* <NewestProducts
         products={index?.newestProducts || []}
         loading={isLoading}
