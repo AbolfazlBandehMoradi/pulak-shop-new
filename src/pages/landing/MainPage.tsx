@@ -11,6 +11,7 @@ import ShowCasesNumberThree from '@/components/reusable-components/Showcases/Sho
 import IndexLoading from '@/components/ui/IndexLoading';
 import ApiError from '@/pages/error/ApiError';
 import Hero from './sections/Hero';
+import CategoriesSlider from './sections/CategoriesSlider';
 
 const MainPage = () => {
   const { data: index, isLoading, isError, refetch } = useIndex();
@@ -25,6 +26,7 @@ const MainPage = () => {
   return (
     <main>
       <Hero />
+      <CategoriesSlider categories={index?.categories ?? []} />
       {/* <AllCategoriesIndex categories={index?.categories ?? []} /> */}
       <ParentCategories categories={index?.categories ?? []} />
       <SpecificCategorySlider products={specificCategoryProducts} />
