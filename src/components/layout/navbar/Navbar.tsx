@@ -4,21 +4,18 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import MainLogo from '@/assets/Images/Logo/MainLogo.png';
-import BasketWithNumber from '@/components/layout/navbar/BasketWithNumber';
-import { SearchWithButton } from '@/components/ui/SearchWithButton';
 import { ThemeToggleButton } from '@/components/ui/ThemeToggleButton';
 import { LanguageToggle } from './LanguageWithClick';
-import useCartStore from '@/stores/cartStore'
-import {useShopStore} from "@/stores/productsFilterStore"
+import useCartStore from '@/stores/cartStore';
+import { useShopStore } from '@/stores/productsFilterStore';
+import { useLangStore } from '@/stores/languageStore';
 import useCategories from '@/hooks/useCategories';
 
 export const Navbar: React.FC = () => {
-  const { t } = useTranslation();
-  const { isAuthenticated, user, logout } = useAuth();
+  const { i18n } = useTranslation();
+  const { isAuthenticated, user } = useAuth();
   const favCounts = 0;
   const { data: categories } = useCategories();
-  const [themeIndex, setThemeIndex] = useState(0);
-  const themes = ["light", "dark"];
   const [isOpenMegaMenu, setIsOpenMegaMenu] = useState(false);
   const menuRefMegaMenu = useRef<HTMLLIElement>(null);
   const [activeTab, setActiveTab] = useState(0);
@@ -34,18 +31,14 @@ export const Navbar: React.FC = () => {
   const setSearchText = useShopStore((s) => s.setSearch);
   const setCategoryIds = useShopStore((s) => s.setCategoryIds);
   const cartCount = useCartStore((s) => s.itemCount);
+  const dir = useLangStore((s) => s.dir);
 
-  useEffect(() => {
-    document.body.className = themes[themeIndex];
-  }, [themeIndex]);
-  const handleThemeChange = () => {
-    setThemeIndex((prev) => (prev + 1) % themes.length);
-  };
+  const searchPlaceholder = i18n.language === 'fa' ? 'جستجوی محصولات...' : 'Search products...';
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 1024);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   useEffect(() => {
@@ -55,11 +48,11 @@ export const Navbar: React.FC = () => {
       }
     };
     if (isOpen) {
-      document.body.addEventListener("click", handleClickOutside);
+      document.body.addEventListener('click', handleClickOutside);
     } else {
-      document.body.removeEventListener("click", handleClickOutside);
+      document.body.removeEventListener('click', handleClickOutside);
     }
-    return () => document.body.removeEventListener("click", handleClickOutside);
+    return () => document.body.removeEventListener('click', handleClickOutside);
   }, [isOpen]);
 
   useEffect(() => {
@@ -68,21 +61,18 @@ export const Navbar: React.FC = () => {
         setOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   useEffect(() => {
     const handleClickOutside = (e: any) => {
-      if (
-        menuRefMegaMenu.current &&
-        !menuRefMegaMenu.current.contains(e.target)
-      ) {
+      if (menuRefMegaMenu.current && !menuRefMegaMenu.current.contains(e.target)) {
         setIsOpenMegaMenu(false);
       }
     };
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
   }, []);
   const toggleMegaMenu = () => setIsOpenMegaMenu((prev) => !prev);
   const handleMouseEnter = (index: number) => setActiveTab(index);
@@ -98,8 +88,8 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <>
-      <nav className="px-4 my-4 container mx-auto">
+    <nav>
+      <div dir={dir} className="px-4 my-4 container mx-auto">
         <div className="flex flex-wrap items-center justify-between">
           <div className="w-full md:w-7/12 flex items-center md:gap-3 flex-wrap order-2 md:order-1">
             <div className="hidden md:flex md:w-2/24">
@@ -128,8 +118,8 @@ export const Navbar: React.FC = () => {
                       setSearchText(undefined);
                     }
                   }}
-                  className="w-10/12 px-[16px] text-base first-text-color-for-paragraph placeholder-gray-400 focus-visible:outline-none rounded-bl-none no-clear-button"
-                  placeholder="جستجوی محصولات..."
+                  className="w-10/12 px-4 text-base first-text-color-for-paragraph placeholder-gray-400 focus-visible:outline-none rounded-bl-none no-clear-button"
+                  placeholder={searchPlaceholder}
                 />
                 <button className="h-14 cursor-pointer flex items-center justify-center w-2/12 group">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -179,12 +169,14 @@ export const Navbar: React.FC = () => {
                       open ? 'rounded-b-none border-b first-text-color-hr' : ''
                     }`}
                   >
-                    {<img
-                      src={user?.avatar?.filePath}
-                      alt={`عکس پروفایل ${user?.firstName || user?.lastName}`}
-                      className="w-6 h-6"
-                    />}
-                    <span className="first-text-color inline-block h-4 leading-[22px]">
+                    {
+                      <img
+                        src={user?.avatar?.filePath}
+                        alt={`عکس پروفایل ${user?.firstName || user?.lastName}`}
+                        className="w-6 h-6"
+                      />
+                    }
+                    <span className="first-text-color inline-block h-4 leading-5.5">
                       {user?.firstName}
                     </span>
                     <span className="first-text-color-svg">
@@ -247,8 +239,8 @@ export const Navbar: React.FC = () => {
             </div>
           </div>
         </div>
-      </nav>
-      <header className="bg-color-for-layer-on-body p-4 mx-auto   ">
+      </div>
+      <div className="bg-color-for-layer-on-body p-4 mx-auto   ">
         {!isMobile ? (
           <div className="items-center  mx-auto justify-between px-4 relative  container  flex  ">
             <div className="flex gap-10 items-center justify-end md:justify-between ">
@@ -330,7 +322,7 @@ export const Navbar: React.FC = () => {
                                 'blah blah blah'
                               </p>
                               <ul className="grid grid-cols-4 mt-8 w-full space-y-4">
-                                {categories?.[activeTab]?.subcategories?.map((sub) => (
+                                {categories?.[activeTab]?.children?.map((sub) => (
                                   <Link
                                     key={sub.id}
                                     onClick={() => {
@@ -430,7 +422,7 @@ export const Navbar: React.FC = () => {
                   className="cursor-pinter rounded-md flex bg-first h-10 w-20 justify-center items-center gap-2 "
                   to="/cart"
                 >
-                  <span className="bg-first-600 text-white h-5 w-5 rounded-full grid place-items-center text-[14px] leading-[24px]">
+                  <span className="bg-first-600 text-white h-5 w-5 rounded-full grid place-items-center text-[14px] leading-6">
                     {cartCount}
                   </span>
                   <span className="first-text-color-svg">
@@ -452,46 +444,8 @@ export const Navbar: React.FC = () => {
                   </span>
                 </Link>
               </span>
-              <button className="cursor-pointer" onClick={handleThemeChange}>
-                {themeIndex === 0 && (
-                  <span>
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M3 12H5M5.00006 19L7.00006 17M12 19V21M17 17L19 19M5 5L7 7M19 12H21M16.9999 7L18.9999 5M12 3V5M15 12C15 13.6569 13.6569 15 12 15C10.3431 15 9 13.6569 9 12C9 10.3431 10.3431 9 12 9C13.6569 9 15 10.3431 15 12Z"
-                        stroke="#303030"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </span>
-                )}
-                {themeIndex === 1 && (
-                  <span>
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M4.67199 18.7967C3.97348 18.2328 4.55832 17.2239 5.45256 17.1452C11.2419 16.6357 15.0596 10.0755 12.4592 5.00063C12.0486 4.19926 12.5832 3.13003 13.4466 3.38559C17.2438 4.50955 20 7.94173 20 12C20 16.9715 16.1189 21 11 21C8.65964 21 6.38082 20.1762 4.67199 18.7967Z"
-                        stroke="#f7f7f7"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </span>
-                )}
-              </button>
+              <LanguageToggle />
+              <ThemeToggleButton />
             </div>
           </div>
         ) : (
@@ -660,51 +614,8 @@ export const Navbar: React.FC = () => {
             <div className="flex center gap-2">
               <div className="flex  lg:hidden flex-row-reverse items-center w-full gap-3">
                 <div className="flex center gap-3">
-                  <button className="cursor-pointer" onClick={handleThemeChange}>
-                    {themeIndex === 0 && (
-                      <span>
-                        <svg
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M3 12H5M5.00006 19L7.00006 17M12 19V21M17 17L19 19M5 5L7 7M19 12H21M16.9999 7L18.9999 5M12 3V5M15 12C15 13.6569 13.6569 15 12 15C10.3431 15 9 13.6569 9 12C9 10.3431 10.3431 9 12 9C13.6569 9 15 10.3431 15 12Z"
-                            stroke="#303030"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </span>
-                    )}
-                    {themeIndex === 1 && (
-                      <span>
-                        <svg
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M4.67199 18.7967C3.97348 18.2328 4.55832 17.2239 5.45256 17.1452C11.2419 16.6357 15.0596 10.0755 12.4592 5.00063C12.0486 4.19926 12.5832 3.13003 13.4466 3.38559C17.2438 4.50955 20 7.94173 20 12C20 16.9715 16.1189 21 11 21C8.65964 21 6.38082 20.1762 4.67199 18.7967Z"
-                            stroke="#f7f7f7"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </span>
-                    )}
-                    {/* {themeIndex === 2 && <span>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12.5095 17.7915C12.1888 17.6289 11.8112 17.6289 11.4905 17.7915L7.37943 19.8751C6.50876 20.3164 5.52842 19.5193 5.76452 18.562L6.72576 14.6645C6.81767 14.2918 6.72079 13.8972 6.46729 13.6117L3.29416 10.0378C2.66165 9.32543 3.11095 8.18715 4.05367 8.11364L8.48026 7.76848C8.89433 7.73619 9.25828 7.47809 9.43013 7.09485L10.9627 3.67703C11.3675 2.77432 12.6325 2.77432 13.0373 3.67703L14.5699 7.09485C14.7417 7.47809 15.1057 7.73619 15.5197 7.76848L19.9463 8.11364C20.889 8.18715 21.3384 9.32543 20.7058 10.0378L17.5327 13.6117C17.2792 13.8972 17.1823 14.2918 17.2742 14.6645L18.2355 18.562C18.4716 19.5193 17.4912 20.3164 16.6206 19.8751L12.5095 17.7915Z" stroke="#2635D9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                        </span>} */}
-                  </button>
+                  <LanguageToggle />
+                  <ThemeToggleButton />
                 </div>
                 {!isAuthenticated && (
                   <button
@@ -746,7 +657,7 @@ export const Navbar: React.FC = () => {
                         alt={`عکس پروفایل ${user?.firstName || user?.lastName}`}
                         className="w-6 h-6"
                       />
-                      <span className="first-text-color inline-block h-4 leading-[22px]">
+                      <span className="first-text-color inline-block h-4 leading-5.5">
                         {user?.firstName}
                       </span>
                       <span className="first-text-color-svg">
@@ -858,7 +769,7 @@ export const Navbar: React.FC = () => {
             </div>
           </div>
         )}
-      </header>
-    </>
+      </div>
+    </nav>
   );
 };
