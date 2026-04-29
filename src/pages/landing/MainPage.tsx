@@ -23,9 +23,9 @@ const MainPage = () => {
     <main>
       <Hero />
       <CategoriesSlider categories={index?.categories ?? []} />
-      <ProductSlider showCase={showcases && showcases[1]} />
+      <ProductSlider showCase={showcases && showcases[0]} />
 
-      <ShowCasesComingSoon showCase={showcases && showcases[0]} />
+      <ShowCasesComingSoon showCase={showcases && showcases[1]} />
       {/* <NewestProducts
         products={index?.newestProducts || []}
         loading={isLoading}

@@ -3,7 +3,7 @@ import { useLangStore } from '@/stores/languageStore';
 const IndexLoading = () => {
   const lang = useLangStore((s) => s.lang);
 
-  const title = lang === 'fa' ? 'به گاماطب خوش آمدید' : 'Welcome to Gamateb';
+  const title = lang === 'fa' ? 'به بهشت زیبایی پولک خوش آمدید' : 'Welcome to PulakShop';
 
   const subtitle = lang === 'fa' ? '' : '';
 
