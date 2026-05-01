@@ -64,7 +64,7 @@ const ShowCases = ({ showCase }: Props) => {
           </div>
         </div>
       </div>
-      <div className="w-full rounded-4xl p-6 lg:p-8 bg-linear-to-br from-first-300 via-first-600 to-first-400 shadow-first-md mt-4 border border-secound-300/40">
+      <div className="w-full rounded-4xl p-6 lg:p-8 bg-linear-to-br from-firsta via-first-600 to-first-400 shadow-first-md mt-4 border border-secound-300/40">
         <div className="flex  flex-wrap">
           <div className="relative w-full lg:w-16/48 xl:w-10/48 rounded-3xl bg-white/10 backdrop-blur-sm border border-white/20 p-6 lg:p-8 flex flex-col justify-between">
             <div className=" flex flex-col justify-between h-full">

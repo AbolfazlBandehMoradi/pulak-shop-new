@@ -22,15 +22,15 @@ const MainPage = () => {
   }
 
   return (
-    <main>
+    <main className='pb-10'>
       <Hero />
       <CategoriesSlider categories={index?.categories ?? []} />
       <ProductSlider showCase={showcases && showcases[0]} />
       <NewBlogs blogs={index?.blogs ?? []} />
-      <ShowCases showCase={showcases && showcases[1]} />
-      <Banner />
       <ProductsSliderTwo showcase={showcases && showcases[1]} />
+      <Banner />
       <WhyUs />
+      <ShowCases showCase={showcases && showcases[1]} />
     </main>
   );
 };
