@@ -7,6 +7,7 @@ import CategoriesSlider from './sections/CategoriesSlider';
 import ProductSlider from './sections/ProductsSlider';
 import "./MainPage.css"
 import NewBlogs from './sections/NewBlogs';
+import ProductsSliderTwo from './sections/ProductsSliderTwo';
 
 const MainPage = () => {
   const { data: index, isLoading, isError, refetch } = useIndex();
@@ -23,6 +24,7 @@ const MainPage = () => {
       <CategoriesSlider categories={index?.categories ?? []} />
       <ProductSlider showCase={showcases && showcases[0]} />
       <NewBlogs blogs={index?.blogs ?? []} />
+      <ProductsSliderTwo showcase={showcases && showcases[1]} />
     </main>
   );
 };
