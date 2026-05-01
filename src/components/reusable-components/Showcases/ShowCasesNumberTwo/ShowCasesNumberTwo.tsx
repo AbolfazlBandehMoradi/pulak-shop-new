@@ -95,7 +95,7 @@ const ShowCasesNumberTwo = ({ showCase }: Props) => {
           </div>
         </div>
       </header>
-      <div className="w-full  mt-4">
+      <div className="w-full mt-4 rounded-4xl p-4 lg:p-6 bg-linear-to-br from-first-50 via-white to-secound-50 border border-first-100/80 shadow-[0_16px_36px_-30px_rgba(27,126,251,0.5)]">
         <div className="flex flex-wrap">
           <div className="w-full  mx-auto rounded-r-none rounded-4xl relative">
             <Swiper

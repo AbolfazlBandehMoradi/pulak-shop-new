@@ -108,16 +108,16 @@ const ShowCasesNumberThree = ({ showCase }: Props) => {
         </div>
       </header>
 
-      <div className="w-full rounded-4xl p-8 bg-secound mt-4">
+      <div className="w-full rounded-4xl p-6 lg:p-8 bg-linear-to-br from-first via-first-700 to-third mt-4 border border-first-300/35 shadow-first-md">
         <div className="flex flex-wrap">
-          <div className="w-full lg:w-16/48 flex flex-col justify-center xl:w-10/48 p-8">
+          <div className="w-full lg:w-16/48 flex flex-col justify-center xl:w-10/48 p-6 lg:p-8 rounded-3xl bg-white/10 backdrop-blur-sm border border-white/20">
             <p className="text-xl text-center text-white mb-4">
               <span>{t('product.nonSterileDes')}</span>
             </p>
             <div className="flex justify-center  gap-2 ">
               <div
                 ref={prevRef}
-                className={`swiper-button-prev_product-sliderflex justify-center flex w-8 h-8 items-center rounded bg-white ${
+                className={`swiper-button-prev_product-sliderflex justify-center flex w-10 h-10 items-center rounded-xl bg-white/95 shadow-lg transition-all ${
                   isBeginning ? 'opacity-50 ' : 'cursor-pointer'
                 }`}
               >
@@ -139,7 +139,7 @@ const ShowCasesNumberThree = ({ showCase }: Props) => {
               </div>
               <div
                 ref={nextRef}
-                className={`swiper-button-next_product-slider flex justify-center w-8 h-8 items-center rounded bg-white ${
+                className={`swiper-button-next_product-slider flex justify-center w-10 h-10 items-center rounded-xl bg-white/95 shadow-lg transition-all ${
                   isEnd ? 'opacity-50 cursor-pointer' : 'cursor-pointer'
                 }`}
               >

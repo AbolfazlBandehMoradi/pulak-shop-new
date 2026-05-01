@@ -30,8 +30,10 @@ export const ShowCasesCardNumberThree: React.FC<ProductCardProps> = ({ showCaseI
 
   return (
     <div
-      className={`h-100 cursor-pointer p-4 rounded-2xl flex flex-col justify-between transition-colors duration-300 ${
-        isHovered ? 'bg-first text-white' : 'bg-color-for-layer-on-body first-text-color'
+      className={`h-100 cursor-pointer p-4 rounded-2xl flex flex-col justify-between transition-all duration-300 border ${
+        isHovered
+          ? 'bg-first text-white border-first-700 shadow-[0_20px_40px_-28px_rgba(14,99,231,0.9)] -translate-y-1'
+          : 'bg-color-for-layer-on-body first-text-color border-first-100/80 shadow-[0_14px_30px_-26px_rgba(27,126,251,0.55)]'
       }`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -80,7 +82,7 @@ export const ShowCasesCardNumberThree: React.FC<ProductCardProps> = ({ showCaseI
         </div>
       </div>
 
-      <hr className="my-2 border-gray-300" />
+      <hr className={`my-2 ${isHovered ? 'border-white/35' : 'border-first-100'}`} />
 
       {/* Name & Description */}
       <div className="h-2/4 flex flex-col justify-between">
@@ -114,7 +116,11 @@ export const ShowCasesCardNumberThree: React.FC<ProductCardProps> = ({ showCaseI
             )}
           </div>
           <div className="w-12/96">
-            <div className="w-10 h-10 p-2 rounded-md bg-first hover:bg-first-700 text-white flex items-center justify-center border-none">
+            <div
+              className={`w-10 h-10 p-2 rounded-md text-white flex items-center justify-center border-none ${
+                isHovered ? 'bg-white/20' : 'bg-first hover:bg-first-700'
+              }`}
+            >
               <ShoppingCart className="w-6 h-6" />
             </div>
           </div>

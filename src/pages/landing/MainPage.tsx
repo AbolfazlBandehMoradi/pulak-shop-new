@@ -8,6 +8,9 @@ import ProductSlider from './sections/ProductsSlider';
 import "./MainPage.css"
 import NewBlogs from './sections/NewBlogs';
 import ProductsSliderTwo from './sections/ProductsSliderTwo';
+import Banner from './sections/Banner';
+import ShowCases from '@/components/reusable-components/Showcases/ShowCases';
+import WhyUs from './sections/WhyUs';
 
 const MainPage = () => {
   const { data: index, isLoading, isError, refetch } = useIndex();
@@ -24,7 +27,10 @@ const MainPage = () => {
       <CategoriesSlider categories={index?.categories ?? []} />
       <ProductSlider showCase={showcases && showcases[0]} />
       <NewBlogs blogs={index?.blogs ?? []} />
+      <ShowCases showCase={showcases && showcases[1]} />
+      <Banner />
       <ProductsSliderTwo showcase={showcases && showcases[1]} />
+      <WhyUs />
     </main>
   );
 };

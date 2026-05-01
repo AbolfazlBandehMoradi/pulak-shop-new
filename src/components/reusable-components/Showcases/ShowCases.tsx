@@ -30,7 +30,7 @@ const ShowCases = ({ showCase }: Props) => {
         <div className="flex w-full flex-wrap items-center justify-between  lg:w-11/24  ">
           <div className="flex w-full items-center gap-2">
             <h2 className="font-s-sbold first-text-color text-2xl">
-              {t("products.newest")}
+              {showCase?.translation.title}
             </h2>
           </div>
         </div>
@@ -64,9 +64,9 @@ const ShowCases = ({ showCase }: Props) => {
           </div>
         </div>
       </div>
-      <div className="w-full rounded-4xl p-8 bg-secound  mt-4">
+      <div className="w-full rounded-4xl p-6 lg:p-8 bg-linear-to-br from-first-300 via-first-600 to-first-400 shadow-first-md mt-4 border border-secound-300/40">
         <div className="flex  flex-wrap">
-          <div className="relative  w-full lg:w-16/48 xl:w-10/48 rounded-l-none rounded-4xl  p-8 flex flex-col justify-between">
+          <div className="relative w-full lg:w-16/48 xl:w-10/48 rounded-3xl bg-white/10 backdrop-blur-sm border border-white/20 p-6 lg:p-8 flex flex-col justify-between">
             <div className=" flex flex-col justify-between h-full">
               <div>
                 <h3 className="text-base text-center font-font-f-light mt-1 text-white">
@@ -88,7 +88,7 @@ const ShowCases = ({ showCase }: Props) => {
                   </svg>
                 </h3>
               </div>
-              <p className="text-xl w-8/12 mx-auto text-center font-s-medium text-white mb-2 lg:mb-0 mt-2">
+              <p className="text-xl w-10/12 mx-auto text-center font-s-medium text-white mb-2 lg:mb-0 mt-2">
                 اولین خوشبو کننده تخصصی دهان و دندان در ایران
               </p>
               <ul className="flex flex-col text-white font-f-light text-center">
@@ -99,7 +99,7 @@ const ShowCases = ({ showCase }: Props) => {
               <div className="flex justify-center gap-2 ">
                 <div
                   ref={prevRef}
-                  className={`swiper-button-prev_product-sliderflex justify-center flex w-8 h-8 items-center rounded bg-white  ${isBeginning ? "opacity-50 " : "cursor-pointer"
+                  className={`swiper-button-prev_product-sliderflex justify-center flex w-10 h-10 items-center rounded-xl bg-white/95 shadow-lg transition-all ${isBeginning ? "opacity-50 " : "cursor-pointer hover:scale-105"
                     }`}
                 >
                   <svg
@@ -120,7 +120,7 @@ const ShowCases = ({ showCase }: Props) => {
                 </div>
                 <div
                   ref={nextRef}
-                  className={`swiper-button-next_product-slider flex justify-center w-8 h-8 items-center rounded bg-white ${isEnd ? "opacity-50 cursor-pointer" : "cursor-pointer"
+                  className={`swiper-button-next_product-slider flex justify-center w-10 h-10 items-center rounded-xl bg-white/95 shadow-lg transition-all ${isEnd ? "opacity-50 cursor-pointer" : "cursor-pointer hover:scale-105"
                     }`}
                 >
                   <svg

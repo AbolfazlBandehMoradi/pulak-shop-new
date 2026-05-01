@@ -40,7 +40,7 @@ export const ShowCaseCard: React.FC<ProductCardProps> = ({
     : formatPriceEn(product.price);
 
   return (
-    <div className="h-95  p-4 rounded-2xl  bg-color-for-layer-sec relative flex flex-col justify-between">
+    <div className="h-95 p-4 rounded-2xl bg-color-for-layer-on-body relative flex flex-col justify-between border border-first-100/70 shadow-[0_14px_32px_-24px_rgba(14,99,231,0.55)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_38px_-24px_rgba(14,99,231,0.65)]">
       <Link
         to={product.inStock ? productUrl : "#"}
         className={`flex flex-col h-full ${
@@ -48,7 +48,7 @@ export const ShowCaseCard: React.FC<ProductCardProps> = ({
         }`}
       >
         {/* --- Image Section --- */}
-        <div className="relative aspect-[4/3] overflow-hidden bg-zinc-50 dark:bg-zinc-800">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-linear-to-br from-first-50 to-secound-50">
           <motion.img
             src={imageUrl}
             alt={displayName}
@@ -117,7 +117,7 @@ export const ShowCaseCard: React.FC<ProductCardProps> = ({
           </div>
 
           {/* Title */}
-          <h3 className="font-bold text-lg text-zinc-900 dark:text-white mb-1 line-clamp-1 group-hover:text-blue-600 transition-colors">
+          <h3 className="font-bold text-lg first-text-color mb-1 line-clamp-1 group-hover:text-first transition-colors">
             {displayName}
           </h3>
 
@@ -153,7 +153,7 @@ export const ShowCaseCard: React.FC<ProductCardProps> = ({
             <div className="absolute inset-0 flex items-center transition-transform duration-500 translate-y-[150%] group-hover:translate-y-0">
               <Button
                 variant="primary"
-                className="w-full h-11 rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2 border-none"
+                className="w-full h-11 rounded-xl bg-first hover:bg-first-700 text-white shadow-lg shadow-first/25 flex items-center justify-center gap-2 border-none"
                 disabled={!product.inStock}
                 onClick={(e) => {
                   e.stopPropagation();
