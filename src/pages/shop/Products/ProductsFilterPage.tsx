@@ -1,11 +1,9 @@
-import { X, Grid, List } from 'lucide-react';
-import { cn } from '@/utils/cn';
+import { X } from 'lucide-react';
 import { useTranslation } from '@/i18n/useTranslation';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { useInfiniteProducts } from '@/hooks/useInfiniteProducts';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useShopStore } from '@/stores/productsFilterStore';
-import { Skeleton } from '@/components/ui/skeleton';
 import useCategories from '@/hooks/useCategories';
 import { type Category } from '@/types';
 import { useLangStore } from '@/stores/languageStore';
@@ -14,13 +12,12 @@ import { areSameStrings, parseCategoryIdsParam, parseHasOfferParam } from '@/uti
 import { FilterPanelSkeleton, ProductsContentSkeleton } from './sections/FilterPageSkeletons';
 import { getCategoryChildren } from '@/utils/categoryHelpers';
 import FiltersSidebar from './sections/FiltersSidebar';
-import { ListViewProduct } from './sections/ListViewProducts';
 import { GridViewProduct } from './sections/GridViewProducts';
 import Spinner from '@/components/ui/Spinner';
 import ApiError from '@/pages/error/ApiError';
 
 const GRID_SKELETON_COUNT = 9;
-const LIST_SKELETON_COUNT = 6;
+const MAX_GRID_SKELETON_COUNT = 12;
 
 export default function ProductsFilterPage() {
   const [, setSearchParams] = useSearchParams();
@@ -30,8 +27,6 @@ export default function ProductsFilterPage() {
   const lang = useLangStore((s) => s.lang);
 
   const {
-    viewMode,
-    setViewMode,
     search,
     categoryIds,
     hasOffer,
@@ -58,11 +53,9 @@ export default function ProductsFilterPage() {
   const products = data?.pages.flatMap((page) => page.products) ?? [];
 
   const showProductsSkeleton = (isLoading || isFetching) && !isFetchingNextPage;
-  const minimumSkeletonCount = viewMode === 'grid' ? GRID_SKELETON_COUNT : LIST_SKELETON_COUNT;
-  const maximumSkeletonCount = viewMode === 'grid' ? 12 : 8;
   const skeletonCount = Math.min(
-    Math.max(products.length, minimumSkeletonCount),
-    maximumSkeletonCount
+    Math.max(products.length, GRID_SKELETON_COUNT),
+    MAX_GRID_SKELETON_COUNT
   );
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -238,13 +231,13 @@ export default function ProductsFilterPage() {
             <FilterPanelSkeleton />
           </aside>
           <section className="w-full md:w-32/96 lg:w-75/96">
-            <div className="flex mb-4">
-              <div className="flex border border-gray-400 rounded-lg overflow-hidden p-1 gap-1">
-                <Skeleton className="w-8 h-8 bg-gray-200" />
-                <Skeleton className="w-8 h-8 bg-gray-200" />
+            {/* <div className="flex mb-4">
+              <div className="flex overflow-hidden rounded-lg border border-first-100 p-1 gap-1 bg-color-for-layer-on-body">
+                <Skeleton className="w-8 h-8 bg-first-100" />
+                <Skeleton className="w-8 h-8 bg-first-100" />
               </div>
-            </div>
-            <ProductsContentSkeleton viewMode={viewMode} count={skeletonCount} />
+            </div> */}
+            <ProductsContentSkeleton count={skeletonCount} />
           </section>
         </div>
       </main>
@@ -273,7 +266,7 @@ export default function ProductsFilterPage() {
                   key={tag.key}
                   type="button"
                   onClick={tag.onRemove}
-                  className="inline-flex items-center gap-1 rounded-full border border-gray-300 bg-color-for-layer-on-body px-3 py-1 text-xs transition-colors hover:border-first hover:text-first"
+                  className="inline-flex items-center gap-1 rounded-full border border-first-100 bg-color-for-layer-on-body px-3 py-1 text-xs first-text-color-for-paragraph transition-colors hover:border-first hover:text-first"
                 >
                   <span>{tag.label}</span>
                   <X className="w-3 h-3" />
@@ -282,29 +275,10 @@ export default function ProductsFilterPage() {
             </div>
           )}
 
-          <div className="flex mb-4">
-            <div className="flex border border-gray-400 rounded-lg overflow-hidden">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={cn('p-2', viewMode === 'grid' && 'bg-first text-white')}
-              >
-                <Grid className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={cn('p-2', viewMode === 'list' && 'bg-first text-white')}
-              >
-                <List className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
           {showProductsSkeleton ? (
-            <ProductsContentSkeleton viewMode={viewMode} count={skeletonCount} />
-          ) : viewMode === 'grid' ? (
-            <GridViewProduct products={products} lang={lang} getImageUrl={getImageUrl} />
+            <ProductsContentSkeleton count={skeletonCount} />
           ) : (
-            <ListViewProduct products={products} lang={lang} getImageUrl={getImageUrl} />
+            <GridViewProduct products={products} lang={lang} getImageUrl={getImageUrl} />
           )}
 
           <div ref={loadMoreRef} className="h-16 mt-4 flex justify-center">

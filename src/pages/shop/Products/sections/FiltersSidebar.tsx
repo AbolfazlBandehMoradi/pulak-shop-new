@@ -29,13 +29,15 @@ export default function FiltersSidebar({
 
   return (
     <aside className="w-full md:w-32/96 lg:w-20/96">
-      <div className="bg-color-for-layer-on-body rounded-lg p-4 sticky top-4">
-
-        <div className="flex justify-between mb-4">
-          <h2 className="font-semibold">{t('product.filters')}</h2>
+      <div className="bg-color-for-layer-on-body rounded-lg p-4 sticky top-4 border border-first-100/70 shadow-sm">
+        <div className="mb-4 flex items-center justify-between gap-2">
+          <h2 className="font-semibold first-text-color">{t('product.filters')}</h2>
 
           {hasActiveFilters && (
-            <button onClick={handleClearFilters} className="text-xs flex items-center gap-1">
+            <button
+              onClick={handleClearFilters}
+              className="text-xs flex items-center gap-1 first-text-color-for-paragraph transition-colors hover:text-first"
+            >
               <X className="w-3 h-3" />
               {t('product.clear')}
             </button>
@@ -44,7 +46,7 @@ export default function FiltersSidebar({
 
         <button
           onClick={() => toggleSection('categories')}
-          className="flex w-full justify-between py-2 font-medium text-sm"
+          className="flex w-full items-center justify-between rounded-md py-2 text-sm font-medium first-text-color hover:text-first transition-colors"
         >
           {t('product.categories') || 'Categories'}
 
@@ -55,27 +57,25 @@ export default function FiltersSidebar({
           )}
         </button>
 
-        {expanded.categories && (
-          isCategoriesLoading ? (
+        {expanded.categories &&
+          (isCategoriesLoading ? (
             <FilterItemsSkeleton rows={6} />
           ) : (
             <CategoryTree categories={categories} />
-          )
-        )}
+          ))}
 
-        <div className="mt-4 border-t border-gray-200 pt-4">
-          <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
+        <div className="mt-4 border-t border-first-100 pt-4">
+          <label className="flex items-center gap-2 text-sm cursor-pointer select-none first-text-color-for-paragraph">
             <input
               type="checkbox"
               checked={Boolean(hasOffer)}
               onChange={(e) => setHasOffer(e.target.checked ? true : undefined)}
-              className="w-4 h-4 rounded border border-gray-400 checked:bg-first checked:border-first"
+              className="h-4 w-4 rounded border border-first-300 checked:bg-first checked:border-first"
             />
 
             <span>{t('product.discount') || 'Only discounted products'}</span>
           </label>
         </div>
-
       </div>
     </aside>
   );

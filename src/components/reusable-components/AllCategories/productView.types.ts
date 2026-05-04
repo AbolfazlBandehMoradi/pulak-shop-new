@@ -33,9 +33,13 @@ export const getProductTranslation = (
   product: CatalogProduct,
   lang: Language
 ): ProductTranslation | undefined => {
+  const translations = Array.isArray(product.translations)
+    ? product.translations
+    : [];
+
   return (
-    product.translations.find((translation) => translation.languageCode === lang) ??
-    product.translations[0]
+    translations.find((translation) => translation.languageCode === lang) ??
+    translations[0]
   );
 };
 
