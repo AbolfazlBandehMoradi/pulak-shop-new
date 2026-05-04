@@ -32,7 +32,7 @@ export const GridProductsSkeleton = ({ count }: { count: number }) => (
     {Array.from({ length: count }).map((_, index) => (
       <div
         key={`grid-skeleton-${index}`}
-        className="h-[380px] rounded-xl border border-first-100/70 bg-color-for-layer-on-body p-4 shadow-[0_10px_26px_-20px_rgba(27,126,251,0.45)]"
+        className="h-95 rounded-xl border border-first-100/70 bg-color-for-layer-on-body p-4 shadow-[0_10px_26px_-20px_rgba(27,126,251,0.45)]"
       >
         <div className="relative mb-3 h-1/2">
           <div className="absolute inset-x-0 top-0 flex items-start justify-between">
@@ -42,10 +42,8 @@ export const GridProductsSkeleton = ({ count }: { count: number }) => (
           <Skeleton className="h-full w-full rounded-xl bg-first-100" />
         </div>
 
-        <div className="mb-3 space-y-2">
+        <div className="mb-10 space-y-2">
           <Skeleton className="h-5 w-4/5 bg-first-100" />
-          <Skeleton className="h-4 w-full bg-first-100" />
-          <Skeleton className="h-4 w-2/3 bg-first-100" />
         </div>
 
         <div className="mb-3 flex items-center justify-between">
