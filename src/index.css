@@ -35,17 +35,18 @@ button {
   --color-secound-900: #7f3a0f;
   --color-secound-950: #451b05;
   --color-third-50: #ecfdf8;
-  --color-third-100: #d1faef;
-  --color-third-200: #a7f3de;
-  --color-third-300: #6ee7c5;
-  --color-third-400: #34d3a7;
-  --color-third: #10b981;
-  --color-third-600: #059669;
-  --color-third-700: #047857;
-  --color-third-800: #065f46;
-  --color-third-900: #064e3b;
-  --color-third-950: #022c22;
+  --color-third-100: #fff7f1;
+  --color-third-200: #fff0e3;
+  --color-third-300: #ffe8d4;
+  --color-third-400: #ffe1c6;
+  --color-third: #ffc9b5;
+  --color-third-600: #ffd9b8;
+  --color-third-700: #ccae93;
+  --color-third-800: #99826e;
+  --color-third-900: #66574a;
+  --color-third-950: #332b25;
 }
+
 
 @custom-variant dark (&:where(.dark, .dark *));
 
