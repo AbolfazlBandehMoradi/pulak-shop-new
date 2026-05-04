@@ -17,6 +17,8 @@ import faFooter from './locales/fa/footer.json';
 import enFooter from './locales/en/footer.json';
 import faFaq from './locales/fa/faq.json';
 import enFaq from './locales/en/faq.json';
+import faAuth from './locales/fa/Auth.json';
+import enAuth from './locales/en/Auth.json';
 
 i18n
   .use(LanguageDetector)
@@ -33,6 +35,7 @@ i18n
           static: faStatic,
           privete: faPrivete,
           faq: faFaq,
+          auth: faAuth,
         },
       },
       en: {
@@ -45,6 +48,7 @@ i18n
           static: enStatic,
           privete: enPrivete,
           faq: enFaq,
+          auth: enAuth,
         },
       },
     },

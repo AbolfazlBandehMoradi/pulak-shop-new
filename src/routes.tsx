@@ -16,11 +16,11 @@ import ErrorPage from './pages/error/ErrorPage';
 import BlogListPage from './pages/blog/BlogListPage';
 import BlogPage from './pages/blog/BlogPage';
 import PaymentPage from './pages/checkout/PaymentPage';
-import Auth from './pages/auth/Auth';
 import PaymentFailurePage from './pages/checkout/PaymentFailurePage';
 import PaymentSuccessPage from './pages/checkout/PaymentSuccessPage';
 import { useLangStore } from "@/stores/languageStore";
 import { SUPPORTED_LANGS, SupportedLang, withLangPath } from "@/utils/langRouting";
+import Auth from "./pages/auth/Auth";
 
 function RedirectToPreferredLanguage() {
   const lang = useLangStore((s) => s.lang);

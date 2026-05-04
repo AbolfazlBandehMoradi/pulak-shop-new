@@ -1,14 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { MessageSquare, LogIn, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import logo from '@/assets/Images/Logo/MainLogo.png';
 import { sendOtp, verifyOtp } from '@/utils/authApi';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/Button';
 import { useTranslation } from '@/i18n/useTranslation';
 import { useLangStore } from '@/stores/languageStore';
 import { useAuth } from '@/context/AuthContext';
 import banner1 from '@/assets/images/auth/2.png';
-import banner2 from '@/assets/images/auth/1.png';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 import OtpStep from './OtpStep';
 import OtpStepMobile from './OtpStepMobile';
@@ -127,7 +125,32 @@ export default function Auth() {
       setSending(false);
     }
   };
+  // const handleSendOtp = async () => {
+  //   setError(null);
 
+  //   if (mobile.length !== 11 || sending) {
+  //     setError(t('auth.login.mobileInvalid'));
+  //     return;
+  //   }
+
+  //   try {
+  //     setSending(true);
+
+  //     // ❌ اینو کامنت کن
+  //     // await sendOtp(mobile, lang);
+
+  //     // ✅ فیک
+  //     await new Promise((res) => setTimeout(res, 800));
+
+  //     setStep('otp');
+  //     startResendTimer();
+
+  //   } catch (e: any) {
+  //     setError(e?.message);
+  //   } finally {
+  //     setSending(false);
+  //   }
+  // };
   /* ---------------- verify otp ---------------- */
 
   const handleVerify = async () => {
@@ -158,7 +181,7 @@ export default function Auth() {
         }),
       );
     } catch (e: any) {
-      setError(e?.message || t('login.error.invalidOtp'));
+      setError(e?.message || t('auth.login.error.invalidOtp'));
 
       setOtp(['', '', '', '', '']);
       otpRefs.current[0]?.focus();
@@ -166,50 +189,25 @@ export default function Auth() {
       setVerifying(false);
     }
   };
-
-  /* ---------------- otp input logic ---------------- */
-
-  const handleOtpChange = (i: number, v: string) => {
-    if (v && !/^\d$/.test(v)) return;
-
-    const next = [...otp];
-
-    next[i] = v;
-
-    setOtp(next);
-
-    if (v && i < 4) otpRefs.current[i + 1]?.focus();
-  };
-
-  const handleOtpKeyDown = (i: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key !== 'Backspace') return;
-
-    if (otp[i]) {
-      const next = [...otp];
-      next[i] = '';
-      setOtp(next);
-      return;
-    }
-
-    if (i > 0) {
-      otpRefs.current[i - 1]?.focus();
-    }
-  };
-
-  /* ---------------- auto verify ---------------- */
-
   useEffect(() => {
     if (step === 'otp' && otp.every(Boolean)) {
       const timeout = setTimeout(handleVerify, 300);
       return () => clearTimeout(timeout);
     }
   }, [otp, step]);
-
   return (
-    <section className="h-screen flex justify-center items-center mx-auto sm:container">
-      <div className=" md:w-70/96 h-full md:h-[60vh] bg-color-for-layer-on-body rounded-xl w-full overflow-hidden flex-wrap">
-        <div className="flex flex-wrap h-full overflow-hidden">
-          <div className="w-48/96 p-4">
+    <section className=" h-dvh md:h-screen flex justify-center items-center mx-auto md:container">
+      <div
+        className=" md:w-88/96 lg:w-70/96 h-full md:h-[60vh] bg-color-for-layer-on-body rounded-xl w-full overflow-hidden flex-wrap">
+        <div
+          className={`flex flex-wrap h-full overflow-hidden ${lang === "fa"
+            ? " "
+            : "flex flex-row-reverse"
+            }`}>
+          <div
+            className=" w-full h-full flex flex-col justify-center md:justify-start  md:w-48/96 p-4
+          "
+          >
             <div className="flex items-center justify-between">
               <Link to={localizedPath('/')}>
                 <img src={logo} alt="logo" />
@@ -221,13 +219,27 @@ export default function Auth() {
                 <span className="flex items-center mb-0.5 leading-none">
                   {lang === 'fa' ? 'صفحه اصلی' : 'Index'}
                 </span>
-
                 <ChevronLeftIcon className="h-4 w-4 shrink-0 transition-colors group-hover:text-white" />
               </Link>
             </div>
-            <div className="">
-              <h1 className="">{lang === 'fa' ? 'گاما طب' : 'Gamma Teb'}</h1>
-              <p>{step === 'mobile' ? t('login.welcome') : ''}</p>
+            {step === 'mobile' && (
+
+              <h1
+                className={`font-s-bold md:mt-5 flex-wrap flex flex-col justify-center text-nowrap gap-1 text-center text-lg 2xl:text-2xl ${lang === 'fa' ? ' ' : 'flex flex-row-reverse'
+                  }`}
+              >
+                <span className="gap-1 flex w-full justify-center text-third">
+                  <span className="first-text-color">{lang === 'fa' ? 'به' : 'To'}</span>
+                  <span>{t('hero.shopName')}</span>
+                  <span className=" flex">{t('hero.shopNameTwo')}</span>
+                </span>
+                <span className="first-text-color w-full justify-center flex">{t('about.welcomeTo')}</span>
+              </h1>
+            )}
+            <div>
+              <p className="text-center mt-4 first-text-color-for-paragraph font-f-light ">
+                {step === 'mobile' ? t('auth.login.welcome') : ''}
+              </p>
               {step === 'mobile' && (
                 <OtpStepMobile
                   mobile={mobile}
@@ -251,17 +263,17 @@ export default function Auth() {
                 />
               )}
               {error && (
-                <div className="mt-4 flex gap-2 text-sm text-red-600 bg-red-50 p-3 rounded">
+                <div className="text-sm flex font-f-light items-center mt-4 gap-2 first-text-color-red justify-center">
                   <AlertCircle className="h-4 w-4" />
                   {error}
                 </div>
               )}
             </div>
           </div>
-          <div className="w-48/96 h-full flex ">
+          <div className=" hidden w-48/96 h-full md:flex ">
             <div
               className="bg-linear-to-tr flex justify-center items-center w-full h-full
-            from-third-100 from-0% via-third-300/50 via-50% to-third-100 to-100%"
+            from-first-100 from-0% via-first-300 via-700% to-first-100 to-100%"
             >
               <img className="" src={banner1} alt="banner" />
             </div>

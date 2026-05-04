@@ -139,7 +139,7 @@ export const Navbar: React.FC = () => {
           <div className="w-full md:w-5/12 lg:w-3/12 xl:w-2/12 order-1 md:order-2">
             <div className="hidden lg:flex flex-row-reverse items-center gap-3">
               {!isAuthenticated && (
-                <Link to="/login">
+                <Link to="/auth">
                   <button className="font-s-sbold first-text-color flex h-14 items-center justify-center gap-2 rounded-2xl bg-color-for-layer-on-body px-4">
                     <span className="first-text-color">ورود و ثبت نام</span>
                     <div className="h-8 w-8 rounded-full flex justify-center items-center bg-first">
@@ -623,7 +623,7 @@ export const Navbar: React.FC = () => {
                       'font-s-sbold first-text-color flex h-14 items-center justify-center gap-2 rounded-xl  bg-color-for-layer-sec px-2 w-40 '
                     }
                   >
-                    <Link to="/login" className="first-text-color">
+                    <Link to="/auth" className="first-text-color">
                       ورود و ثبت نام
                     </Link>
                     <div className="h-8 w-8 rounded-full flex justify-center items-center bg-first">
