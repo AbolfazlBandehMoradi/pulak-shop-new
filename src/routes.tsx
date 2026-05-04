@@ -7,9 +7,7 @@ import Layout from './pages/Layout';
 import Faq from './pages/Static/faq/Faq';
 import AboutUs from './pages/Static/AboutUs/AboutUs';
 import ContactUs from './pages/Static/ContactUs/ContactUs';
-import PrivacyPolicy from './pages/Static/PrivacyPolicy/PrivacyPolicy';
 import ReturnPolicy from './pages/Static/ReturnPolicy/ReturnPolicy';
-import TermsPolicy from './pages/Static/TermsPolicy/TermsPolicy';
 import ProductDetail from './pages/shop/Product-Detail/ProductDetail';
 import CheckoutPage from './pages/checkout/CheckoutPage';
 import CategoriesPage from './pages/shop/Categories/CategoriesPage';
@@ -19,8 +17,6 @@ import BlogListPage from './pages/blog/BlogListPage';
 import BlogPage from './pages/blog/BlogPage';
 import PaymentPage from './pages/checkout/PaymentPage';
 import Auth from './pages/auth/Auth';
-import Catalogs from './pages/Static/Catalogs/Catalogs';
-import Certifications from './pages/Static/Certifications/Certifications';
 import PaymentFailurePage from './pages/checkout/PaymentFailurePage';
 import PaymentSuccessPage from './pages/checkout/PaymentSuccessPage';
 import { useLangStore } from "@/stores/languageStore";
@@ -54,11 +50,7 @@ const getPublicChildren = () => [
   { path: "faq", element: <Faq /> },
   { path: "about-us", element: <AboutUs /> },
   { path: "contact-us", element: <ContactUs /> },
-  { path: "return-policy", element: <ReturnPolicy /> },
-  { path: "privacy-policy", element: <PrivacyPolicy /> },
-  { path: "terms-policy", element: <TermsPolicy /> },
-  { path: "catalogs", element: <Catalogs /> },
-  { path: "certifications", element: <Certifications /> },
+  { path: "return-policy", element: <ReturnPolicy /> }
 ];
 
 const getPrivateChildren = () => [
