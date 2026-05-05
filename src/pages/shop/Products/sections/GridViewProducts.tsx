@@ -13,7 +13,7 @@ import {
   getProductPrice,
   getProductTranslation,
   isProductInStock,
-} from "@/components/reusable-components/AllCategories/productView.types";
+} from "@/types/productView.types";
 
 interface GridProductItemProps extends Omit<ProductViewProps, "products"> {
   product: ProductViewProps["products"][number];

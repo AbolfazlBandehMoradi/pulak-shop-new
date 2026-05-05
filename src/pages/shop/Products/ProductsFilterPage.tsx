@@ -7,7 +7,6 @@ import { useShopStore } from '@/stores/productsFilterStore';
 import useCategories from '@/hooks/useCategories';
 import { type Category } from '@/types';
 import { useLangStore } from '@/stores/languageStore';
-import { type CatalogProduct } from '@/components/reusable-components/AllCategories/productView.types';
 import { areSameStrings, parseCategoryIdsParam, parseHasOfferParam } from '@/utils/urlHelpers';
 import { FilterPanelSkeleton, ProductsContentSkeleton } from './sections/FilterPageSkeletons';
 import { getCategoryChildren } from '@/utils/categoryHelpers';
@@ -15,6 +14,7 @@ import FiltersSidebar from './sections/FiltersSidebar';
 import { GridViewProduct } from './sections/GridViewProducts';
 import Spinner from '@/components/ui/Spinner';
 import ApiError from '@/pages/error/ApiError';
+import { CatalogProduct } from '@/types/productView.types';
 
 const GRID_SKELETON_COUNT = 9;
 const MAX_GRID_SKELETON_COUNT = 12;

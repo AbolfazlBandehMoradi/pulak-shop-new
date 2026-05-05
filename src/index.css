@@ -433,6 +433,78 @@ html {
     display: none;
     -webkit-appearance: none;
   }
+
+  .navbar-shell :where(a, button, input, [role='button']):focus {
+    outline: none;
+  }
+
+  .nav-search-form {
+    display: flex;
+    min-height: 56px;
+    border-radius: 16px;
+    overflow: hidden;
+    background-color: color-mix(in srgb, var(--bg-color-for-layer-on-body) 72%, transparent);
+    border: 1px solid color-mix(in srgb, var(--first-text-color-svg) 25%, transparent);
+    box-shadow:
+      0 10px 24px -18px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .nav-search-form:focus-within {
+    border-color: color-mix(in srgb, var(--color-first) 55%, transparent);
+    box-shadow:
+      0 14px 30px -18px color-mix(in srgb, var(--color-first) 35%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  .nav-search-input {
+    width: 100%;
+    height: 56px;
+    padding: 0 16px;
+    background: transparent;
+    color: var(--first-text-color-for-paragraph);
+    border: none;
+  }
+
+  .nav-search-input::placeholder {
+    color: color-mix(in srgb, var(--first-text-color-svg) 65%, transparent);
+  }
+
+  .nav-search-submit {
+    width: 64px;
+    min-width: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--first-text-color-svg);
+    border-right: 1px solid color-mix(in srgb, var(--first-text-color-svg) 22%, transparent);
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .nav-search-submit:hover {
+    color: var(--color-first);
+    background-color: color-mix(in srgb, var(--color-first) 12%, transparent);
+  }
+
+  .nav-action-btn {
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .nav-action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 18px -12px rgba(0, 0, 0, 0.45);
+  }
 }
 
 .hover\:bg-color-for-layer-sec:hover {

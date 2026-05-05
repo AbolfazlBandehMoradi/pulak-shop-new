@@ -10,6 +10,7 @@ import useCartStore from '@/stores/cartStore';
 import { useShopStore } from '@/stores/productsFilterStore';
 import { useLangStore } from '@/stores/languageStore';
 import useCategories from '@/hooks/useCategories';
+import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 
 export const Navbar: React.FC = () => {
   const { i18n } = useTranslation();
@@ -28,6 +29,7 @@ export const Navbar: React.FC = () => {
   const [homeMenuOpen, setHomeMenuOpen] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const localizedPath = useLocalizedPath();
   const setSearchText = useShopStore((s) => s.setSearch);
   const setCategoryIds = useShopStore((s) => s.setCategoryIds);
   const cartCount = useCartStore((s) => s.itemCount);
@@ -88,7 +90,7 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <nav>
+    <nav className="navbar-shell">
       <div dir={dir} className="px-4 my-4 container mx-auto">
         <div className="flex flex-wrap items-center justify-between">
           <div className="w-full md:w-7/12 flex items-center md:gap-3 flex-wrap order-2 md:order-1">
@@ -97,14 +99,21 @@ export const Navbar: React.FC = () => {
                 <img className="w-full h-auto" src={MainLogo} alt="" />
               </Link>
             </div>
-            <div className="w-full md:w-8/12 relative flex md:mt-0 bg-color-for-layer-on-body rounded-lg">
+            <div className="w-full md:w-8/12 relative flex md:mt-0">
               <form
-                className="w-full  flex"
+                className="w-full flex nav-search-form"
                 name="search"
                 onSubmit={(event) => {
                   event.preventDefault();
-                  if (searchRef.current) setSearchText(searchRef.current.value);
-                  navigate('/products');
+                  const normalizedSearch = searchRef.current?.value?.trim() || undefined;
+                  setSearchText(normalizedSearch);
+
+                  const query = new URLSearchParams();
+                  if (normalizedSearch) query.set('search', normalizedSearch);
+                  const target = query.toString()
+                    ? localizedPath(`/products?${query.toString()}`)
+                    : localizedPath('/products');
+                  navigate(target);
                 }}
               >
                 <input
@@ -118,10 +127,10 @@ export const Navbar: React.FC = () => {
                       setSearchText(undefined);
                     }
                   }}
-                  className="w-10/12 px-4 text-base first-text-color-for-paragraph placeholder-gray-400 focus-visible:outline-none rounded-bl-none no-clear-button"
+                  className="nav-search-input no-clear-button"
                   placeholder={searchPlaceholder}
                 />
-                <button className="h-14 cursor-pointer flex items-center justify-center w-2/12 group">
+                <button type="submit" className="nav-search-submit group" aria-label={searchPlaceholder}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <path
                       d="M20 20L15.8033 15.8033M18 10.5C18 6.35786 14.6421 3 10.5 3C6.35786 3 3 6.35786 3 10.5C3 14.6421 6.35786 18 10.5 18C14.6421 18 18 14.6421 18 10.5Z"
@@ -321,7 +330,7 @@ export const Navbar: React.FC = () => {
                               <p className="first-text-color-for-paragraph font-f-light">
                                 'blah blah blah'
                               </p>
-                              <ul className="grid grid-cols-4 mt-8 w-full space-y-4">
+                              <ul className="grid grid-cols-4 mt-8 w-full gap-y-4 gap-x-6 items-start">
                                 {categories?.[activeTab]?.children?.map((sub) => (
                                   <Link
                                     key={sub.id}
@@ -349,8 +358,8 @@ export const Navbar: React.FC = () => {
                                     </li>
                                   </Link>
                                 ))}
-                                <li>
-                                  <div className="flex w-full ">
+                                <li className="col-span-4 mt-2 pt-4">
+                                  <div className="flex w-full justify-end">
                                     <Link
                                       className="flex gap-2 items-center"
                                       onClick={() => {
@@ -359,7 +368,7 @@ export const Navbar: React.FC = () => {
                                       }}
                                       to={`/products?categoryIds=${categories?.[activeTab]?.id}`}
                                     >
-                                      <button className="bg-secound text-white py-2 px-4 rounded-lg ">
+                                      <button className="bg-secound text-white py-2 px-4 rounded-lg nav-action-btn">
                                         مشاهده همه
                                       </button>
                                     </Link>
@@ -581,13 +590,13 @@ export const Navbar: React.FC = () => {
                           )}
 
                           {openSubMenu === menu.id && (
-                            <div className="flex  mt-2">
+                            <div className="flex mt-3 w-full">
                               <Link
-                                className="flex gap-2 items-center"
+                                className="flex gap-2 items-center w-full"
                                 onClick={() => setIsOpen(false)}
                                 to={`/products?categoryIds=${menu.id}`}
                               >
-                                <button className="bg-secound text-white py-2 px-4 rounded-lg ">
+                                <button className="bg-secound text-white py-2 px-4 rounded-lg nav-action-btn w-full">
                                   مشاهده همه
                                 </button>
                               </Link>
