@@ -9,8 +9,8 @@ import "./MainPage.css"
 import NewBlogs from './sections/NewBlogs';
 import ProductsSliderTwo from './sections/ProductsSliderTwo';
 import Banner from './sections/Banner';
-import ShowCases from '@/components/reusable-components/Showcases/ShowCases';
 import WhyUs from './sections/WhyUs';
+import ShowCasesNumberTwo from '@/pages/landing/sections/ShowCasesNumberTwo/ShowCasesNumberTwo';
 
 const MainPage = () => {
   const { data: index, isLoading, isError, refetch } = useIndex();
@@ -30,7 +30,7 @@ const MainPage = () => {
       <ProductsSliderTwo showcase={showcases && showcases[1]} />
       <Banner />
       <WhyUs />
-      <ShowCases showCase={showcases && showcases[1]} />
+      <ShowCasesNumberTwo showCase={showcases && showcases[2]} />
     </main>
   );
 };

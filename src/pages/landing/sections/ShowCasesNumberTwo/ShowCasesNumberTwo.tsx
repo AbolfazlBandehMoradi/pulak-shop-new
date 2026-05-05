@@ -1,38 +1,29 @@
-import React, { useState, useMemo, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Product } from '@/types';
-import { Link } from 'react-router-dom';
-import { Navigation } from 'swiper/modules';
-import { Swiper, SwiperSlide } from 'swiper/react';
+import { t } from 'i18next';
 import type { Swiper as SwiperType } from 'swiper';
-import { SpecificCategoryProductsCardNumberTwo } from './SpecificCategoryProductsCardNumberTwo';
-import { useLangStore } from '@/stores/languageStore';
+import { Navigation } from 'swiper/modules';
+import { useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
+import { Swiper, SwiperSlide } from 'swiper/react';
 import { Showcase } from '@/hooks/useShowcases';
+import { ShowCasesCardNumberTwo } from './ShowCasesCardNumberTwo';
+import { useLangStore } from '@/stores/languageStore';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import cleanText from '@/utils/cleanText';
+import Typewriter from '@/components/ui/Typewriter';
+import { useInView } from '@/hooks/useInView';
 
-interface Props {
-  products?: Product[];
-  loading?: boolean;
-}
 interface Props {
   showCase?: Showcase;
 }
-export const SpecificCategorySliderNumberTwo: React.FC<Props> = ({
-  products = [],
-  loading = false,
-}) => {
-  const { t } = useTranslation();
-  const localizedPath = useLocalizedPath();
-  const visibleProducts = useMemo(() => {
-    if (loading) return [];
-    return products.slice(-5);
-  }, [products, loading]);
 
+const ShowCasesNumberTwo = ({ showCase }: Props) => {
+  const localizedPath = useLocalizedPath();
   const [hoveredId, setHoveredId] = useState<number | null>(null);
   const prevRef = useRef<HTMLDivElement>(null);
   const nextRef = useRef<HTMLDivElement>(null);
-  const [isBeginning, setIsBeginning] = useState(true);
-  const [isEnd, setIsEnd] = useState(false);
+  const [, setIsBeginning] = useState(true);
+  const [, setIsEnd] = useState(false);
+  const {ref, isVisible} = useInView<HTMLDivElement>()
 
   const handleLinkHover = (isHovering: boolean | null, id: number) => {
     setHoveredId(isHovering ? id : null);
@@ -41,7 +32,7 @@ export const SpecificCategorySliderNumberTwo: React.FC<Props> = ({
   return (
     <section
       className="product-slider relative sm:container mx-auto mt-8 lg:mt-16 px-4"
-      aria-labelledby="specific-category-title"
+      aria-labelledby="coming-soon-heading"
     >
       <header
         className={`flex flex-wrap items-center justify-between ${
@@ -59,8 +50,7 @@ export const SpecificCategorySliderNumberTwo: React.FC<Props> = ({
             }`}
           >
             <h2 className="font-s-sbold gap-1 flex first-text-color text-2xl">
-              <span>{t('product.products')}</span>
-              <span>{t('product.Sterile')}</span>
+              <span>{showCase?.translation.title}</span>
             </h2>
           </div>
         </div>
@@ -108,8 +98,7 @@ export const SpecificCategorySliderNumberTwo: React.FC<Props> = ({
           </div>
         </div>
       </header>
-
-      <div className="w-full   mt-4">
+      <div className="w-full mt-4 rounded-4xl p-4 lg:p-6 bg-linear-to-br from-first-50 via-white to-secound-50 border border-first-100/80 shadow-[0_16px_36px_-30px_rgba(27,126,251,0.5)]">
         <div className="flex flex-wrap">
           <div className="w-full  mx-auto rounded-r-none rounded-4xl relative">
             <Swiper
@@ -139,21 +128,19 @@ export const SpecificCategorySliderNumberTwo: React.FC<Props> = ({
                 1536: { slidesPerView: 3 },
               }}
             >
-              {visibleProducts?.map((product) => (
-                <SwiperSlide key={product.id}>
+              {showCase?.items.map((item) => (
+                <SwiperSlide key={item.id}>
                   <div
-                    onMouseEnter={() => handleLinkHover(true, parseInt(product.id))}
-                    onMouseLeave={() => handleLinkHover(false, parseInt(product.id))}
+                    onMouseEnter={() => handleLinkHover(true, item.id)}
+                    onMouseLeave={() => handleLinkHover(false, item.id)}
                     className={`transition-all duration-300 ${
-                      hoveredId && hoveredId !== parseInt(product.id)
-                        ? 'blur-xs opacity-100 scale-[0.95]'
-                        : ''
-                    } ${hoveredId === parseInt(product.id) ? 'z-10' : ''}`}
+                      hoveredId && hoveredId !== item.id ? 'blur-xs opacity-80 scale-[0.95]' : ''
+                    } ${hoveredId === item.id ? 'z-10' : ''}`}
                   >
-                    <Link to={localizedPath(`/products/${product.slug}`)}>
-                      <SpecificCategoryProductsCardNumberTwo
-                        product={product}
-                        onLinkHover={handleLinkHover}
+                    <Link to={`/products/${item.product.slug}`}>
+                      <ShowCasesCardNumberTwo
+                        showCaseItem={item}
+                        onLinkHover={handleLinkHover} // کارت خودش هم می‌تونه این prop رو صدا بزنه
                       />
                     </Link>
                   </div>
@@ -162,53 +149,12 @@ export const SpecificCategorySliderNumberTwo: React.FC<Props> = ({
             </Swiper>
           </div>
         </div>
-        <div className="flex justify-center gap-2 mt-4 ">
-          <div
-            ref={prevRef}
-            className={`swiper-button-prev_product-sliderflex justify-center flex w-8 h-8 items-center rounded bg-white ${
-              isBeginning ? 'opacity-50 ' : 'cursor-pointer'
-            }`}
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 17L15 12L10 7"
-                stroke="#1b7efb"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-          <div
-            ref={nextRef}
-            className={`swiper-button-next_product-slider flex justify-center w-8 h-8 items-center rounded bg-white ${
-              isEnd ? 'opacity-50 cursor-pointer' : 'cursor-pointer'
-            }`}
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M14 7L9 12L14 17"
-                stroke="#1b7efb"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-        </div>
+      </div>
+      <div ref={ref} className="w-full drop-shadow-2xl bg-white/90 p-6 rounded-2xl my-5">
+        <Typewriter start={isVisible}  text={cleanText(showCase?.translation.description || '')} />
       </div>
     </section>
   );
 };
+
+export default ShowCasesNumberTwo;

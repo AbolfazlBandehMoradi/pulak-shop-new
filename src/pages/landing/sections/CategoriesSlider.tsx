@@ -1,49 +1,32 @@
 import { motion } from "framer-motion";
-import { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Navigation, Pagination } from "swiper/modules";
 import "swiper/swiper.css";
 import { SwiperSlide, Swiper } from "swiper/react";
 import { Category } from "@/types";
+import { useInView } from "@/hooks/useInView";
 
 interface Props {
   categories: Category[];
 }
 
 const CategoriesSlider = ({ categories }: Props) => {
-  const [isInView, setIsInView] = useState(false);
   const navigate = useNavigate();
-  const sectionRef = useRef(null);
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsInView(entry.isIntersecting);
-      },
-      { threshold: 0.5 }
-    );
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-    return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
-    };
-  }, []);
+  const {ref, isVisible} = useInView<HTMLDivElement>()
 
   return (
     <motion.section
       className="all-categories mx-auto mt-8 lg:mt-16 px-4 sm:container"
-      ref={sectionRef}
+      ref={ref}
       initial={{ opacity: 0, y: 10 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+      animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
       <div className="bg-color-for-layer-on-body rounded-3xl p-6">
         <motion.div
           className="flex w-full flex-wrap items-center justify-between lg:w-full xl:w-full 2xl:w-full"
           initial={{ opacity: 0, y: -20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
+          animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
           transition={{
             duration: 0.5,
             ease: "easeOut",
@@ -140,7 +123,7 @@ const CategoriesSlider = ({ categories }: Props) => {
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={
-                      isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
+                      isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
                     }
                     transition={{
                       duration: 0.4,
@@ -187,7 +170,7 @@ const CategoriesSlider = ({ categories }: Props) => {
             <motion.p
               className="text-center text-gray-500"
               initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+              animate={isVisible ? { opacity: 1 } : { opacity: 0 }}
             >
               هیچ دسته‌بندی‌ای یافت نشد.
             </motion.p>
