@@ -17,7 +17,7 @@ import apiClient from "@/services/apiClient";
 import { useTranslation } from "@/i18n/useTranslation";
 import { useLangStore } from "@/stores/languageStore";
 import { formatPrice } from "@/utils/numberFormat";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface ProfileData {
@@ -49,17 +49,17 @@ interface ProfileOrder {
 type OrdersResponse =
   | ProfileOrder[]
   | {
-      items?: ProfileOrder[];
-      orders?: ProfileOrder[];
-      data?: ProfileOrder[];
-      result?: ProfileOrder[];
-      totalCount?: number;
-      pageNumber?: number;
-      pageSize?: number;
-      totalPages?: number;
-      hasPreviousPage?: boolean;
-      hasNextPage?: boolean;
-    };
+    items?: ProfileOrder[];
+    orders?: ProfileOrder[];
+    data?: ProfileOrder[];
+    result?: ProfileOrder[];
+    totalCount?: number;
+    pageNumber?: number;
+    pageSize?: number;
+    totalPages?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+  };
 
 interface OrdersMeta {
   totalCount: number;
@@ -463,20 +463,20 @@ const ProfilePage = () => {
                     {hasNoOrders
                       ? translateOr("profile.noOrders", "You have no orders yet.")
                       : translateOr(
-                          "profile.emptyOrdersPage",
-                          "No orders were found on this page."
-                        )}
+                        "profile.emptyOrdersPage",
+                        "No orders were found on this page."
+                      )}
                   </p>
                   <p className="text-sm text-muted-foreground mt-2">
                     {hasNoOrders
                       ? translateOr(
-                          "profile.noOrdersHint",
-                          "After your first purchase, your order history will appear here."
-                        )
+                        "profile.noOrdersHint",
+                        "After your first purchase, your order history will appear here."
+                      )
                       : translateOr(
-                          "profile.emptyOrdersPageHint",
-                          `There are ${ordersMeta.totalCount} orders in total.`
-                        )}
+                        "profile.emptyOrdersPageHint",
+                        `There are ${ordersMeta.totalCount} orders in total.`
+                      )}
                   </p>
                 </div>
               ) : (

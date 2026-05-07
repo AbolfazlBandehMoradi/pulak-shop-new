@@ -15,7 +15,6 @@ import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 export const Navbar: React.FC = () => {
   const { i18n } = useTranslation();
   const { isAuthenticated, user } = useAuth();
-  const favCounts = 0;
   const { data: categories } = useCategories();
   const [isOpenMegaMenu, setIsOpenMegaMenu] = useState(false);
   const menuRefMegaMenu = useRef<HTMLLIElement>(null);
@@ -400,7 +399,7 @@ export const Navbar: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <div>
+              {/* <div>
                 <span>
                   <Link className="cursor-pinter relative" to={'/favorites'}>
                     <span className="first-text-color-svg">
@@ -425,7 +424,7 @@ export const Navbar: React.FC = () => {
                     </span>
                   </Link>
                 </span>
-              </div>
+              </div> */}
               <span>
                 <Link
                   className="cursor-pinter rounded-md flex bg-first h-10 w-20 justify-center items-center gap-2 "
@@ -453,12 +452,12 @@ export const Navbar: React.FC = () => {
                   </span>
                 </Link>
               </span>
-              <LanguageToggle />
-              <ThemeToggleButton />
+              {/* <LanguageToggle /> */}
+              {/* <ThemeToggleButton /> */}
             </div>
           </div>
         ) : (
-          <div className="flex justify-between p-4 ">
+          <div className="flex justify-between ">
             <button className="cursor-pointer" onClick={toggleMenu}>
               <span className="first-text-color-svg">
                 <svg
@@ -622,10 +621,10 @@ export const Navbar: React.FC = () => {
             </div>
             <div className="flex center gap-2">
               <div className="flex  lg:hidden flex-row-reverse items-center w-full gap-3">
-                <div className="flex center gap-3">
+                {/* <div className="flex center gap-3">
                   <LanguageToggle />
                   <ThemeToggleButton />
-                </div>
+                </div> */}
                 {!isAuthenticated && (
                   <button
                     className={
@@ -726,7 +725,7 @@ export const Navbar: React.FC = () => {
                     </AnimatePresence>
                   </div>
                 )}
-                <span>
+                {/* <span>
                   <Link className="cursor-pinter relative" to={'/favorites'}>
                     <span className="first-text-color-svg">
                       <svg
@@ -749,7 +748,7 @@ export const Navbar: React.FC = () => {
                       {isAuthenticated ? favCounts : 0}
                     </span>
                   </Link>
-                </span>
+                </span> */}
                 <span>
                   <Link className="cursor-pinter relative" to={'/cart'}>
                     <span className="first-text-color-svg">

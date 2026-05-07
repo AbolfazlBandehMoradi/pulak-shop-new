@@ -6,7 +6,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/i18n/useTranslation';
 import { useLangStore } from '@/stores/languageStore';
 import { useAuth } from '@/context/AuthContext';
-import banner1 from '@/assets/images/auth/2.png';
+import banner1 from '@/assets/images/auth/1.png';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 import OtpStep from './OtpStep';
 import OtpStepMobile from './OtpStepMobile';
@@ -197,46 +197,47 @@ export default function Auth() {
   }, [otp, step]);
   return (
     <section className=" h-dvh md:h-screen flex justify-center items-center mx-auto md:container">
-      <div
-        className=" md:w-88/96 lg:w-70/96 h-full md:h-[60vh] bg-color-for-layer-on-body rounded-xl w-full overflow-hidden flex-wrap">
+      <div className=" md:w-88/96 lg:w-70/96 h-full md:h-[60vh] bg-color-for-layer-on-body rounded-xl w-full overflow-hidden flex-wrap">
         <div
-          className={`flex flex-wrap h-full overflow-hidden ${lang === "fa"
-            ? " "
-            : "flex flex-row-reverse"
-            }`}>
+          className={`flex flex-wrap h-full overflow-hidden ${
+            lang === 'fa' ? ' ' : 'flex flex-row-reverse'
+          }`}
+        >
           <div
             className=" w-full h-full flex flex-col justify-center md:justify-start  md:w-48/96 p-4
           "
           >
-            <div className="flex items-center justify-between">
-              <Link to={localizedPath('/')}>
-                <img src={logo} alt="logo" />
-              </Link>
-              <Link
-                to={localizedPath('/')}
-                className="group inline-flex items-center hover:bg-secound hover:text-white border px-2 py-2 rounded-lg gap-1 text-sm font-s-medium text-secound transition-colors"
-              >
-                <span className="flex items-center mb-0.5 leading-none">
-                  {lang === 'fa' ? 'صفحه اصلی' : 'Index'}
-                </span>
-                <ChevronLeftIcon className="h-4 w-4 shrink-0 transition-colors group-hover:text-white" />
-              </Link>
-            </div>
-            {step === 'mobile' && (
-
-              <h1
-                className={`font-s-bold md:mt-5 flex-wrap flex flex-col justify-center text-nowrap gap-1 text-center text-lg 2xl:text-2xl ${lang === 'fa' ? ' ' : 'flex flex-row-reverse'
+              <div className="flex items-center justify-between">
+                <Link to={localizedPath('/')}>
+                  <img src={logo} className="w-3/4" alt="logo" />
+                </Link>
+                <Link
+                  to={localizedPath('/')}
+                  className="group inline-flex items-center hover:bg-first hover:text-white border px-2 py-2 rounded-lg gap-1 text-sm font-s-medium text-first transition-colors"
+                >
+                  <span className="flex items-center mb-0.5 leading-none">
+                    {lang === 'fa' ? 'صفحه اصلی' : 'Index'}
+                  </span>
+                  <ChevronLeftIcon className="h-4 w-4 shrink-0 transition-colors group-hover:text-white" />
+                </Link>
+              </div>
+              {step === 'mobile' && (
+                <h1
+                  className={`font-s-bold md:mt-5 flex-wrap flex flex-col justify-center text-nowrap gap-1 text-center text-lg 2xl:text-2xl ${
+                    lang === 'fa' ? ' ' : 'flex flex-row-reverse'
                   }`}
-              >
-                <span className="gap-1 flex w-full justify-center text-third">
-                  <span className="first-text-color">{lang === 'fa' ? 'به' : 'To'}</span>
-                  <span>{t('hero.shopName')}</span>
-                  <span className=" flex">{t('hero.shopNameTwo')}</span>
-                </span>
-                <span className="first-text-color w-full justify-center flex">{t('about.welcomeTo')}</span>
-              </h1>
-            )}
-            <div>
+                >
+                  <span className="gap-1 flex w-full justify-center text-third">
+                    <span className="first-text-color">{lang === 'fa' ? 'به' : 'To'}</span>
+                    <span>{t('hero.shopName')}</span>
+                    <span className=" flex">{t('hero.shopNameTwo')}</span>
+                  </span>
+                  <span className="first-text-color w-full justify-center flex">
+                    {t('about.welcomeTo')}
+                  </span>
+                </h1>
+              )}
+            <div className='mt-3' >
               <p className="text-center mt-4 first-text-color-for-paragraph font-f-light ">
                 {step === 'mobile' ? t('auth.login.welcome') : ''}
               </p>
@@ -275,7 +276,7 @@ export default function Auth() {
               className="bg-linear-to-tr flex justify-center items-center w-full h-full
             from-first-100 from-0% via-first-300 via-700% to-first-100 to-100%"
             >
-              <img className="" src={banner1} alt="banner" />
+              <img className="w-4/6 object-cover" src={banner1} alt="banner" />
             </div>
           </div>
         </div>
