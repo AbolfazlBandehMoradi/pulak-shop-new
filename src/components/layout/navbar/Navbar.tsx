@@ -626,14 +626,13 @@ export const Navbar: React.FC = () => {
                   <ThemeToggleButton />
                 </div> */}
                 {!isAuthenticated && (
-                  <button
-                    className={
-                      'font-s-sbold first-text-color flex h-14 items-center justify-center gap-2 rounded-xl  bg-color-for-layer-sec px-2 w-40 '
-                    }
+                  <Link
+                    to={localizedPath('/auth')}
+                    className="font-s-sbold first-text-color flex h-14 items-center justify-center gap-2 rounded-xl bg-color-for-layer-sec px-2 w-40"
                   >
-                    <Link to="/auth" className="first-text-color">
+                    <span className="first-text-color">
                       ورود و ثبت نام
-                    </Link>
+                    </span>
                     <div className="h-8 w-8 rounded-full flex justify-center items-center bg-first">
                       <span className="text-color-svg-white">
                         <svg
@@ -650,7 +649,7 @@ export const Navbar: React.FC = () => {
                         </svg>
                       </span>
                     </div>
-                  </button>
+                  </Link>
                 )}
                 {isAuthenticated && (
                   <div className="relative flex" ref={dropdownRef}>
@@ -750,7 +749,7 @@ export const Navbar: React.FC = () => {
                   </Link>
                 </span> */}
                 <span>
-                  <Link className="cursor-pinter relative" to={'/cart'}>
+                  <Link className="cursor-pinter relative" to={localizedPath('/cart')}>
                     <span className="first-text-color-svg">
                       <svg
                         width="24"

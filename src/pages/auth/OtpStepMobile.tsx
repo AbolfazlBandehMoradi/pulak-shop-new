@@ -1,7 +1,6 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/i18n/useTranslation';
-import { useState } from 'react';
-import { z, ZodError } from 'zod';
 
 type MobileStepProps = {
   mobile: string;
@@ -9,12 +8,12 @@ type MobileStepProps = {
   sending: boolean;
   onSend: () => void;
   normalizeMobile: (value: string) => string;
+  mobileError: string;
+  label: string;
+  hint: string;
 };
 
-const mobileSchema = z
-  .string()
-  .regex(/^09\d{9}$/, 'شماره موبایل باید 11 رقم و با 09 شروع شود');
-
+const MOBILE_REGEX = /^09\d{9}$/;
 
 export default function MobileStep({
   mobile,
@@ -22,62 +21,69 @@ export default function MobileStep({
   sending,
   onSend,
   normalizeMobile,
+  mobileError,
+  label,
+  hint,
 }: MobileStepProps) {
   const { t } = useTranslation();
-  const [error, setError] = useState<string | null>(null);
+  const [shouldShowError, setShouldShowError] = useState(false);
 
-const handleSend = () => {
-  const result = mobileSchema.safeParse(mobile);
+  const hasError = shouldShowError && !MOBILE_REGEX.test(mobile);
 
-  if (!result.success) {
-    if (result.error instanceof ZodError) {
-      setError(result.error.issues[0]?.message);
+  const handleSend = () => {
+    setShouldShowError(true);
+
+    if (!MOBILE_REGEX.test(mobile)) {
+      return;
     }
-    return;
-  }
-  setError(null);
-  onSend();
-};
+
+    onSend();
+  };
 
   return (
-    <div className="flex flex-wrap">
+    <div className="space-y-4">
+      <div>
+        <label className="mb-2 block text-sm font-s-medium first-text-color">{label}</label>
+        <div className="flex items-center rounded-xl border border-gray-300 bg-color-for-layer-on-body px-3 transition-all focus-within:border-first focus-within:ring-2 focus-within:ring-first/20">
+          <input
+            className="h-13 w-full bg-transparent px-1 text-[15px] first-text-color outline-none placeholder:text-sm placeholder:text-gray-400"
+            type="tel"
+            value={mobile}
+            onChange={(e) => {
+              const v = normalizeMobile(e.target.value);
+              if (v.length <= 11) {
+                setMobile(v);
 
-      <div className="flex justify-center flex-row-reverse gap-3 w-full">
-        <input
-          className="rounded-md placeholder:opacity-50 placeholder:text-xs mt-4 p-4 w-full outline-none text-[14px] first-text-color border border-gray-400"
-          type="tel"
-          value={mobile}
-          onChange={(e) => {
-            const v = normalizeMobile(e.target.value);
-            if (v.length <= 11) {
-              setMobile(v);
-              if (error) setError(null); // UX بهتر
-            }
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') handleSend();
-          }}
-          placeholder={t('auth.login.enterMobile')}
-        />
+                if (v.length < 11 && shouldShowError) {
+                  setShouldShowError(false);
+                }
+
+                if (v.length === 11) {
+                  setShouldShowError(true);
+                }
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleSend();
+            }}
+            placeholder={t('auth.login.enterMobile')}
+            inputMode="numeric"
+            autoComplete="tel"
+            aria-invalid={hasError}
+          />
+        </div>
+        <p className="mt-2 text-xs first-text-color-for-paragraph">{hint}</p>
       </div>
 
-      {/* error */}
-      {error && (
-        <p className="text-red-500 text-xs mt-2 text-center">
-          {error}
-        </p>
-      )}
+      {hasError && <p className="rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600">{mobileError}</p>}
 
-      <div className="w-full">
-        <Button
-          className="py-4 w-full cursor-pointer disabled:bg-gray-400 mt-4 px-2 bg-first text-white rounded-md"
-          onClick={handleSend}
-          disabled={sending}
-        >
-          {sending ? t('auth.login.sending') : t('auth.login.getCode')}
-        </Button>
-      </div>
-
+      <Button
+        className="h-12 w-full rounded-xl bg-first text-white disabled:bg-gray-400"
+        onClick={handleSend}
+        disabled={sending}
+      >
+        {sending ? t('auth.login.sending') : t('auth.login.getCode')}
+      </Button>
     </div>
   );
 }

@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { ChevronLeftIcon } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLangStore } from '@/stores/languageStore';
 import { useTranslation } from '@/i18n/useTranslation';
@@ -14,7 +14,14 @@ type OtpStepProps = {
   onVerify: () => void;
   onResend: () => void;
   onBack: () => void;
+  focusTrigger: number;
+  incompleteOtpError: string;
 };
+
+const toEnglishDigits = (value: string) =>
+  value
+    .replace(/[\u06F0-\u06F9]/g, (digit) => String(digit.charCodeAt(0) - 1728))
+    .replace(/[\u0660-\u0669]/g, (digit) => String(digit.charCodeAt(0) - 1584));
 
 export default function OtpStep({
   mobile,
@@ -26,37 +33,60 @@ export default function OtpStep({
   onVerify,
   onResend,
   onBack,
+  focusTrigger,
+  incompleteOtpError,
 }: OtpStepProps) {
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
   const { t } = useTranslation();
   const lang = useLangStore((s) => s.lang);
-
   const [otpError, setOtpError] = useState<string | null>(null);
 
-  const handleOtpChange = (i: number, v: string) => {
+  useEffect(() => {
+    otpRefs.current[0]?.focus();
+  }, [focusTrigger]);
+
+  const handleOtpChange = (index: number, nextValue: string) => {
     if (otpError) setOtpError(null);
 
-    if (v && !/^\d$/.test(v)) return;
-
+    const single = toEnglishDigits(nextValue).replace(/\D/g, '').slice(-1);
     const next = [...otp];
-    next[i] = v;
+    next[index] = single;
     setOtp(next);
 
-    if (v && i < 4) otpRefs.current[i + 1]?.focus();
+    if (single && index < 4) {
+      otpRefs.current[index + 1]?.focus();
+    }
   };
 
-  const handleOtpKeyDown = (i: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key !== 'Backspace') return;
 
-    if (otp[i]) {
+    if (otp[index]) {
       const next = [...otp];
-      next[i] = '';
+      next[index] = '';
       setOtp(next);
       return;
     }
 
-    if (i > 0) {
-      otpRefs.current[i - 1]?.focus();
+    if (index > 0) {
+      otpRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handlePaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const pasted = toEnglishDigits(event.clipboardData.getData('text')).replace(/\D/g, '').slice(0, 5);
+    if (!pasted) return;
+
+    const next = [...otp];
+    pasted.split('').forEach((digit, index) => {
+      next[index] = digit;
+    });
+    setOtp(next);
+
+    const lastIndex = Math.min(pasted.length, 5) - 1;
+    if (lastIndex >= 0) {
+      otpRefs.current[lastIndex]?.focus();
     }
   };
 
@@ -64,89 +94,76 @@ export default function OtpStep({
     if (verifying) return;
 
     const code = otp.join('');
-
     if (code.length !== 5) {
-      setOtpError(t('auth.register.error.invalidOrExpiredOtp') || 'کد ناقص است');
+      setOtpError(incompleteOtpError);
       return;
     }
 
     setOtpError(null);
-
-    try {
-      await onVerify();
-    } catch (e: any) {
-      setOtpError(t('auth.register.error.invalidOtp') || 'کد اشتباه است');
-    }
+    await onVerify();
   };
 
-  return (
-    <div className="flex flex-col mt-24">
+  const counterText =
+    resendTimer > 0
+      ? `${t('auth.register.resendOtp')} (${resendTimer} ${t('auth.register.seconds')})`
+      : t('auth.register.resendOtp');
 
-      {/* back button */}
+  return (
+    <div className="space-y-5">
       <button
-        className="flex first-text-color-red justify-center"
+        className="inline-flex items-center gap-1 text-sm text-first transition-colors hover:text-first-700"
         onClick={onBack}
       >
-        {lang === 'fa' ? 'ویرایش شماره' : 'Edit phone number'}
-        <ChevronLeftIcon className="h-5 w-5 shrink-0 transition-colors" />
+        {lang === 'fa' ? <ArrowRight className="h-4 w-4" /> : <ArrowLeft className="h-4 w-4" />}
+        <span>{lang === 'fa' ? 'ویرایش شماره موبایل' : 'Edit mobile number'}</span>
       </button>
 
-      {/* info text */}
-      <div
-        className={`md:my-2 flex-wrap text-sm first-text-color-for-paragraph flex justify-center text-nowrap gap-1 text-center ${lang === 'fa' ? '' : 'flex-row-reverse'
-          }`}
-      >
-        <span>{t('auth.register.otpSentToThisMobile')}</span>
-        <span className="text-third">{mobile}</span>
-        <span>{t('auth.register.otpSentToThisMobileP2')}</span>
+      <div className="rounded-xl border border-first/20 bg-first/5 p-3 text-sm first-text-color-for-paragraph">
+        <span>{t('auth.register.otpSentToThisMobile')} </span>
+        <span className="font-s-medium text-first">{mobile}</span>
+        <span> {t('auth.register.otpSentToThisMobileP2')}</span>
       </div>
 
-      {/* OTP inputs */}
-      <div className="flex justify-center gap-3" dir="ltr">
-        {otp.map((d, i) => (
+      <div className="flex justify-between gap-2 sm:gap-3" dir="ltr">
+        {otp.map((digit, index) => (
           <input
-            key={i}
-            ref={(el) => (otpRefs.current[i] = el)}
-            value={d}
+            key={index}
+            ref={(el) => {
+              otpRefs.current[index] = el;
+            }}
+            value={digit}
             maxLength={1}
-            onChange={(e) => handleOtpChange(i, e.target.value)}
-            onKeyDown={(e) => handleOtpKeyDown(i, e)}
-            className="
-              w-12 h-14 text-center text-xl font-semibold
-              border border-gray-300 rounded-xl
-              focus:border-first focus:ring-2 focus:ring-first/30
-              outline-none transition
-            "
+            onChange={(e) => handleOtpChange(index, e.target.value)}
+            onKeyDown={(e) => handleOtpKeyDown(index, e)}
+            onPaste={handlePaste}
+            className="h-13 w-12 rounded-xl border border-gray-300 bg-color-for-layer-on-body text-center text-xl font-semibold first-text-color outline-none transition-all focus:border-first focus:ring-2 focus:ring-first/20 sm:w-14"
+            inputMode="numeric"
+            autoComplete={index === 0 ? 'one-time-code' : 'off'}
+            aria-label={`OTP digit ${index + 1}`}
           />
         ))}
       </div>
 
-      {/* verify button */}
+      {otpError && <p className="rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600">{otpError}</p>}
+
       <Button
         onClick={handleVerify}
         disabled={verifying}
-        className="py-4 w-full cursor-pointer disabled:bg-gray-400 my-4 bg-first text-white rounded-md"
+        className="h-12 w-full rounded-xl bg-first text-white disabled:bg-gray-400"
       >
         {verifying ? t('auth.login.signingIn') : t('auth.login.signIn')}
       </Button>
 
-      {/* error */}
-      {otpError && (
-        <p className="text-red-500 text-xs text-center mt-2 animate-pulse">
-          {otpError}
-        </p>
-      )}
       <button
         onClick={onResend}
         disabled={sending || resendTimer > 0}
-        className={`text-xs block mx-auto transition ${resendTimer > 0
-          ? 'text-gray-400 cursor-not-allowed pointer-events-none'
-          : 'text-first hover:underline'
-          }`}
+        className={`text-xs transition ${
+          resendTimer > 0
+            ? 'cursor-not-allowed text-gray-400'
+            : 'font-s-medium text-first hover:text-first-700'
+        }`}
       >
-        {resendTimer > 0
-          ? `${t('auth.register.resendOtp')} (${resendTimer}${t('auth.register.seconds')})`
-          : t('auth.register.resendOtp')}
+        {counterText}
       </button>
     </div>
   );
