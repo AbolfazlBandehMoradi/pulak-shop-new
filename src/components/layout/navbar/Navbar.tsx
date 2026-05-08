@@ -1,124 +1,139 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '@/context/AuthContext';
+import { AnimatePresence, motion } from 'framer-motion';
 import MainLogo from '@/assets/Images/Logo/MainLogo.png';
-import { ThemeToggleButton } from '@/components/ui/ThemeToggleButton';
-import { LanguageToggle } from './LanguageWithClick';
+import logoNav from '@/assets/Images/Logo/logo-nav.png';
+import { useAuth } from '@/context/AuthContext';
 import useCartStore from '@/stores/cartStore';
 import { useShopStore } from '@/stores/productsFilterStore';
 import { useLangStore } from '@/stores/languageStore';
 import useCategories from '@/hooks/useCategories';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import { useTranslation } from 'react-i18next';
+
+type CategoryId = string | null;
 
 export const Navbar: React.FC = () => {
   const { i18n } = useTranslation();
   const { isAuthenticated, user } = useAuth();
   const { data: categories } = useCategories();
-  const [isOpenMegaMenu, setIsOpenMegaMenu] = useState(false);
-  const menuRefMegaMenu = useRef<HTMLLIElement>(null);
+  const dir = useLangStore((s) => s.dir);
+
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  const [isDesktopCategoryOpen, setIsDesktopCategoryOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
-  const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const [openSubMenu, setOpenSubMenu] = useState(null);
-  const [open, setOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const [homeMenuOpen, setHomeMenuOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [openSubMenu, setOpenSubMenu] = useState<CategoryId>(null);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isMobileCategoryOpen, setIsMobileCategoryOpen] = useState(false);
+
+  const desktopCategoryRef = useRef<HTMLLIElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+
   const navigate = useNavigate();
   const localizedPath = useLocalizedPath();
+
   const setSearchText = useShopStore((s) => s.setSearch);
   const setCategoryIds = useShopStore((s) => s.setCategoryIds);
   const cartCount = useCartStore((s) => s.itemCount);
-  const dir = useLangStore((s) => s.dir);
 
-  const searchPlaceholder = i18n.language === 'fa' ? 'جستجوی محصولات...' : 'Search products...';
+  const isFa = i18n.language === 'fa';
+  const searchPlaceholder = isFa ? 'جستجوی محصولات...' : 'Search products...';
+
+  const navLabels = {
+    home: isFa ? 'پولک' : 'Pulak',
+    categories: isFa ? 'دسته بندی' : 'Categories',
+    about: isFa ? 'درباره ما' : 'About us',
+    contact: isFa ? 'تماس با ما' : 'Contact us',
+    blog: isFa ? 'بلاگ' : 'Blog',
+    signIn: isFa ? 'ورود و ثبت نام' : 'Sign in / Register',
+    signInShort: isFa ? 'ورود' : 'Sign in',
+    all: isFa ? 'مشاهده همه' : 'View all',
+    profile: isFa ? 'پروفایل' : 'Profile',
+    cart: isFa ? 'سبد خرید' : 'Cart',
+  };
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 1024);
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   useEffect(() => {
-    const handleClickOutside = (e: any) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setIsOpen(false);
-      }
-    };
-    if (isOpen) {
-      document.body.addEventListener('click', handleClickOutside);
-    } else {
-      document.body.removeEventListener('click', handleClickOutside);
+    if (!isMobile) {
+      setIsDrawerOpen(false);
+      setIsMobileCategoryOpen(false);
+      setOpenSubMenu(null);
     }
-    return () => document.body.removeEventListener('click', handleClickOutside);
-  }, [isOpen]);
+  }, [isMobile]);
 
   useEffect(() => {
-    const handleClickOutside = (e: any) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    const handleOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
 
-  useEffect(() => {
-    const handleClickOutside = (e: any) => {
-      if (menuRefMegaMenu.current && !menuRefMegaMenu.current.contains(e.target)) {
-        setIsOpenMegaMenu(false);
+      if (
+        isDesktopCategoryOpen &&
+        desktopCategoryRef.current &&
+        !desktopCategoryRef.current.contains(target)
+      ) {
+        setIsDesktopCategoryOpen(false);
+      }
+
+      if (isDrawerOpen && drawerRef.current && !drawerRef.current.contains(target)) {
+        setIsDrawerOpen(false);
+      }
+
+      if (isProfileMenuOpen && profileRef.current && !profileRef.current.contains(target)) {
+        setIsProfileMenuOpen(false);
       }
     };
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, []);
-  const toggleMegaMenu = () => setIsOpenMegaMenu((prev) => !prev);
-  const handleMouseEnter = (index: number) => setActiveTab(index);
-  const toggleMenu = (e: any) => {
-    e.stopPropagation();
-    setIsOpen(!isOpen);
+
+    document.addEventListener('mousedown', handleOutside);
+    return () => document.removeEventListener('mousedown', handleOutside);
+  }, [isDesktopCategoryOpen, isDrawerOpen, isProfileMenuOpen]);
+
+  const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const normalizedSearch = searchRef.current?.value?.trim() || undefined;
+    setSearchText(normalizedSearch);
+
+    const query = new URLSearchParams();
+    if (normalizedSearch) query.set('search', normalizedSearch);
+
+    const target = query.toString()
+      ? localizedPath(`/products?${query.toString()}`)
+      : localizedPath('/products');
+
+    navigate(target);
   };
-  const toggleSubMenu = (menuId: any) => {
-    setOpenSubMenu(openSubMenu === menuId ? null : menuId);
-  };
-  const handleMenuClick = (e: any) => {
-    e.stopPropagation();
+
+  const categoryHref = (id: string) => localizedPath(`/products?categoryIds=${id}`);
+
+  const closeDrawer = () => {
+    setIsDrawerOpen(false);
+    setIsMobileCategoryOpen(false);
+    setOpenSubMenu(null);
   };
 
   return (
     <nav className="navbar-shell">
-      <div dir={dir} className="px-4 my-4 container mx-auto">
-        <div className="flex flex-wrap items-center justify-between">
-          <div className="w-full md:w-7/12 flex items-center md:gap-3 flex-wrap order-2 md:order-1">
-            <div className="hidden md:flex md:w-2/24">
-              <Link className="w-full h-auto" to="/">
-                <img className="w-full h-auto" src={MainLogo} alt="" />
+      {!isMobile && (
+        <div dir={dir} className="container mx-auto my-4 px-4">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex w-full items-center gap-3 lg:w-8/12">
+              <Link className="hidden w-16 md:block" to={localizedPath('/')}>
+                <img className="w-full h-auto" src={MainLogo} alt="logo" />
               </Link>
-            </div>
-            <div className="w-full md:w-8/12 relative flex md:mt-0">
-              <form
-                className="w-full flex nav-search-form"
-                name="search"
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  const normalizedSearch = searchRef.current?.value?.trim() || undefined;
-                  setSearchText(normalizedSearch);
 
-                  const query = new URLSearchParams();
-                  if (normalizedSearch) query.set('search', normalizedSearch);
-                  const target = query.toString()
-                    ? localizedPath(`/products?${query.toString()}`)
-                    : localizedPath('/products');
-                  navigate(target);
-                }}
-              >
+              <form className="flex w-full nav-search-form" name="search" onSubmit={handleSearchSubmit}>
                 <input
+                  ref={searchRef}
                   name="search"
                   type="search"
-                  ref={searchRef}
+                  className="nav-search-input no-clear-button"
+                  placeholder={searchPlaceholder}
                   onChange={() => {
                     if (searchRef.current?.value) {
                       setSearchText(searchRef.current.value);
@@ -126,8 +141,6 @@ export const Navbar: React.FC = () => {
                       setSearchText(undefined);
                     }
                   }}
-                  className="nav-search-input no-clear-button"
-                  placeholder={searchPlaceholder}
                 />
                 <button type="submit" className="nav-search-submit group" aria-label={searchPlaceholder}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -142,464 +155,390 @@ export const Navbar: React.FC = () => {
                 </button>
               </form>
             </div>
-          </div>
-          {/* دکمه‌ها و پروفایل */}
-          <div className="w-full md:w-5/12 lg:w-3/12 xl:w-2/12 order-1 md:order-2">
-            <div className="hidden lg:flex flex-row-reverse items-center gap-3">
-              {!isAuthenticated && (
-                <Link to="/auth">
-                  <button className="font-s-sbold first-text-color flex h-14 items-center justify-center gap-2 rounded-2xl bg-color-for-layer-on-body px-4">
-                    <span className="first-text-color">ورود و ثبت نام</span>
-                    <div className="h-8 w-8 rounded-full flex justify-center items-center bg-first">
-                      <span className="text-color-svg-white">
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M12 2C11.0111 2 10.0444 2.29324 9.22215 2.84265C8.3999 3.39206 7.75904 4.17295 7.3806 5.08658C7.00216 6.00021 6.90315 7.00555 7.09607 7.97545C7.289 8.94536 7.7652 9.83627 8.46447 10.5355C9.16373 11.2348 10.0546 11.711 11.0245 11.9039C11.9945 12.0969 12.9998 11.9978 13.9134 11.6194C14.827 11.241 15.6079 10.6001 16.1573 9.77785C16.7068 8.95561 17 7.98891 17 7C17 5.67392 16.4732 4.40215 15.5355 3.46447C14.5979 2.52678 13.3261 2 12 2ZM12 10C11.4067 10 10.8266 9.82405 10.3333 9.49441C9.83994 9.16476 9.45542 8.69623 9.22836 8.14805C9.0013 7.59987 8.94189 6.99667 9.05764 6.41473C9.1734 5.83279 9.45912 5.29824 9.87868 4.87868C10.2982 4.45912 10.8328 4.1734 11.4147 4.05764C11.9967 3.94189 12.5999 4.0013 13.1481 4.22836C13.6962 4.45542 14.1648 4.83994 14.4944 5.33329C14.8241 5.82664 15 6.40666 15 7C15 7.79565 14.6839 8.55871 14.1213 9.12132C13.5587 9.68393 12.7956 10 12 10ZM21 21V20C21 18.1435 20.2625 16.363 18.9497 15.0503C17.637 13.7375 15.8565 13 14 13H10C8.14348 13 6.36301 13.7375 5.05025 15.0503C3.7375 16.363 3 18.1435 3 20V21H5V20C5 18.6739 5.52678 17.4021 6.46447 16.4645C7.40215 15.5268 8.67392 15 10 15H14C15.3261 15 16.5979 15.5268 17.5355 16.4645C18.4732 17.4021 19 18.6739 19 20V21H21Z"
-                            fill="currentColor"
-                          />
-                        </svg>
-                      </span>
-                    </div>
-                  </button>
+
+            <div className="flex w-full items-center justify-end gap-3 lg:w-auto">
+              {!isAuthenticated ? (
+                <Link
+                  to={localizedPath('/auth')}
+                  className="font-s-sbold first-text-color flex h-12 items-center justify-center gap-2 rounded-2xl bg-color-for-layer-on-body px-4"
+                >
+                  <span>{navLabels.signIn}</span>
                 </Link>
-              )}
-              {isAuthenticated && (
-                <div className="relative flex" ref={dropdownRef}>
+              ) : (
+                <div className="relative" ref={profileRef}>
                   <button
-                    onClick={() => setOpen(!open)}
-                    className={`bg-color-for-layer-on-body w-44 flex items-center justify-between px-3 py-2 rounded-md ${
-                      open ? 'rounded-b-none border-b first-text-color-hr' : ''
-                    }`}
+                    onClick={() => setIsProfileMenuOpen((prev) => !prev)}
+                    className="flex h-12 items-center gap-2 rounded-xl bg-color-for-layer-on-body px-3 first-text-color"
                   >
-                    {
+                    {user?.avatar?.filePath ? (
                       <img
-                        src={user?.avatar?.filePath}
-                        alt={`عکس پروفایل ${user?.firstName || user?.lastName}`}
-                        className="w-6 h-6"
+                        src={user.avatar.filePath}
+                        alt={user?.firstName || navLabels.profile}
+                        className="h-8 w-8 rounded-full object-cover"
                       />
-                    }
-                    <span className="first-text-color inline-block h-4 leading-5.5">
-                      {user?.firstName}
-                    </span>
-                    <span className="first-text-color-svg">
-                      <svg
-                        className={`w-4 h-4 transition-transform duration-300 ${
-                          open ? 'rotate-180' : ''
-                        }`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </span>
+                    ) : (
+                      <span className="h-8 w-8 rounded-full bg-color-for-layer-sec" />
+                    )}
+                    <span className="text-sm">{user?.firstName || navLabels.profile}</span>
                   </button>
+
                   <AnimatePresence>
-                    {open && (
+                    {isProfileMenuOpen && (
                       <motion.div
-                        initial={{ opacity: 0, y: -10 }}
+                        initial={{ opacity: 0, y: -8 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.3 }}
-                        className="absolute top-full w-full bg-color-for-layer-on-body rounded-t-none rounded-md z-50"
+                        exit={{ opacity: 0, y: -8 }}
+                        className="absolute top-full z-50 mt-2 min-w-44 rounded-xl bg-color-for-layer-on-body p-2 shadow-dark-sm"
                       >
                         <Link
-                          to="/users/me"
-                          className="block px-4 py-2 text-sm first-text-color-for-paragraph hover:bg-color-for-layer-sec"
+                          to={localizedPath('/profile')}
+                          className="block rounded-lg px-3 py-2 text-sm first-text-color-for-paragraph hover:bg-color-for-layer-sec"
                         >
-                          داشبورد
+                          {navLabels.profile}
                         </Link>
                         <Link
-                          to="/favorites"
-                          className="block px-4 py-2 text-sm first-text-color-for-paragraph hover:bg-color-for-layer-sec"
+                          to={localizedPath('/cart')}
+                          className="block rounded-lg px-3 py-2 text-sm first-text-color-for-paragraph hover:bg-color-for-layer-sec"
                         >
-                          علاقه‌مندی‌ها
-                        </Link>
-                        <Link
-                          to="/cart"
-                          className="block px-4 py-2 text-sm first-text-color-for-paragraph hover:bg-color-for-layer-sec"
-                        >
-                          سبد خرید
-                        </Link>
-                        <Link
-                          to="/logout"
-                          className="block px-4 py-2 text-sm first-text-color-for-paragraph hover:bg-color-for-layer-sec"
-                        >
-                          خروج
+                          {navLabels.cart}
                         </Link>
                       </motion.div>
                     )}
                   </AnimatePresence>
                 </div>
               )}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="bg-color-for-layer-on-body p-4 mx-auto   ">
-        {!isMobile ? (
-          <div className="items-center  mx-auto justify-between px-4 relative  container  flex  ">
-            <div className="flex gap-10 items-center justify-end md:justify-between ">
-              <div>
-                <ul className="flex  gap-10">
-                  <li className=" first-text-color text-base font-f-normal cursor-pointer">
-                    <Link className="first-header__ul-link" to={'/'}>
-                      <span>پولک</span>
-                    </Link>
-                  </li>
-                  <li
-                    className=" first-text-color flex text-base font-f-normal cursor-pointer align-items-center gap-3"
-                    onClick={toggleMegaMenu}
-                    ref={menuRefMegaMenu}
-                  >
-                    <span className="block first-text-color">دسته بندی</span>
-                    <span className="block first-text-color">
-                      <svg
-                        className={`w-4 h-4 transform absolute top-3 duration-500 line- transition-transform ${
-                          isOpenMegaMenu ? 'rotate-180' : 'rotate-0'
-                        }`}
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        strokeWidth="2"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </span>
-                    {isOpenMegaMenu && (
-                      <div
-                        className="  bg-color-for-layer-on-body  absolute shadow-dark-md top-15 overflow-hidden  right-0 left-0  mt-2 w-full   shadow-lg rounded-md z-12 transition-all ease-in-out duration-500 transform scale-100 opacity-100"
-                        onClick={handleMenuClick}
-                      >
-                        <div className="  flex">
-                          <ul className="w-2/12 p-4 border-l border-gray-300 text-base">
-                            {categories?.map((category, index) => (
-                              <li
-                                key={category.id}
-                                className={`py-2 items-center flex cursor-pointer relative group ${
-                                  activeTab === index ? 'font-bold' : ''
-                                }`}
-                                onMouseEnter={() => handleMouseEnter(index)}
-                              >
-                                {activeTab === index && (
-                                  <span
-                                    className="
-            absolute first-text-color-svg-const flex justify-center bg-first-100 bottom-1/2
-            items-center w-8 h-8
-            -left-8
-            rounded-full
-            translate-y-1/2
-          "
-                                  >
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                      <path
-                                        d="M15 4L7 12L15 20"
-                                        stroke="currentColor"
-                                        strokeWidth="3"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                      />
-                                    </svg>
-                                  </span>
-                                )}
-                                <span className="h-2 w-2 bg-secound rounded-full me-1 opacity-25 group-hover:opacity-100"></span>
-                                {category.name}
-                              </li>
-                            ))}
-                          </ul>
 
-                          <div className="py-6 px-8 w-10/12">
-                            <div className="flex flex-wrap">
-                              <h5 className="text-first w-full font-f-sbold">
-                                {categories?.[activeTab]?.name}
-                              </h5>
-                              <p className="first-text-color-for-paragraph font-f-light">
-                                'blah blah blah'
-                              </p>
-                              <ul className="grid grid-cols-4 mt-8 w-full gap-y-4 gap-x-6 items-start">
-                                {categories?.[activeTab]?.children?.map((sub) => (
-                                  <Link
-                                    key={sub.id}
-                                    onClick={() => {
-                                      setIsOpenMegaMenu(false);
-                                      setCategoryIds([sub.id]);
-                                    }}
-                                    to={`/products?categoryIds=${sub.id}`}
-                                  >
-                                    <li
-                                      key={sub.id}
-                                      className="
-                                                        text-base
-                                                        relative
-                                                        before:h-0.5 before:bg-secound-200
-                                                        hover:before:bg-secound
-                                                        before:w-2
-                                                        before:-right-2
-                                                        before:absolute
-                                                        before:top-3
-                                                        cursor-pointer transition-bg duration-500
-                                                    "
-                                    >
-                                      <span className="ms-2">{sub.name}</span>
-                                    </li>
-                                  </Link>
-                                ))}
-                                <li className="col-span-4 mt-2 pt-4">
-                                  <div className="flex w-full justify-end">
-                                    <Link
-                                      className="flex gap-2 items-center"
-                                      onClick={() => {
-                                        setIsOpen(false);
-                                        setIsOpenMegaMenu(false);
-                                      }}
-                                      to={`/products?categoryIds=${categories?.[activeTab]?.id}`}
-                                    >
-                                      <button className="bg-secound text-white py-2 px-4 rounded-lg nav-action-btn">
-                                        مشاهده همه
-                                      </button>
-                                    </Link>
-                                  </div>
-                                </li>
-                              </ul>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </li>
-                  <li className=" first-text-color text-base font-f-normal cursor-pointer">
-                    <Link className="first-header__ul-link" to={'/about-us'}>
-                      درباره ما
-                    </Link>
-                  </li>
-                  <li className=" first-text-color text-base font-f-normal cursor-pointer">
-                    <Link className="first-header__ul-link" to={'/contact-us'}>
-                      تماس با ما
-                    </Link>
-                  </li>
-                  <li className=" first-text-color text-base font-f-normal cursor-pointer">
-                    <Link className="first-header__ul-link" to={'/blogs'}>
-                      بلاگ
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              {/* <div>
-                <span>
-                  <Link className="cursor-pinter relative" to={'/favorites'}>
-                    <span className="first-text-color-svg">
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M12 20C12 20 21 16 21 9.71405C21 6 18.9648 4 16.4543 4C15.2487 4 14.0925 4.49666 13.24 5.38071L12.7198 5.92016C12.3266 6.32798 11.6734 6.32798 11.2802 5.92016L10.76 5.38071C9.90749 4.49666 8.75128 4 7.54569 4C5 4 3 6 3 9.71405C3 16 12 20 12 20Z"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </span>
-                    <span className="absolute -top-5 left-3 leading-tight text-xs text-white bg-secound rounded-full w-5 h-5 flex items-center justify-center">
-                      {isAuthenticated ? favCounts : 0}
-                    </span>
-                  </Link>
-                </span>
-              </div> */}
-              <span>
-                <Link
-                  className="cursor-pinter rounded-md flex bg-first h-10 w-20 justify-center items-center gap-2 "
-                  to="/cart"
-                >
-                  <span className="bg-first-600 text-white h-5 w-5 rounded-full grid place-items-center text-[14px] leading-6">
-                    {cartCount}
-                  </span>
-                  <span className="first-text-color-svg">
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M4.78571 5H18.2251C19.5903 5 20.5542 6.33739 20.1225 7.63246L18.4558 12.6325C18.1836 13.4491 17.4193 14 16.5585 14H6.07142M4.78571 5L4.74531 4.71716C4.60455 3.73186 3.76071 3 2.76541 3H2M4.78571 5L6.07142 14M6.07142 14L6.25469 15.2828C6.39545 16.2681 7.23929 17 8.23459 17H17M17 17C15.8954 17 15 17.8954 15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17ZM11 19C11 20.1046 10.1046 21 9 21C7.89543 21 7 20.1046 7 19C7 17.8954 7.89543 17 9 17C10.1046 17 11 17.8954 11 19Z"
-                        stroke="white"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </span>
-                </Link>
-              </span>
-              {/* <LanguageToggle /> */}
-              {/* <ThemeToggleButton /> */}
-            </div>
-          </div>
-        ) : (
-          <div className="flex justify-between ">
-            <button className="cursor-pointer" onClick={toggleMenu}>
-              <span className="first-text-color-svg">
-                <svg
-                  width="32"
-                  height="32"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
+              <Link
+                className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-first"
+                to={localizedPath('/cart')}
+                aria-label={navLabels.cart}
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
                   <path
-                    d="M4 17H20M4 12H20M4 7H20"
-                    stroke="currentColor"
+                    d="M4.78571 5H18.2251C19.5903 5 20.5542 6.33739 20.1225 7.63246L18.4558 12.6325C18.1836 13.4491 17.4193 14 16.5585 14H6.07142M4.78571 5L4.74531 4.71716C4.60455 3.73186 3.76071 3 2.76541 3H2M4.78571 5L6.07142 14M6.07142 14L6.25469 15.2828C6.39545 16.2681 7.23929 17 8.23459 17H17M17 17C15.8954 17 15 17.8954 15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17ZM11 19C11 20.1046 10.1046 21 9 21C7.89543 21 7 20.1046 7 19C7 17.8954 7.89543 17 9 17C10.1046 17 11 17.8954 11 19Z"
+                    stroke="white"
                     strokeWidth="1.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
                 </svg>
-              </span>
-            </button>
-            {isOpen && (
-              <div
-                className="fixed top-0 left-0 w-full h-full bg-black opacity-50 z-50"
-                onClick={() => setIsOpen(false)}
-              />
-            )}
-            <div
-              ref={menuRef}
-              className={`fixed top-0 z-99 right-0 h-full overflow-y-auto bg-color-for-layer-on-body  transform transition-transform duration-300
-                            ${isOpen ? 'translate-x-0  w-9/12' : 'translate-x-full'}`}
-            >
-              <div className="flex justify-between p-3">
-                <div className="w-2/12">
-                  <Link to={'/'}>
-                    <img className="  " src={MainLogo} alt="" />
-                  </Link>
-                </div>
-                <button onClick={() => setIsOpen(false)} className="cursor-pointer">
-                  <span className="first-text-color-svg">
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
+                <span className="absolute -top-1 -right-1 h-5 min-w-5 rounded-full text-white bg-secound px-1 text-center text-[11px] leading-5">
+                  {cartCount}
+                </span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="mx-auto bg-color-for-layer-on-body p-4">
+        {!isMobile ? (
+          <div className="container mx-auto flex items-center justify-between px-4">
+            <ul className="flex items-center gap-8">
+              <li className="text-base font-f-normal first-text-color">
+                <Link to={localizedPath('/')} className="first-header__ul-link">
+                  {navLabels.home}
+                </Link>
+              </li>
+
+              <li
+                ref={desktopCategoryRef}
+                className="relative text-base font-f-normal first-text-color"
+              >
+                <button
+                  className="flex items-center gap-2"
+                  onClick={() => setIsDesktopCategoryOpen((prev) => !prev)}
+                >
+                  <span>{navLabels.categories}</span>
+                  <svg
+                    className={`h-4 w-4 transition-transform ${isDesktopCategoryOpen ? 'rotate-180' : ''}`}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                  >
+                    <path
+                      d="M19 9l-7 7-7-7"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+
+                {isDesktopCategoryOpen && (
+                  <div className="absolute start-0 top-full z-40 mt-3 w-212.5 overflow-hidden rounded-2xl bg-color-for-layer-on-body shadow-dark-sm">
+                    <div className="flex">
+                      <ul className="w-64 border-e border-gray-300/60 bg-color-for-layer-sec p-4">
+                        {categories?.map((category, index) => (
+                          <li key={category.id}>
+                            <button
+                              className={`mb-2 flex w-full items-center rounded-lg px-3 py-2 text-sm text-start ${
+                                activeTab === index ? 'bg-color-for-layer-on-body font-f-sbold' : 'font-f-light'
+                              }`}
+                              onMouseEnter={() => setActiveTab(index)}
+                              onFocus={() => setActiveTab(index)}
+                            >
+                              {category.name}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+
+                      <div className="flex-1 p-5">
+                        <h5 className="mb-4 text-base font-f-sbold text-first">
+                          {categories?.[activeTab]?.name}
+                        </h5>
+                        <ul className="grid grid-cols-3 gap-3">
+                          {categories?.[activeTab]?.children?.map((sub) => (
+                            <li key={sub.id}>
+                              <Link
+                                className="block rounded-lg px-3 py-2 text-sm first-text-color-for-paragraph hover:bg-color-for-layer-sec"
+                                onClick={() => {
+                                  setCategoryIds([sub.id]);
+                                  setIsDesktopCategoryOpen(false);
+                                }}
+                                to={categoryHref(sub.id)}
+                              >
+                                {sub.name}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                        {categories?.[activeTab]?.id && (
+                          <div className="mt-4">
+                            <Link
+                              className="inline-flex rounded-lg bg-secound px-4 py-2 text-sm text-white"
+                              to={categoryHref(categories[activeTab].id)}
+                              onClick={() => setIsDesktopCategoryOpen(false)}
+                            >
+                              {navLabels.all}
+                            </Link>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </li>
+
+              <li className="text-base font-f-normal first-text-color">
+                <Link to={localizedPath('/about-us')} className="first-header__ul-link">
+                  {navLabels.about}
+                </Link>
+              </li>
+              <li className="text-base font-f-normal first-text-color">
+                <Link to={localizedPath('/contact-us')} className="first-header__ul-link">
+                  {navLabels.contact}
+                </Link>
+              </li>
+              <li className="text-base font-f-normal first-text-color">
+                <Link to={localizedPath('/blogs')} className="first-header__ul-link">
+                  {navLabels.blog}
+                </Link>
+              </li>
+            </ul>
+          </div>
+        ) : (
+          <div className="container mx-auto px-1 pb-2">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between rounded-2xl">
+                <button
+                  aria-label="Open menu"
+                  className="rounded-xl border border-gray-300/50 p-2 first-text-color-svg"
+                  onClick={() => setIsDrawerOpen(true)}
+                >
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M4 17H20M4 12H20M4 7H20"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+
+                <Link to={localizedPath('/')} className="block w-20">
+                  <img className="h-24" src={logoNav} alt="logo" />
+                </Link>
+
+                <div className="flex items-center gap-2">
+                  <Link
+                    className="relative rounded-xl border border-gray-300/50 p-2 first-text-color-svg"
+                    to={localizedPath('/cart')}
+                    aria-label={navLabels.cart}
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                       <path
-                        d="M19 5L5 19M5.00003 5L19 19"
+                        d="M4.78571 5H18.2251C19.5903 5 20.5542 6.33739 20.1225 7.63246L18.4558 12.6325C18.1836 13.4491 17.4193 14 16.5585 14H6.07142M4.78571 5L4.74531 4.71716C4.60455 3.73186 3.76071 3 2.76541 3H2M4.78571 5L6.07142 14M6.07142 14L6.25469 15.2828C6.39545 16.2681 7.23929 17 8.23459 17H17M17 17C15.8954 17 15 17.8954 15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17ZM11 19C11 20.1046 10.1046 21 9 21C7.89543 21 7 20.1046 7 19C7 17.8954 7.89543 17 9 17C10.1046 17 11 17.8954 11 19Z"
                         stroke="currentColor"
                         strokeWidth="1.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       />
                     </svg>
-                  </span>
-                </button>
-              </div>
-              <ul className="flex flex-col space-y-2 mt-10 p-2 ">
-                <li className="first-text-color relative ">
-                  <div className="flex">
-                    <button
-                      onClick={() => setHomeMenuOpen(!homeMenuOpen)}
-                      className="w-full flex justify-between items-center cursor-pointer text-base"
-                    >
-                      دسته بندی
-                    </button>
-                    <span className="flex justify-center rounded-sm items-center w-6 h-6 bg-secound ">
-                      <svg
-                        className={`w-4 h-4 transform absolute duration-500 transition-transform ${
-                          homeMenuOpen ? 'rotate-180' : 'rotate-0'
-                        }`}
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        stroke="white"
-                        viewBox="0 0 24 24"
-                        strokeWidth="2"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                      </svg>
+                    <span className="absolute -right-1 -top-1 h-5 min-w-5 rounded-full bg-secound px-1 text-center text-[11px] leading-5 text-white">
+                      {cartCount}
                     </span>
-                  </div>
+                  </Link>
 
-                  {homeMenuOpen && (
-                    <ul className="overflow-hidden transition-all duration-300 mt-4 space-y-2">
+                  {!isAuthenticated ? (
+                    <Link
+                      to={localizedPath('/auth')}
+                      className="rounded-xl bg-first py-2 px-3 text-[16px] font-s-sbold text-white"
+                    >
+                      {navLabels.signInShort}
+                    </Link>
+                  ) : (
+                    <Link
+                      to={localizedPath('/profile')}
+                      className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border border-gray-300/50 bg-color-for-layer-on-body"
+                      aria-label={navLabels.profile}
+                    >
+                      {user?.avatar?.filePath ? (
+                        <img
+                          src={user.avatar.filePath}
+                          alt={user?.firstName || navLabels.profile}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <span className="h-3 w-3 rounded-full bg-first" />
+                      )}
+                    </Link>
+                  )}
+                </div>
+              </div>
+
+              <form className="flex w-full nav-search-form" name="mobile-search" onSubmit={handleSearchSubmit}>
+                <input
+                  ref={searchRef}
+                  name="search"
+                  type="search"
+                  className="nav-search-input no-clear-button"
+                  placeholder={searchPlaceholder}
+                  onChange={() => {
+                    if (searchRef.current?.value) {
+                      setSearchText(searchRef.current.value);
+                    } else {
+                      setSearchText(undefined);
+                    }
+                  }}
+                />
+                <button type="submit" className="nav-search-submit group" aria-label={searchPlaceholder}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M20 20L15.8033 15.8033M18 10.5C18 6.35786 14.6421 3 10.5 3C6.35786 3 3 6.35786 3 10.5C3 14.6421 6.35786 18 10.5 18C14.6421 18 18 14.6421 18 10.5Z"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+              </form>
+            </div>
+
+            {isDrawerOpen && (
+              <div className="fixed inset-0 z-50 bg-black/45 backdrop-blur-[1px]" onClick={closeDrawer} />
+            )}
+
+            <div
+              ref={drawerRef}
+              className={`fixed top-0 z-60 h-full w-10/12 max-w-sm overflow-y-auto bg-color-for-layer-on-body shadow-dark-sm transition-transform duration-300 ${
+                dir === 'rtl' ? 'right-0' : 'left-0'
+              } ${isDrawerOpen ? 'translate-x-0' : dir === 'rtl' ? 'translate-x-full' : '-translate-x-full'}`}
+            >
+              <div className="flex items-center justify-between border-b border-gray-200/50 p-4">
+                <button onClick={closeDrawer} className="rounded-xl border border-gray-300/60 p-2 first-text-color-svg">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M19 5L5 19M5.00003 5L19 19"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+                <Link to={localizedPath('/')} className="w-22" onClick={closeDrawer}>
+                  <img className="w-5/6" src={MainLogo} alt="logo" />
+                </Link>
+              </div>
+
+              <ul className="space-y-2 p-4">
+                <li className="rounded-xl bg-color-for-layer-sec p-3">
+                  <button
+                    onClick={() => setIsMobileCategoryOpen((prev) => !prev)}
+                    className="flex w-full items-center justify-between text-sm font-f-sbold first-text-color"
+                  >
+                    <span>{navLabels.categories}</span>
+                    <svg
+                      className={`h-4 w-4 transition-transform ${isMobileCategoryOpen ? 'rotate-180' : ''}`}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                    >
+                      <path
+                        d="M19 9l-7 7-7-7"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+
+                  {isMobileCategoryOpen && (
+                    <ul className="mt-3 space-y-2">
                       {categories?.map((menu) => (
-                        <li key={menu.id}>
+                        <li key={menu.id} className="rounded-lg bg-color-for-layer-on-body p-2">
                           <button
-                            onClick={() => toggleSubMenu(menu.id)}
-                            className="w-full text-right flex font-f-light cursor-pointer mt-1 justify-between items-center"
+                            onClick={() => setOpenSubMenu((prev) => (prev === menu.id ? null : menu.id))}
+                            className={`flex w-full items-center justify-between text-sm first-text-color ${
+                              dir === 'rtl' ? 'text-right' : 'text-left'
+                            }`}
                           >
-                            {menu.name}
-                            <span className="flex justify-center rounded-sm items-center w-6 h-6 first-text-color">
-                              <svg
-                                className={`w-4 h-4 transform absolute duration-500 transition-transform ${
-                                  openSubMenu === menu.id ? 'rotate-180' : 'rotate-0'
-                                }`}
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
+                            <span>{menu.name}</span>
+                            <svg
+                              className={`h-4 w-4 transition-transform ${openSubMenu === menu.id ? 'rotate-180' : ''}`}
+                              viewBox="0 0 24 24"
+                              fill="none"
+                            >
+                              <path
+                                d="M19 9l-7 7-7-7"
                                 stroke="currentColor"
-                                viewBox="0 0 24 24"
-                                strokeWidth="2"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M19 9l-7 7-7-7"
-                                />
-                              </svg>
-                            </span>
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
                           </button>
 
                           {openSubMenu === menu.id && (
-                            <ul className="mt-2 py-2 flex flex-col space-y-3 px-4 rounded">
-                              {menu.children?.map((sub, index) => (
-                                <li key={index}>
+                            <ul className="mt-2 space-y-1 px-2">
+                              {menu.children?.map((sub) => (
+                                <li key={sub.id}>
                                   <Link
-                                    className="flex gap-2 items-center"
+                                    className="block py-1 text-sm first-text-color-for-paragraph hover:first-text-color"
                                     onClick={() => {
                                       setCategoryIds([sub.id]);
-                                      setIsOpen(false);
+                                      closeDrawer();
                                     }}
-                                    to={`/products?categoryIds=${sub.id}`}
+                                    to={categoryHref(sub.id)}
                                   >
-                                    <span className="h-2 w-2 rounded-full bg-secound flex"></span>
-                                    <span className="flex">{sub.name}</span>
+                                    {sub.name}
                                   </Link>
                                 </li>
                               ))}
+                              <li>
+                                <Link
+                                  className="my-2 inline-flex rounded-lg bg-secound px-3 py-2 text-xs text-white"
+                                  onClick={closeDrawer}
+                                  to={categoryHref(menu.id)}
+                                >
+                                  {navLabels.all}
+                                </Link>
+                              </li>
                             </ul>
-                          )}
-
-                          {openSubMenu === menu.id && (
-                            <div className="flex mt-3 w-full">
-                              <Link
-                                className="flex gap-2 items-center w-full"
-                                onClick={() => setIsOpen(false)}
-                                to={`/products?categoryIds=${menu.id}`}
-                              >
-                                <button className="bg-secound text-white py-2 px-4 rounded-lg nav-action-btn w-full">
-                                  مشاهده همه
-                                </button>
-                              </Link>
-                            </div>
                           )}
                         </li>
                       ))}
@@ -608,171 +547,33 @@ export const Navbar: React.FC = () => {
                 </li>
 
                 <li>
-                  <Link className="first-text-color-for-paragraph" to={'/about-us'}>
-                    درباره ما
+                  <Link
+                    className="block rounded-xl px-3 py-2 text-sm first-text-color-for-paragraph hover:bg-color-for-layer-sec"
+                    onClick={closeDrawer}
+                    to={localizedPath('/about-us')}
+                  >
+                    {navLabels.about}
                   </Link>
                 </li>
                 <li>
-                  <Link className="first-text-color-for-paragraph" to={'/contact-us'}>
-                    تماس با ما
+                  <Link
+                    className="block rounded-xl px-3 py-2 text-sm first-text-color-for-paragraph hover:bg-color-for-layer-sec"
+                    onClick={closeDrawer}
+                    to={localizedPath('/contact-us')}
+                  >
+                    {navLabels.contact}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="block rounded-xl px-3 py-2 text-sm first-text-color-for-paragraph hover:bg-color-for-layer-sec"
+                    onClick={closeDrawer}
+                    to={localizedPath('/blogs')}
+                  >
+                    {navLabels.blog}
                   </Link>
                 </li>
               </ul>
-            </div>
-            <div className="flex center gap-2">
-              <div className="flex  lg:hidden flex-row-reverse items-center w-full gap-3">
-                {/* <div className="flex center gap-3">
-                  <LanguageToggle />
-                  <ThemeToggleButton />
-                </div> */}
-                {!isAuthenticated && (
-                  <Link
-                    to={localizedPath('/auth')}
-                    className="font-s-sbold first-text-color flex h-14 items-center justify-center gap-2 rounded-xl bg-color-for-layer-sec px-2 w-40"
-                  >
-                    <span className="first-text-color">
-                      ورود و ثبت نام
-                    </span>
-                    <div className="h-8 w-8 rounded-full flex justify-center items-center bg-first">
-                      <span className="text-color-svg-white">
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M12 2C11.0111 2 10.0444 2.29324 9.22215 2.84265C8.3999 3.39206 7.75904 4.17295 7.3806 5.08658C7.00216 6.00021 6.90315 7.00555 7.09607 7.97545C7.289 8.94536 7.7652 9.83627 8.46447 10.5355C9.16373 11.2348 10.0546 11.711 11.0245 11.9039C11.9945 12.0969 12.9998 11.9978 13.9134 11.6194C14.827 11.241 15.6079 10.6001 16.1573 9.77785C16.7068 8.95561 17 7.98891 17 7C17 5.67392 16.4732 4.40215 15.5355 3.46447C14.5979 2.52678 13.3261 2 12 2ZM12 10C11.4067 10 10.8266 9.82405 10.3333 9.49441C9.83994 9.16476 9.45542 8.69623 9.22836 8.14805C9.0013 7.59987 8.94189 6.99667 9.05764 6.41473C9.1734 5.83279 9.45912 5.29824 9.87868 4.87868C10.2982 4.45912 10.8328 4.1734 11.4147 4.05764C11.9967 3.94189 12.5999 4.0013 13.1481 4.22836C13.6962 4.45542 14.1648 4.83994 14.4944 5.33329C14.8241 5.82664 15 6.40666 15 7C15 7.79565 14.6839 8.55871 14.1213 9.12132C13.5587 9.68393 12.7956 10 12 10ZM21 21V20C21 18.1435 20.2625 16.363 18.9497 15.0503C17.637 13.7375 15.8565 13 14 13H10C8.14348 13 6.36301 13.7375 5.05025 15.0503C3.7375 16.363 3 18.1435 3 20V21H5V20C5 18.6739 5.52678 17.4021 6.46447 16.4645C7.40215 15.5268 8.67392 15 10 15H14C15.3261 15 16.5979 15.5268 17.5355 16.4645C18.4732 17.4021 19 18.6739 19 20V21H21Z"
-                            fill="currentColor"
-                          />
-                        </svg>
-                      </span>
-                    </div>
-                  </Link>
-                )}
-                {isAuthenticated && (
-                  <div className="relative flex" ref={dropdownRef}>
-                    <button
-                      onClick={() => setOpen(!open)}
-                      className={`bg-color-for-layer-sec w-44 flex items-center justify-between px-3 py-2 rounded-md ${
-                        open ? 'rounded-b-none border-b first-text-color-hr' : ''
-                      }`}
-                    >
-                      <img
-                        src={user?.avatar?.filePath}
-                        alt={`عکس پروفایل ${user?.firstName || user?.lastName}`}
-                        className="w-6 h-6"
-                      />
-                      <span className="first-text-color inline-block h-4 leading-5.5">
-                        {user?.firstName}
-                      </span>
-                      <span className="first-text-color-svg">
-                        <svg
-                          className={`w-4 h-4 transition-transform duration-300 ${
-                            open ? 'rotate-180' : ''
-                          }`}
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                    <AnimatePresence>
-                      {open && (
-                        <motion.div
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          transition={{ duration: 0.3 }}
-                          className="absolute top-full w-full bg-color-for-layer-on-body rounded-t-none rounded-md z-50"
-                        >
-                          <Link
-                            to="/users/me"
-                            className="block px-4 py-2 text-sm first-text-color-for-paragraph hover:bg-color-for-layer-sec"
-                          >
-                            داشبورد
-                          </Link>
-                          <Link
-                            to="/favorites"
-                            className="block px-4 py-2 text-sm first-text-color-for-paragraph hover:bg-color-for-layer-sec"
-                          >
-                            علاقه‌مندی‌ها
-                          </Link>
-                          <Link
-                            to="/cart"
-                            className="block px-4 py-2 text-sm first-text-color-for-paragraph hover:bg-color-for-layer-sec"
-                          >
-                            سبد خرید
-                          </Link>
-                          <Link
-                            to="/logout"
-                            className="block px-4 py-2 text-sm first-text-color-for-paragraph hover:bg-color-for-layer-sec"
-                          >
-                            خروج
-                          </Link>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                )}
-                {/* <span>
-                  <Link className="cursor-pinter relative" to={'/favorites'}>
-                    <span className="first-text-color-svg">
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M12 20C12 20 21 16 21 9.71405C21 6 18.9648 4 16.4543 4C15.2487 4 14.0925 4.49666 13.24 5.38071L12.7198 5.92016C12.3266 6.32798 11.6734 6.32798 11.2802 5.92016L10.76 5.38071C9.90749 4.49666 8.75128 4 7.54569 4C5 4 3 6 3 9.71405C3 16 12 20 12 20Z"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </span>
-                    <span className="absolute -top-5 left-3 leading-tight text-xs text-white bg-secound rounded-full w-5 h-5 flex items-center justify-center">
-                      {isAuthenticated ? favCounts : 0}
-                    </span>
-                  </Link>
-                </span> */}
-                <span>
-                  <Link className="cursor-pinter relative" to={localizedPath('/cart')}>
-                    <span className="first-text-color-svg">
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M4.78571 5H18.2251C19.5903 5 20.5542 6.33739 20.1225 7.63246L18.4558 12.6325C18.1836 13.4491 17.4193 14 16.5585 14H6.07142M4.78571 5L4.74531 4.71716C4.60455 3.73186 3.76071 3 2.76541 3H2M4.78571 5L6.07142 14M6.07142 14L6.25469 15.2828C6.39545 16.2681 7.23929 17 8.23459 17H17M17 17C15.8954 17 15 17.8954 15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17ZM11 19C11 20.1046 10.1046 21 9 21C7.89543 21 7 20.1046 7 19C7 17.8954 7.89543 17 9 17C10.1046 17 11 17.8954 11 19Z"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </span>
-                    <span className="absolute -top-5 left-3 leading-tight text-xs text-white bg-secound rounded-full w-5 h-5 flex items-center justify-center">
-                      {cartCount}
-                    </span>
-                  </Link>
-                </span>
-              </div>
             </div>
           </div>
         )}
