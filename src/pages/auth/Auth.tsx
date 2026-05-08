@@ -25,7 +25,7 @@ const toEnglishDigits = (value: string) =>
 export default function Auth() {
   const [mobile, setMobile] = useState('');
   const [otp, setOtp] = useState(['', '', '', '', '']);
-  const [step, setStep] = useState<'mobile' | 'otp'>('otp');
+  const [step, setStep] = useState<'mobile' | 'otp'>('mobile');
   const [focusTrigger, setFocusTrigger] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);

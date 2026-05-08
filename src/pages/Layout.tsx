@@ -2,7 +2,6 @@ import { Outlet, ScrollRestoration, useLocation } from "react-router-dom";
 import { Footer } from "@/components/layout/footer/Footer";
 import useCart from "@/hooks/cart/useCart";
 import { Navbar } from "@/components/layout/navbar/Navbar";
-import GoftinoWidget from "@/components/ui/GoftinoWidget";
 import { ReactNode, useEffect } from "react";
 import { useLangStore } from "@/stores/languageStore";
 import { isSupportedLang, stripLangPrefix } from "@/utils/langRouting";
@@ -31,7 +30,7 @@ const Layout = ({ children }: LayoutProps) => {
     <>
       {!hideNavAndFooter && <Navbar />}
       {children ?? <Outlet />}
-      <GoftinoWidget />
+      {/* <GoftinoWidget /> */}
       {!hideNavAndFooter && <Footer />}
       <ScrollRestoration />
     </>
