@@ -1,10 +1,10 @@
-import { motion } from "framer-motion";
-import { useNavigate, Link } from "react-router-dom";
-import { Navigation, Pagination } from "swiper/modules";
-import "swiper/swiper.css";
-import { SwiperSlide, Swiper } from "swiper/react";
-import { Category } from "@/types";
-import { useInView } from "@/hooks/useInView";
+import { useInView } from '@/hooks/useInView';
+import { Category } from '@/types';
+import { motion } from 'framer-motion';
+import { Link, useNavigate } from 'react-router-dom';
+import { Navigation, Pagination } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/swiper.css';
 
 interface Props {
   categories: Category[];
@@ -12,7 +12,7 @@ interface Props {
 
 const CategoriesSlider = ({ categories }: Props) => {
   const navigate = useNavigate();
-  const {ref, isVisible} = useInView<HTMLDivElement>()
+  const { ref, isVisible } = useInView<HTMLDivElement>();
 
   return (
     <motion.section
@@ -20,20 +20,20 @@ const CategoriesSlider = ({ categories }: Props) => {
       ref={ref}
       initial={{ opacity: 0, y: 10 }}
       animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
     >
       <div className="bg-color-for-layer-on-body rounded-3xl p-6">
         <motion.div
-          className="flex w-full flex-wrap items-center justify-between lg:w-full xl:w-full 2xl:w-full"
+          className="flex w-full flex-wrap items-center justify-between"
           initial={{ opacity: 0, y: -20 }}
           animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
           transition={{
             duration: 0.5,
-            ease: "easeOut",
+            ease: 'easeOut',
             delay: 0.2,
           }}
         >
-          <div className="flex w-full items-center  lg:w-6/12">
+          <div className="flex w-full items-center lg:w-6/12">
             <span className="first-text-color-svg inline-block rounded-lg p-3">
               <svg
                 className="h-6 w-6 lg:h-16 lg:w-16"
@@ -51,18 +51,19 @@ const CategoriesSlider = ({ categories }: Props) => {
               </svg>
             </span>
             <div>
-              <h2 className="font-s-sbold first-text-color text-2xl">
+              <h2 className="font-s-sbold first-text-color text-xl sm:text-2xl">
                 <span className="text-first me-3 inline-block">دسته</span>
                 محصولات
               </h2>
-              <p className="first-text-color-for-paragraph mt-2 text-base text-nowrap">
+              <p className="first-text-color-for-paragraph mt-2 text-sm sm:text-base">
                 دسته بندی محصولات جهت دسترسی آسان
               </p>
             </div>
           </div>
-          <div className="mt-4 flex w-full lg:mt-0 lg:w-6/12 lg:flex-row-reverse">
+
+          <div className="mt-3 flex w-full lg:mt-0 lg:w-6/12 lg:flex-row-reverse">
             <Link
-              className="button-with-icon-on-white-layout   text-sm flex items-center h-14 px-4 rounded-2xl gap-2"
+              className="button-with-icon-on-white-layout text-sm flex items-center h-12 sm:h-14 px-4 rounded-2xl gap-2 w-fit"
               to="/categories"
             >
               <span className="button-with-icon-on-white-layout__svg h-8 flex justify-center items-center rounded-full w-8">
@@ -88,6 +89,7 @@ const CategoriesSlider = ({ categories }: Props) => {
             </Link>
           </div>
         </motion.div>
+
         <div className="relative mt-4">
           {categories?.length > 0 ? (
             <Swiper
@@ -97,8 +99,8 @@ const CategoriesSlider = ({ categories }: Props) => {
               loop={true}
               modules={[Navigation, Pagination]}
               navigation={{
-                nextEl: ".swiper-button-next",
-                prevEl: ".swiper-button-prev",
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
               }}
               pagination={{
                 clickable: true,
@@ -106,10 +108,10 @@ const CategoriesSlider = ({ categories }: Props) => {
                   if (index < 4) {
                     return `<span class="${className}"></span>`;
                   }
-                  return "";
+                  return '';
                 },
               }}
-              initialSlide={Math.floor(categories.length / 1)} // اسلاید وسطی
+              initialSlide={Math.floor(categories.length / 1)}
               breakpoints={{
                 640: { slidesPerView: 1 },
                 1024: { slidesPerView: 4 },
@@ -122,26 +124,24 @@ const CategoriesSlider = ({ categories }: Props) => {
                 <SwiperSlide key={category.id}>
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
-                    animate={
-                      isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
-                    }
+                    animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                     transition={{
                       duration: 0.4,
                       delay: index * 0.1,
                     }}
                   >
                     <div
-                      className=" my-4 flex h-72 cursor-pointer flex-col items-center justify-center rounded-2xl p-4"
+                      className="my-4 flex h-72 cursor-pointer flex-col items-center justify-center rounded-2xl p-4"
                       onClick={() =>
                         navigate(`products?categoryIds=${category.id}`, {
                           state: { name: category.name },
                         })
                       }
                     >
-                      <div className="flex  h-50 w-50 relative ">
+                      <div className="flex h-50 w-50 relative">
                         {category.image && (
                           <img
-                            src={`${category.image}`}
+                            src={category.image}
                             className="h-full w-full z-1 object-cover"
                             alt={category.name}
                           />
@@ -149,14 +149,12 @@ const CategoriesSlider = ({ categories }: Props) => {
                         <span className="bg-color-for-layer-three absolute h-6 inset-0 rounded-full top-40"></span>
                       </div>
                       <div className="flex flex-col items-center justify-center">
-                        <h3 className="font-s-bold  text-nowrap first-text-color  text-base 2xl:text-lg">
+                        <h3 className="font-s-bold first-text-color text-base text-center line-clamp-2 2xl:text-lg">
                           {category.name}
                         </h3>
-                        <p className=" first-text-color-for-paragraph mt-1 flex items-center justify-center rounded-sm  text-sm">
+                        <p className="first-text-color-for-paragraph mt-1 flex items-center justify-center rounded-sm text-sm">
                           <span className="inline-block text-center text-sm">
-                            <span className="me-1 inline-block">
-                              {category.productCount}
-                            </span>
+                            <span className="me-1 inline-block">{category.productCount}</span>
                             کالا
                           </span>
                         </p>

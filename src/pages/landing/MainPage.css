@@ -26,82 +26,83 @@
 
 .all-categories .swiper-button-prev,
 .all-categories .swiper-button-next {
-    width: 32px;
-    height: 32px;
-    border: 1px solid var(--color-secound);
-    border-radius: 4px;
-    transition: background-color 0.3s ease, color 0.3s ease;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--color-secound);
+  border-radius: 4px;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 .all-categories .swiper-button-next {
-    border-left: 0;
+  border-left: 0;
 }
 .all-categories .swiper-button-prev {
-    top: -40px;
-    left: 0;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
+  top: -40px;
+  left: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 .all-categories .swiper-button-next {
-    top: -40px;
-    left: 2rem;
-    right: auto;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
+  top: -40px;
+  left: 2rem;
+  right: auto;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
 
 .all-categories .swiper-button-prev:after,
 .all-categories .swiper-button-next:after {
-    font-size: 14px !important;
-    color: var(--color-secound);
-    transition: color 0.3s ease;
+  font-size: 14px !important;
+  color: var(--color-secound);
+  transition: color 0.3s ease;
 }
 
 .all-categories .swiper-button-prev:hover {
-    background-color: var(--color-secound);
+  background-color: var(--color-secound);
 }
 
 .all-categories .swiper-button-prev:hover:after {
-    color: var(--color-white);
+  color: var(--color-white);
 }
 
 .all-categories .swiper-button-next:hover {
-    background-color: var(--color-secound);
+  background-color: var(--color-secound);
 }
 
 .all-categories .swiper-button-next:hover:after {
-    color: var(--color-white);
+  color: var(--color-white);
 }
 
 /* Media Query */
 @media (min-width: 64rem) {
-    .all-categories .swiper-button-prev {
-        top: -70px;
-        width: 40px;
-        height: 30px;
-        border-radius: 12px;
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
-    }
-    .all-categories .swiper-button-next {
-        top: -70px;
-        left: 40px;
-        width: 40px;
-        height: 30px;
-        border-radius: 12px;
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
-    }
+  .all-categories .swiper-button-prev {
+    top: -70px;
+    width: 40px;
+    height: 30px;
+    border-radius: 12px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  .all-categories .swiper-button-next {
+    top: -70px;
+    left: 40px;
+    width: 40px;
+    height: 30px;
+    border-radius: 12px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
 }
 .all-categories .swiper-pagination {
   display: flex;
   justify-content: center; /* مرکز کردن نقطه‌ها */
-  bottom: 0 !important; 
-
+  bottom: 0 !important;
 }
 
 .all-categories .swiper-pagination-bullet {
-  background-color:#ebf2fa;
+  background-color: #ebf2fa;
   width: 8px;
   opacity: 0.7;
   height: 8px;
