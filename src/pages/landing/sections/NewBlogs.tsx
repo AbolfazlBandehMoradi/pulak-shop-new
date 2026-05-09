@@ -154,7 +154,7 @@ const NewBlogs = ({ blogs }: Props) => {
         </div>
         <div className="lg:w-17/48 xl:w-26/48 w-full flex flex-col justify-between mt-3 lg:mt-0">
           {blogs?.length! > 0 &&
-            blogs?.slice(0, blogs.length - 1).map((blog) => (
+            blogs?.map((blog) => (
               <Link
                 key={blog.id}
                 to={`/blogs/${blog?.title}`}
