@@ -127,7 +127,11 @@ export const Navbar: React.FC = () => {
                 <img className="w-full h-auto" src={MainLogo} alt="logo" />
               </Link>
 
-              <form className="flex w-full nav-search-form" name="search" onSubmit={handleSearchSubmit}>
+              <form
+                className="flex w-full nav-search-form"
+                name="search"
+                onSubmit={handleSearchSubmit}
+              >
                 <input
                   ref={searchRef}
                   name="search"
@@ -142,7 +146,11 @@ export const Navbar: React.FC = () => {
                     }
                   }}
                 />
-                <button type="submit" className="nav-search-submit group" aria-label={searchPlaceholder}>
+                <button
+                  type="submit"
+                  className="nav-search-submit group"
+                  aria-label={searchPlaceholder}
+                >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <path
                       d="M20 20L15.8033 15.8033M18 10.5C18 6.35786 14.6421 3 10.5 3C6.35786 3 3 6.35786 3 10.5C3 14.6421 6.35786 18 10.5 18C14.6421 18 18 14.6421 18 10.5Z"
@@ -160,7 +168,8 @@ export const Navbar: React.FC = () => {
               {!isAuthenticated ? (
                 <Link
                   to={localizedPath('/auth')}
-                  className="font-s-sbold first-text-color flex h-12 items-center justify-center gap-2 rounded-2xl bg-color-for-layer-on-body px-4"
+                  className={`font-s-sbold first-text-color flex h-12
+                   items-center justify-center gap-2 rounded-2xl bg-color-for-layer-on-body px-4`}
                 >
                   <span>{navLabels.signIn}</span>
                 </Link>
@@ -273,7 +282,9 @@ export const Navbar: React.FC = () => {
                           <li key={category.id}>
                             <button
                               className={`mb-2 flex w-full items-center rounded-lg px-3 py-2 text-sm text-start ${
-                                activeTab === index ? 'bg-color-for-layer-on-body font-f-sbold' : 'font-f-light'
+                                activeTab === index
+                                  ? 'bg-color-for-layer-on-body font-f-sbold'
+                                  : 'font-f-light'
                               }`}
                               onMouseEnter={() => setActiveTab(index)}
                               onFocus={() => setActiveTab(index)}
@@ -409,7 +420,11 @@ export const Navbar: React.FC = () => {
                 </div>
               </div>
 
-              <form className="flex w-full nav-search-form" name="mobile-search" onSubmit={handleSearchSubmit}>
+              <form
+                className="flex w-full nav-search-form"
+                name="mobile-search"
+                onSubmit={handleSearchSubmit}
+              >
                 <input
                   ref={searchRef}
                   name="search"
@@ -424,7 +439,11 @@ export const Navbar: React.FC = () => {
                     }
                   }}
                 />
-                <button type="submit" className="nav-search-submit group" aria-label={searchPlaceholder}>
+                <button
+                  type="submit"
+                  className="nav-search-submit group"
+                  aria-label={searchPlaceholder}
+                >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <path
                       d="M20 20L15.8033 15.8033M18 10.5C18 6.35786 14.6421 3 10.5 3C6.35786 3 3 6.35786 3 10.5C3 14.6421 6.35786 18 10.5 18C14.6421 18 18 14.6421 18 10.5Z"
@@ -439,7 +458,10 @@ export const Navbar: React.FC = () => {
             </div>
 
             {isDrawerOpen && (
-              <div className="fixed inset-0 z-50 bg-black/45 backdrop-blur-[1px]" onClick={closeDrawer} />
+              <div
+                className="fixed inset-0 z-50 bg-black/45 backdrop-blur-[1px]"
+                onClick={closeDrawer}
+              />
             )}
 
             <div
@@ -449,7 +471,10 @@ export const Navbar: React.FC = () => {
               } ${isDrawerOpen ? 'translate-x-0' : dir === 'rtl' ? 'translate-x-full' : '-translate-x-full'}`}
             >
               <div className="flex items-center justify-between border-b border-gray-200/50 p-4">
-                <button onClick={closeDrawer} className="rounded-xl border border-gray-300/60 p-2 first-text-color-svg">
+                <button
+                  onClick={closeDrawer}
+                  className="rounded-xl border border-gray-300/60 p-2 first-text-color-svg"
+                >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <path
                       d="M19 5L5 19M5.00003 5L19 19"
@@ -492,7 +517,9 @@ export const Navbar: React.FC = () => {
                       {categories?.map((menu) => (
                         <li key={menu.id} className="rounded-lg bg-color-for-layer-on-body p-2">
                           <button
-                            onClick={() => setOpenSubMenu((prev) => (prev === menu.id ? null : menu.id))}
+                            onClick={() =>
+                              setOpenSubMenu((prev) => (prev === menu.id ? null : menu.id))
+                            }
                             className={`flex w-full items-center justify-between text-sm first-text-color ${
                               dir === 'rtl' ? 'text-right' : 'text-left'
                             }`}

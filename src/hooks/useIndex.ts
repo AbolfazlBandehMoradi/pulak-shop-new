@@ -22,7 +22,7 @@ const useIndex = () => {
         }
       }).then(res => res.data)
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 60
   })
 }
 

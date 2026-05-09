@@ -9,6 +9,8 @@ export interface Product {
   originalPrice?: number;
   discount?: number;
   image: string;
+  saleStartDate?: string | null ,
+  saleEndDate?: string | null,
   images?: string[];
   category: string;
   categoryId: string;
