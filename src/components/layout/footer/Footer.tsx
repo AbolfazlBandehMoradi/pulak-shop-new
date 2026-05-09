@@ -6,12 +6,12 @@ export const Footer = () => {
   const sealUrl = `https://trustseal.enamad.ir/?id=${sealId}&Code=${sealCode}`;
   const imageUrl = `https://trustseal.enamad.ir/logo.aspx?id=${sealId}&Code=${sealCode}`;
   return (
-    <footer className="bg-color-for-layer-on-body">
-      <div className="sm:container  mt-8 mx-auto px-4 py-4 lg:pb-12 lg:pt-4 relative">
-        <div className="flex flex-wrap bg-color-for-layer-sec rounded-2xl p-4">
-          <div className="w-full sm:w-23/48 lg:w-12/48 mt-4 lg:mt-0  items-center gap-2 flex">
+    <footer className="footer-shell bg-color-for-layer-on-body">
+      <div className="footer-wrapper sm:container mt-8 mx-auto px-4 py-4 lg:pb-12 lg:pt-4 relative">
+        <div className="footer-highlights">
+          <div className="footer-feature-item">
             <div className="relative">
-              <span className="w-12 flex justify-center bg-color-for-layer-on-body rounded-lg items-center h-12 ">
+              <span className="footer-feature-icon">
                 <span>
                   <svg
                     width="32"
@@ -39,18 +39,18 @@ export const Footer = () => {
                 </span>
               </span>
             </div>
-            <div className="flex h-full items-start flex-col justify-around">
+            <div className="footer-feature-content">
               <h5 className="font-s-sbold text-base first-text-color">
                 ارسال رایگان کالا
               </h5>
-              <p className="text-sm first-text-color-for-paragraph">
+              <p className="text-sm first-text-color-for-paragraph leading-7">
                 به تمام نقاط کشور
               </p>
             </div>
           </div>
-          <div className="w-full sm:w-23/48 lg:w-12/48 mt-4 lg:mt-0  items-center gap-2 flex">
+          <div className="footer-feature-item">
             <div className="relative">
-              <span className="w-12 flex justify-center bg-color-for-layer-on-body rounded-lg items-center h-12 ">
+              <span className="footer-feature-icon">
                 <span>
                   <svg
                     width="32"
@@ -81,18 +81,18 @@ export const Footer = () => {
                 </span>
               </span>
             </div>
-            <div className="flex h-full items-start flex-col justify-around">
+            <div className="footer-feature-content">
               <h5 className="font-s-sbold text-base first-text-color">
                 پشتیبانی 24 ساعته
               </h5>
-              <p className="text-sm first-text-color-for-paragraph">
+              <p className="text-sm first-text-color-for-paragraph leading-7">
                 کارشناسان ما پاسخگوی شما هستند
               </p>
             </div>
           </div>
-          <div className="w-full sm:w-23/48 lg:w-12/48 mt-4 lg:mt-0  items-center gap-2 flex">
+          <div className="footer-feature-item">
             <div className="relative">
-              <span className="w-12 flex justify-center bg-color-for-layer-on-body rounded-lg items-center h-12 ">
+              <span className="footer-feature-icon">
                 <span>
                   <svg
                     width="32"
@@ -123,18 +123,18 @@ export const Footer = () => {
                 </span>
               </span>
             </div>
-            <div className="flex h-full items-start flex-col justify-around">
+            <div className="footer-feature-content">
               <h5 className="font-s-sbold text-base first-text-color">
                 تضمین کیفیت کالا
               </h5>
-              <p className="text-sm first-text-color-for-paragraph">
+              <p className="text-sm first-text-color-for-paragraph leading-7">
                 کالاهای چک شده و تایید شده
               </p>
             </div>
           </div>
-          <div className="w-full sm:w-23/48 lg:w-12/48 mt-4 lg:mt-0  items-center gap-2 flex">
+          <div className="footer-feature-item">
             <div className="relative">
-              <span className="w-12 flex justify-center bg-color-for-layer-on-body rounded-lg items-center h-12 ">
+              <span className="footer-feature-icon">
                 <span>
                   <svg
                     width="32"
@@ -162,23 +162,23 @@ export const Footer = () => {
                 </span>
               </span>
             </div>
-            <div className="flex h-full items-start flex-col justify-around">
+            <div className="footer-feature-content">
               <h5 className="font-s-sbold text-base first-text-color">
                 امکان پرداخت آنلاین
               </h5>
-              <p className="text-sm first-text-color-for-paragraph">
+              <p className="text-sm first-text-color-for-paragraph leading-7">
                 با درگاه اینترنتی کاملا امن
               </p>
             </div>
           </div>
         </div>
-        <div className="flex flex-wrap mt-8 justify-between">
-          <div className="flex flex-col w-full sm:w-24/48 lg:w-11/48  flex-wrap">
+        <div className="footer-content-grid">
+          <div className="footer-about-column">
             <h5 className="font-s-sbold text-base first-text-color">
               بهشت زیبایی پولک
             </h5>
             <ul className="mt-2">
-              <li className="text-sm first-text-color-for-paragraph">
+              <li className="text-sm first-text-color-for-paragraph leading-7">
                 میدونستی سالانه هزاران نفر بر اثر کالا های بی کیف زیبایی صورتشون
                 رو از دست میدن پس شک نکن با فرشگاه بهشت زیبایی{" "}
                میتونی از این امر جلوگیری کنی پس
@@ -186,33 +186,33 @@ export const Footer = () => {
               </li>
             </ul>
           </div>
-          <div className="flex flex-col w-full sm:w-20/48 lg:w-11/48 xl:w-8/48 mt-4 sm:mt-0 flex-wrap">
+          <div className="footer-links-column">
             <h5 className="font-s-sbold text-base first-text-color">
               پشتیبانی
             </h5>
             <ul className="mt-2">
-              <li className="flex items-center gap-1 group">
-                <span className="bg-secound w-2 h-2 rotate-45 opacity-70 rounded-xs flex group-hover:opacity-100 transition-opacity duration-300"></span>
+              <li className="footer-link-row group">
+                <span className="footer-link-dot"></span>
                 <Link
-                  className="text-sm first-text-color-for-paragraph group-hover:font-bold transition-all duration-300"
+                  className="footer-link-anchor"
                   to="/about-us"
                 >
                   درباره ما
                 </Link>
               </li>
-              <li className="flex items-center mt-1 gap-1 group">
-                <span className="bg-secound w-2 h-2 rotate-45 opacity-70 rounded-xs flex group-hover:opacity-100 transition-opacity duration-300"></span>
+              <li className="footer-link-row group">
+                <span className="footer-link-dot"></span>
                 <Link
-                  className="text-sm first-text-color-for-paragraph group-hover:font-bold transition-all duration-300"
+                  className="footer-link-anchor"
                   to="/contact-us"
                 >
                   آدرس
                 </Link>
               </li>
-              <li className="flex items-center mt-1 gap-1 group">
-                <span className="bg-secound w-2 h-2 rotate-45 opacity-70 rounded-xs flex group-hover:opacity-100 transition-opacity duration-300"></span>
+              <li className="footer-link-row group">
+                <span className="footer-link-dot"></span>
                 <Link
-                  className="text-sm first-text-color-for-paragraph group-hover:font-bold transition-all duration-300"
+                  className="footer-link-anchor"
                   to="https://www.instagram.com/galery_pulak?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
                   target="_blank"
                   rel="noopener noreferrer"
@@ -220,78 +220,79 @@ export const Footer = () => {
                   اینستاگرام
                 </Link>
               </li>
-              <li className="flex items-center mt-1 gap-1 group">
-                <span className="bg-secound w-2 h-2 rotate-45 opacity-70 rounded-xs flex group-hover:opacity-100 transition-opacity duration-300"></span>
+              <li className="footer-link-row group">
+                <span className="footer-link-dot"></span>
                 <a
                   href="tel:09392056442"
-                  className="text-sm first-text-color-for-paragraph group-hover:font-bold transition-all duration-300"
+                  className="footer-link-anchor"
                 >
                   09392056442
                 </a>
               </li>
             </ul>
           </div>
-          <div className="flex flex-col w-full sm:w-24/48 lg:w-11/48 xl:w-8/48 mt-4 lg:mt-0 flex-wrap">
+          <div className="footer-links-column">
             <h5 className="font-s-sbold text-base first-text-color">
               لینک های مفید
             </h5>
             <ul className="mt-2">
-              <li className="flex items-center gap-1 group">
-                <span className="bg-secound w-2 h-2 rotate-45 opacity-70 rounded-xs flex group-hover:opacity-100 transition-opacity duration-300"></span>
+              <li className="footer-link-row group">
+                <span className="footer-link-dot"></span>
                 <Link
-                  className="text-sm first-text-color-for-paragraph group-hover:font-bold transition-all duration-300"
+                  className="footer-link-anchor"
                   to="/faq"
                 >
                   سوالات متداول
                 </Link>
               </li>
-              <li className="flex items-center mt-1 gap-1 group">
-                <span className="bg-secound w-2 h-2 rotate-45 opacity-70 rounded-xs flex group-hover:opacity-100 transition-opacity duration-300"></span>
+              <li className="footer-link-row group">
+                <span className="footer-link-dot"></span>
                 <Link
-                  className="text-sm first-text-color-for-paragraph group-hover:font-bold transition-all duration-300"
+                  className="footer-link-anchor"
                   to="/contact-us"
                 >
                   تماس با ما
                 </Link>
               </li>
-              <li className="flex items-center mt-1 gap-1 group">
-                <span className="bg-secound w-2 h-2 rotate-45 opacity-70 rounded-xs flex group-hover:opacity-100 transition-opacity duration-300"></span>
+              <li className="footer-link-row group">
+                <span className="footer-link-dot"></span>
                 <Link
-                  className="text-sm first-text-color-for-paragraph group-hover:font-bold transition-all duration-300"
+                  className="footer-link-anchor"
                   to="/product-tracking"
                 >
                   پیگیری کالا
                 </Link>
               </li>
-              <li className="flex items-center mt-1 gap-1 group">
-                <span className="bg-secound w-2 h-2 rotate-45 opacity-70 rounded-xs flex group-hover:opacity-100 transition-opacity duration-300"></span>
+              <li className="footer-link-row group">
+                <span className="footer-link-dot"></span>
                 <Link
-                  className="text-sm first-text-color-for-paragraph group-hover:font-bold transition-all duration-300"
-                  to="/ruls"
+                  className="footer-link-anchor"
+                  to="/return-policy"
                 >
                   قوانین و مقررات
                 </Link>
               </li>
             </ul>
           </div>
-          <div className="flex flex-col w-16/48 sm:w-12/48 lg:w-8/48 2xl:w-4/48 xl:w-4/48 mt-4 lg:mt-0 flex-wrap">
+          <div className="footer-seal-column">
             <a
+              className="footer-seal-link"
               href={sealUrl}
               target="_blank"
               rel="noopener noreferrer"
               referrerPolicy="origin"
             >
               <img
+                className="footer-seal-image"
                 src={imageUrl}
                 alt="نماد اعتماد الکترونیکی"
-                style={{ cursor: "pointer" }}
                 referrerPolicy="origin"
               />
             </a>
           </div>
         </div>
       </div>
-      <p className="text-center text-sm first-text-color-for-paragraph">
+      <p className="footer-copyright text-center text-sm first-text-color-for-paragraph">
         © 2025 فروشگاه زیبایی پولک - تمام حقوق محفوظ است.
       </p>
     </footer>

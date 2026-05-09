@@ -36,7 +36,7 @@ const ChildCategoryCard: React.FC<{ category: Category }> = ({ category }) => {
             }`}
           >
             {category.productCount === 0
-              ? t('product.viewAllProducts')
+              ? "محصولی در این دسته بندی وجود ندارد"
               : `${category.productCount} ${t('product.simplePorduct')}`}
           </p>
         </div>

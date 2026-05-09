@@ -7,12 +7,12 @@ import {
   ArrowRight,
 } from "lucide-react";
 import type { Cart } from "@/utils/cartApi";
-import { Button } from "@/components/ui/Button";
 import { CartItem } from "./sections/CartItem";
 import { CartSummary } from "./sections/CartSummary";
 import useCartStore from "@/stores/cartStore";
 import { useTranslation } from "@/i18n/useTranslation";
 import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
+import { Button } from "@/components/ui/button";
 
 const Cart = () => {
   const navigate = useLocalizedNavigate();
@@ -141,7 +141,7 @@ const Cart = () => {
             </p>
             <Button
               onClick={() => navigate(`/products`)}
-              className="bg-linear-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-lg"
+              className="bg-linear-to-r from-first to-first hover:from-first-600 hover:to-first-700 text-white shadow-lg"
               size="lg"
             >
               <ShoppingBag className={`h-5 w-5 ${true ? "ml-2" : "mr-2"}`} />

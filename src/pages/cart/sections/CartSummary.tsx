@@ -1,10 +1,10 @@
 import { motion } from 'framer-motion'
-import { Button } from '@/components/ui/Button'
 import { formatPrice, toPersianNumbers } from '@/utils/numberFormat'
 import { useTranslation } from '@/i18n/useTranslation'
 import type { Cart } from '@/utils/cartApi'
 import { ShoppingBag } from 'lucide-react'
 import { useLangStore } from '@/stores/languageStore'
+import { Button } from '@/components/ui/button'
 
 interface CartSummaryProps {
   cart: Cart
