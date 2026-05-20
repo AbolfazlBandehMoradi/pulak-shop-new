@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { ShoppingCart, Star } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/Badge';
-import { formatPrice, formatPriceEn } from '@/utils/formatPrice';
 import cleanText from '@/utils/cleanText';
 import { ShowCaseItem } from '@/hooks/useShowcases';
 import { useLangStore } from '@/stores/languageStore';
+import { PriceDisplay } from '@/components/ui/PriceDisplay';
 
 interface ProductCardProps {
   showCaseItem: ShowCaseItem;
@@ -26,7 +26,6 @@ export const ShowCasesCardNumberTwo: React.FC<ProductCardProps> = ({ showCaseIte
       )}`
     : product.image;
 
-  const price = isRTL ? formatPrice(product.price) : formatPriceEn(product.price);
   return (
     <div
       className={`h-100 cursor-pointer p-4 rounded-2xl flex flex-col justify-between transition-all duration-300 border ${
@@ -107,10 +106,12 @@ export const ShowCasesCardNumberTwo: React.FC<ProductCardProps> = ({ showCaseIte
           }`}
         >
           <div className="flex flex-col">
-            <span className="text-lg font-bold">{price}</span>
+            <span className="text-lg font-bold">
+              <PriceDisplay amount={product.price} currency={isRTL ? 'IRT' : 'USD'} currencyMode="none" languageCode={i18n.language} />
+            </span>
             {product.originalPrice && (
               <span className="text-xs line-through">
-                {isRTL ? formatPrice(product.originalPrice) : formatPriceEn(product.originalPrice)}
+                <PriceDisplay amount={product.originalPrice} currency={isRTL ? 'IRT' : 'USD'} currencyMode="none" languageCode={i18n.language} />
               </span>
             )}
           </div>

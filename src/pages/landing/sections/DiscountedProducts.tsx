@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button";
 import RemainingTime from "@/components/ui/RemainingTime";
 import { Product } from "@/types";
-import { formatPrice } from "@/utils/formatPrice";
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Navigation, EffectCreative, Autoplay } from "swiper/modules";
 import { SwiperSlide, Swiper, SwiperRef } from "swiper/react";
+import { PriceDisplay } from "@/components/ui/PriceDisplay";
+import { useLangStore } from "@/stores/languageStore";
 
 interface Props {
   discountedProduct: Product[]
@@ -14,6 +15,8 @@ interface Props {
  
 const DiscountedProducts = ({discountedProduct}: Props) => {
 const mainSwiper = useRef<SwiperRef>(null);
+const lang = useLangStore((s) => s.lang);
+const currency = lang === "fa" ? "IRT" : "USD";
 
 useEffect(() => {
     const interval = setInterval(() => {
@@ -120,10 +123,10 @@ useEffect(() => {
               </div>
               <div className="flex flex-col">
                 <span className="text-gray-500 line-through">
-                  {formatPrice(product.originalPrice || 0)} 
+                  <PriceDisplay amount={product.originalPrice || 0} currency={currency} currencyMode="none" languageCode={lang} />
                 </span>
                 <span className="text-secound font-bold">
-                  {formatPrice(product.price)} 
+                  <PriceDisplay amount={product.price} currency={currency} currencyMode="none" languageCode={lang} />
                 </span>
               </div>
             </div>
@@ -167,10 +170,10 @@ useEffect(() => {
             </div>
             <div className="flex flex-col">
               <span className="text-gray-500 line-through">
-                {product.originalPrice}
+                <PriceDisplay amount={product.originalPrice} currency={currency} currencyMode="none" languageCode={lang} />
               </span>
               <span className="text-secound font-bold">
-                {product.price} 
+                <PriceDisplay amount={product.price} currency={currency} currencyMode="none" languageCode={lang} />
               </span>
             </div>
           </div>

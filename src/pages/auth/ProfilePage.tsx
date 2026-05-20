@@ -16,9 +16,9 @@ import { useAuth } from "@/context/AuthContext";
 import apiClient from "@/services/apiClient";
 import { useTranslation } from "@/i18n/useTranslation";
 import { useLangStore } from "@/stores/languageStore";
-import { formatPrice } from "@/utils/numberFormat";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PriceDisplay } from "@/components/ui/PriceDisplay";
 
 interface ProfileData {
   id?: number;
@@ -531,12 +531,12 @@ const ProfilePage = () => {
                               {translateOr("profile.total", "Total")}
                             </p>
                             <p className="font-semibold text-blue-700 dark:text-blue-300">
-                              {formatPrice(
-                                amount,
-                                order.currencySymbol,
-                                currentLanguage,
-                                currentLanguage === "fa"
-                              )}
+                              <PriceDisplay
+                                amount={amount}
+                                currency={order.currencySymbol}
+                                currencyMode="none"
+                                languageCode={currentLanguage}
+                              />
                             </p>
                           </div>
                         </div>

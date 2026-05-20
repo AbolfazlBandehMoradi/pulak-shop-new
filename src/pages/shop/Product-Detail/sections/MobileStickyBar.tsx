@@ -1,21 +1,18 @@
-import { useState, useRef, useEffect } from "react";
-import { motion } from "framer-motion";
-import { ShoppingCart, Plus, Minus, Trash2, AlertCircle } from "lucide-react";
-import { Button as IconButton } from "@/components/ui/IconButton";
-import { Button } from "@/components/ui/Button";
-import { useTranslation } from "@/i18n/useTranslation";
-import { formatPrice, toPersianNumbers } from "@/utils/numberFormat";
-import { cn } from "@/utils/cn";
-import useAddToCart from "@/hooks/cart/useAddToCart";
-import useRemoveCartItem from "@/hooks/cart/useRemoveCartItem";
-import useDebouncedCartUpdate from "@/hooks/cart/useDebouncedCartUpdate";
-import useCartStore from "@/stores/cartStore";
-import type {
-  ProductDetail,
-  ProductPrice,
-  ProductInventory,
-} from "@/utils/shopApi";
-import { useLangStore } from "@/stores/languageStore";
+import { useState, useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { ShoppingCart, Plus, Minus, Trash2, AlertCircle } from 'lucide-react';
+import { Button as IconButton } from '@/components/ui/IconButton';
+import { Button } from '@/components/ui/Button';
+import { PriceDisplay } from '@/components/ui/PriceDisplay';
+import { useTranslation } from '@/i18n/useTranslation';
+import { toPersianNumbers } from '@/utils/numberFormat';
+import { cn } from '@/utils/cn';
+import useAddToCart from '@/hooks/cart/useAddToCart';
+import useRemoveCartItem from '@/hooks/cart/useRemoveCartItem';
+import useDebouncedCartUpdate from '@/hooks/cart/useDebouncedCartUpdate';
+import useCartStore from '@/stores/cartStore';
+import type { ProductDetail, ProductPrice, ProductInventory } from '@/utils/shopApi';
+import { useLangStore } from '@/stores/languageStore';
 
 interface MobileStickyBarProps {
   product: ProductDetail | null;
@@ -42,8 +39,8 @@ export function MobileStickyBar({
 }: MobileStickyBarProps) {
   const { t } = useTranslation();
   const dir = useLangStore((s) => s.dir);
-  const isRTL = dir == "rtl";
-  const isPersian = languageCode === "fa";
+  const isRTL = dir == 'rtl';
+  const isPersian = languageCode === 'fa';
 
   const [localQuantity, setLocalQuantity] = useState(cartItem?.quantity || 1);
   const serverQuantityRef = useRef<number | null>(null);
@@ -57,13 +54,8 @@ export function MobileStickyBar({
   const isVariantMissing = hasSelectableVariants && selectedVariant === null;
   const maxAvailableQuantity = currentInventory?.allowBackorders
     ? Number.POSITIVE_INFINITY
-    : Math.max(
-        currentInventory?.availableQuantity ?? Number.POSITIVE_INFINITY,
-        0
-      );
-  const canIncreaseQuantity = cartItem
-    ? localQuantity < maxAvailableQuantity
-    : false;
+    : Math.max(currentInventory?.availableQuantity ?? Number.POSITIVE_INFINITY, 0);
+  const canIncreaseQuantity = cartItem ? localQuantity < maxAvailableQuantity : false;
 
   useEffect(() => {
     if (cartItem) {
@@ -74,10 +66,7 @@ export function MobileStickyBar({
 
   const handleQuantityUpdate = (nextQuantity: number) => {
     if (!cartItem) return;
-    const safeQuantity = Math.max(
-      1,
-      Math.min(nextQuantity, maxAvailableQuantity)
-    );
+    const safeQuantity = Math.max(1, Math.min(nextQuantity, maxAvailableQuantity));
 
     updateItemQuantityLocal(cartItem.id, safeQuantity);
     updateCartDebounced(cartItem.id, safeQuantity, () => {
@@ -112,10 +101,10 @@ export function MobileStickyBar({
 
   return (
     <motion.div
-      className="lg:hidden fixed bottom-0 left-0 right-0 bg-background dark:bg-gray-900 border-t dark:border-gray-800 shadow-lg z-40 p-4"
+      className="lg:hidden hidden bottom-0 left-0 right-0 bg-background dark:bg-gray-900 border-t dark:border-gray-800 shadow-lg z-40 p-4"
       initial={{ y: 100 }}
       animate={{ y: 0 }}
-      transition={{ type: "spring", damping: 25, stiffness: 200 }}
+      transition={{ type: 'spring', damping: 25, stiffness: 200 }}
     >
       {/* Variant Selector for Mobile */}
       {product && product.variants && activeVariants.length > 0 && (
@@ -124,7 +113,7 @@ export function MobileStickyBar({
             <Button
               key={variant.id}
               size="sm"
-              variant={selectedVariant === variant.id ? "primary" : "outline"}
+              variant={selectedVariant === variant.id ? 'primary' : 'outline'}
               onClick={() => setSelectedVariant(variant.id)}
               className="text-xs px-2 py-1"
             >
@@ -135,7 +124,7 @@ export function MobileStickyBar({
       )}
       {isVariantMissing && (
         <p className="text-xs text-orange-600 dark:text-orange-400">
-          {t("product.selectVariant") || "Select Variant"}
+          {t('product.selectVariant') || 'Select Variant'}
         </p>
       )}
 
@@ -146,11 +135,11 @@ export function MobileStickyBar({
           currentInventory.availableQuantity > 0 && (
             <div className="flex items-center gap-2 text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 p-2 rounded-lg text-sm">
               <AlertCircle className="h-4 w-4" />
-              {t("product.lowStock") || "Only"}{" "}
+              {t('product.lowStock') || 'Only'}{' '}
               {isPersian
                 ? toPersianNumbers(currentInventory.availableQuantity)
-                : currentInventory.availableQuantity}{" "}
-              {t("product.itemsLeft") || "items left"}
+                : currentInventory.availableQuantity}{' '}
+              {t('product.itemsLeft') || 'items left'}
             </div>
           )}
 
@@ -158,34 +147,19 @@ export function MobileStickyBar({
         {currentPrice && (
           <div className="flex justify-between items-center">
             {/* Price */}
-            <div className={cn("flex flex-col", isRTL && "items-end")}>
+            <div className={cn('flex flex-col', isRTL && 'items-end')}>
               {currentPrice.isOnSale && currentPrice.salePrice ? (
                 <>
                   <span className="text-sm line-through text-muted-foreground">
-                    {formatPrice(
-                      currentPrice.price,
-                      currentPrice.currencySymbol,
-                      languageCode,
-                      isPersian
-                    )}
+                    <PriceDisplay amount={currentPrice.price} languageCode={languageCode} />
                   </span>
                   <span className="text-lg font-bold text-primary">
-                    {formatPrice(
-                      currentPrice.salePrice,
-                      currentPrice.currencySymbol,
-                      languageCode,
-                      isPersian
-                    )}
+                    <PriceDisplay amount={currentPrice.salePrice} languageCode={languageCode} />
                   </span>
                 </>
               ) : (
                 <span className="text-lg font-bold">
-                  {formatPrice(
-                    currentPrice.price,
-                    currentPrice.currencySymbol,
-                    languageCode,
-                    isPersian
-                  )}
+                  <PriceDisplay amount={currentPrice.price} languageCode={languageCode} />
                 </span>
               )}
             </div>
@@ -239,10 +213,10 @@ export function MobileStickyBar({
                   })
                 }
               >
-                <ShoppingCart className={cn("h-5 w-5 mr-2")} />
+                <ShoppingCart className={cn('h-5 w-5 mr-2')} />
                 {isVariantMissing
-                  ? t("product.selectVariant") || "Select Variant"
-                  : t("product.addToCart") || "Add to Cart"}
+                  ? t('product.selectVariant') || 'Select Variant'
+                  : t('product.addToCart') || 'Add to Cart'}
               </Button>
             )}
           </div>

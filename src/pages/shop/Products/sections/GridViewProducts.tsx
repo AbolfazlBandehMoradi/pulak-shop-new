@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/Badge";
-import { formatPrice, formatPriceEn } from "@/utils/formatPrice";
 import cleanText from "@/utils/cleanText";
 import { useLocalizedPath } from "@/hooks/useLocalizedPath";
 import { cn } from "@/utils/cn";
+import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import {
   type ProductViewProps,
   getProductDiscount,
@@ -30,8 +30,6 @@ function GridProductItem({ product, lang, getImageUrl }: GridProductItemProps) {
   const inStock = isProductInStock(product);
   const rating = typeof product.rating === "number" ? product.rating : 4.5;
   const imageUrl = getImageUrl(product);
-
-  const price = isRTL ? formatPrice(currentPrice) : formatPriceEn(currentPrice);
   const outOfStockLabel = isRTL ? "\u0646\u0627\u0645\u0648\u062C\u0648\u062F" : "Out of stock";
   const viewProductLabel = isRTL ? "\u0645\u0634\u0627\u0647\u062F\u0647 \u0645\u062D\u0635\u0648\u0644" : "View Product";
 
@@ -84,10 +82,12 @@ function GridProductItem({ product, lang, getImageUrl }: GridProductItemProps) {
         <div className="flex flex-col">
           {typeof originalPrice === "number" && originalPrice > currentPrice && (
             <h4 className="text-sm line-through opacity-70 first-text-color-for-paragraph">
-              {isRTL ? formatPrice(originalPrice) : formatPriceEn(originalPrice)}
+              <PriceDisplay amount={originalPrice} currency={isRTL ? "IRT" : "USD"} currencyMode="none" languageCode={lang} />
             </h4>
           )}
-          <span className="text-base font-sm-bold first-text-color-for-paragraph">{price}</span>
+          <span className="text-base font-sm-bold first-text-color-for-paragraph">
+            <PriceDisplay amount={currentPrice} currency={isRTL ? "IRT" : "USD"} currencyMode="none" languageCode={lang} />
+          </span>
         </div>
 
         <div className="flex items-center gap-1 border-s border-first-100 ps-2">

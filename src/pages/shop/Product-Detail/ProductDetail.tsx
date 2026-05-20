@@ -1,43 +1,47 @@
-import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
-import { motion } from "framer-motion";
-import { ChevronLeft } from "lucide-react";
-import { useTranslation } from "@/i18n/useTranslation";
-import { useLangStore } from "@/stores/languageStore";
-import { cn } from "@/utils/cn";
-import { Button } from "@/components/ui/Button";
-import useCartStore from "@/stores/cartStore";
-import ProductDetailSkeleton from "./sections/ProductDetailSkeleton";
-import { ProductGallery } from "./sections/ProductGallery";
-import { ProductInfo } from "./sections/ProductInfo";
-import { ProductBuyBox } from "./sections/ProductBuyBox";
-import { ProductTabs } from "./sections/ProductTabs";
-import { ProductReviews } from "./sections/ProductReviews";
-import { RelatedProducts } from "./sections/RelatedProducts";
-import { MobileStickyBar } from "./sections/MobileStickyBar";
-import { useProductDetails } from "@/hooks/useProductDetails";
-import { ProductBreadcrumb } from "./sections/ProductBreadcrumb";
-import { AddToCartSuccessModal } from "./sections/AddToCartSuccessModal";
-import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
+import { useEffect, useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { ChevronLeft } from 'lucide-react';
+import { useTranslation } from '@/i18n/useTranslation';
+import { useLangStore } from '@/stores/languageStore';
+import { cn } from '@/utils/cn';
+import { Button } from '@/components/ui/button';
+import useCartStore from '@/stores/cartStore';
+import ProductDetailSkeleton from './sections/ProductDetailSkeleton';
+import { ProductGallery } from './sections/ProductGallery';
+import { ProductInfo } from './sections/ProductInfo';
+import { ProductBuyBox } from './sections/ProductBuyBox';
+import { ProductTabsSingle } from './sections/ProductTabsSingle';
+import { ProductReviews } from './sections/ProductReviews';
+import { RelatedProducts } from './sections/RelatedProducts';
+import { MobileStickyBar } from './sections/MobileStickyBar';
+import { useProductDetails } from '@/hooks/useProductDetails';
+import { ProductBreadcrumb } from './sections/ProductBreadcrumb';
+import { AddToCartSuccessModal } from './sections/AddToCartSuccessModal';
+import { useLocalizedNavigate } from '@/hooks/useLocalizedNavigate';
+import { AddToWishlistButton } from '@/components/ui/AddToWishlistButton';
+import { CompareButton } from '@/components/ui/CompareButton';
+import { CopyLinkButton } from '../../../components/ui/CopyLinkButton';
+import OurValue from '@/components/reusable-components/OurValue/OurValue';
 
 export default function ProductDetail() {
   const { slug } = useParams();
   const navigate = useLocalizedNavigate();
   const lang = useLangStore((state) => state.lang);
-  const isRTL = lang === "fa";
+  const isRTL = lang === 'fa';
   const { t } = useTranslation();
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
 
   const {
-  product,
-  loading,
-  error,
-  selectedVariant,
-  setSelectedVariant,
-  currentPrice,
-  currentInventory,
-  isInStock,
-} = useProductDetails(slug, lang);
+    product,
+    loading,
+    error,
+    selectedVariant,
+    setSelectedVariant,
+    currentPrice,
+    currentInventory,
+    isInStock,
+  } = useProductDetails(slug, lang);
 
   const productId = product?.id;
 
@@ -57,7 +61,7 @@ export default function ProductDetail() {
     if (singleVariantInCart === null) return;
 
     const hasActiveCartVariant = product.variants.some(
-      (variant) => variant.id === singleVariantInCart && variant.isActive
+      (variant) => variant.id === singleVariantInCart && variant.isActive,
     );
     if (hasActiveCartVariant) {
       setSelectedVariant(singleVariantInCart);
@@ -68,17 +72,31 @@ export default function ProductDetail() {
     if (!product) return null;
     return product.translation ?? product.translations?.[0];
   }, [product]);
-
+  console.log(product);
   return (
     <section className="mx-auto mt-24 px-4 sm:container lg:mt-8">
-      <div className="rounded-3xl bg-color-for-layer-on-body p-4 md:p-6">
-        <ProductBreadcrumb
-          loading={loading}
-          isRTL={isRTL}
-          product={product}
-          productName={translation?.name}
-        />
-
+      <div className="rounded-3xl bg-color-for-layer-on-body p-4 lg:p-12">
+        <div className="flex flex-wrap">
+          <div className="lg:w-72/96 w-full">
+            <ProductBreadcrumb
+              loading={loading}
+              isRTL={isRTL}
+              product={product}
+              productName={translation?.name}
+            />
+          </div>
+          <div className="w-full mt-4 lg:mt-0 justify-between lg:justify-end lg:gap-2 flex flex-wrap lg:w-24/96">
+            <div className="w-31/96 lg:w-20/96 xl:w-15/96 2xl:w-12/96">
+              <AddToWishlistButton productId={''} />
+            </div>
+            <div className="w-31/96 lg:w-20/96 xl:w-15/96 2xl:w-12/96">
+              <CompareButton productId={''} />{' '}
+            </div>
+            <div className="w-31/96 lg:w-20/96 xl:w-15/96 2xl:w-12/96">
+              <CopyLinkButton url={typeof window !== 'undefined' ? window.location.href : ''} />
+            </div>
+          </div>
+        </div>
         <div className="mt-4">
           {loading && !product ? (
             <ProductDetailSkeleton />
@@ -86,28 +104,26 @@ export default function ProductDetail() {
             <div className="flex min-h-[60vh] items-center justify-center">
               <div className="text-center">
                 <h2 className="mb-4 text-2xl font-bold first-text-color">
-                  {t("product.notFound") || "Product Not Found"}
+                  {t('product.notFound') || 'Product Not Found'}
                 </h2>
                 <Button
                   variant="ghost"
-                  onClick={() => navigate("/products")}
+                  onClick={() => navigate('/products')}
                   className={cn(
-                    "bg-red-500 text-white transition-colors hover:bg-red-600",
-                    isRTL ? "flex-row-reverse" : "flex-row"
+                    'bg-red-500 text-white transition-colors hover:bg-red-600',
+                    isRTL ? 'flex-row-reverse' : 'flex-row',
                   )}
                 >
-                  <ChevronLeft
-                    className={cn("h-4 w-4", isRTL ? "rotate-0" : "rotate-180")}
-                  />
-                  {t("common.back") || "Back"}
+                  <ChevronLeft className={cn('h-4 w-4', isRTL ? 'rotate-0' : 'rotate-180')} />
+                  {t('common.back') || 'Back'}
                 </Button>
               </div>
             </div>
           ) : (
             <>
-              <div className="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-6">
+              <div className="mb-16 grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-6">
                 <motion.section
-                  className="lg:col-span-4"
+                  className="lg:col-span-3"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: 0.1 }}
@@ -136,7 +152,7 @@ export default function ProductDetail() {
                 </motion.section>
 
                 <motion.section
-                  className="hidden lg:col-span-3 lg:block"
+                  className="hidden lg:col-span-4 lg:block"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: 0.3 }}
@@ -155,13 +171,26 @@ export default function ProductDetail() {
                   />
                 </motion.section>
               </div>
-
+              <div className="mb-16">
+                <OurValue />
+              </div>
               <motion.section
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.35 }}
               >
-                <ProductTabs product={product} />
+                <ProductTabsSingle
+                  product={product}
+                  loading={loading}
+                  selectedVariant={selectedVariant}
+                  onVariantChange={setSelectedVariant}
+                  showAnimationOnAdd={setShowSuccessAnimation}
+                  cartItem={cartItem}
+                  currentPrice={currentPrice}
+                  currentInventory={currentInventory} // <--- این خیلی مهمه
+                  isInStock={isInStock} // <--- این هم مهمه
+                  languageCode={lang}
+                />
               </motion.section>
 
               <motion.section
@@ -216,7 +245,7 @@ export default function ProductDetail() {
         onClose={() => setShowSuccessAnimation(false)}
         onViewCart={() => {
           setShowSuccessAnimation(false);
-          navigate("/cart");
+          navigate('/cart');
         }}
       />
     </section>

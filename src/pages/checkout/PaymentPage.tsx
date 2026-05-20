@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   ArrowLeft,
   CreditCard,
@@ -13,37 +13,39 @@ import {
   CheckCircle,
   ShoppingCart,
   Package,
-} from 'lucide-react'
-import { useTranslation } from '@/i18n/useTranslation'
-import { useAuth } from '@/context/AuthContext'
-import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/input'
-import { Skeleton } from '@/components/ui/skeleton'
-import { getCart, type Cart } from '@/utils/cartApi'
-import { formatPrice } from '@/utils/numberFormat'
-import { validateCoupon, type Coupon } from '@/utils/couponApi'
-import { getWalletByUserId, type Wallet as WalletType } from '@/utils/walletApi'
-import { getActivePaymentGateways, type ActivePaymentGateway } from '@/utils/paymentGatewayApi'
-import { requestZibalPayment } from '@/utils/zibalApi'
-import { requestZarinPalPayment } from '@/utils/zarinpalApi'
-import { useLangStore } from '@/stores/languageStore'
-import { useLocalizedPath } from '@/hooks/useLocalizedPath'
+  ShoppingBag,
+} from 'lucide-react';
+import { useTranslation } from '@/i18n/useTranslation';
+import { useAuth } from '@/context/AuthContext';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
+import { getCart, type Cart } from '@/utils/cartApi';
+import { PriceDisplay } from '@/components/ui/PriceDisplay';
+import { validateCoupon, type Coupon } from '@/utils/couponApi';
+import { getWalletByUserId, type Wallet as WalletType } from '@/utils/walletApi';
+import { getActivePaymentGateways, type ActivePaymentGateway } from '@/utils/paymentGatewayApi';
+import { requestZibalPayment } from '@/utils/zibalApi';
+import { requestZarinPalPayment } from '@/utils/zarinpalApi';
+import { useLangStore } from '@/stores/languageStore';
+import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import CheckoutStepper from '@/components/reusable-components/CheckoutStepper/CheckoutStepper';
 
-type PaymentMethod = 'online' | 'wallet'
+type PaymentMethod = 'online' | 'wallet';
 
 export default function PaymentPage() {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const localizedPath = useLocalizedPath()
-  const currentLanguage = useLangStore(s => s.lang)
-  const dir = useLangStore(s => s.dir)
-  const { t } = useTranslation()
-  const { isAuthenticated, user, isLoading: authLoading } = useAuth()
+  const location = useLocation();
+  const navigate = useNavigate();
+  const localizedPath = useLocalizedPath();
+  const currentLanguage = useLangStore((s) => s.lang);
+  const dir = useLangStore((s) => s.dir);
+  const { t } = useTranslation();
+  const { isAuthenticated, user, isLoading: authLoading } = useAuth();
 
   // Determine language code from global language store
-  const effectiveLangCode = currentLanguage || 'fa'
-  const isRTL = dir === 'rtl'
-  const isPersian = effectiveLangCode === 'fa'
+  const effectiveLangCode = currentLanguage || 'fa';
+  const isRTL = dir === 'rtl';
+  const isPersian = effectiveLangCode === 'fa';
 
   // Keep redirect behavior aligned with protected route pattern
   useEffect(() => {
@@ -51,168 +53,172 @@ export default function PaymentPage() {
       navigate(localizedPath('/auth'), {
         replace: true,
         state: { redirectUrl: location.pathname + location.search },
-      })
+      });
     }
-  }, [authLoading, isAuthenticated, location.pathname, location.search, localizedPath, navigate])
+  }, [authLoading, isAuthenticated, location.pathname, location.search, localizedPath, navigate]);
 
-  const [cart, setCart] = useState<Cart | null>(null)
-  const [wallet, setWallet] = useState<WalletType | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('online')
-  const [discountCode, setDiscountCode] = useState('')
-  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null)
-  const [couponDiscount, setCouponDiscount] = useState(0)
-  const [showDiscountInput, setShowDiscountInput] = useState(false)
-  const [applyingCoupon, setApplyingCoupon] = useState(false)
-  const [couponError, setCouponError] = useState<string | null>(null)
-  const [gateways, setGateways] = useState<ActivePaymentGateway[]>([])
-  const [gatewaysLoading, setGatewaysLoading] = useState(false)
-  const [selectedGatewayId, setSelectedGatewayId] = useState<number | null>(null)
-  const [paying, setPaying] = useState(false)
+  const [cart, setCart] = useState<Cart | null>(null);
+  const [wallet, setWallet] = useState<WalletType | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('online');
+  const [discountCode, setDiscountCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [showDiscountInput, setShowDiscountInput] = useState(false);
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [gateways, setGateways] = useState<ActivePaymentGateway[]>([]);
+  const [gatewaysLoading, setGatewaysLoading] = useState(false);
+  const [selectedGatewayId, setSelectedGatewayId] = useState<number | null>(null);
+  const [paying, setPaying] = useState(false);
 
   // Load cart and wallet
   useEffect(() => {
     const loadData = async () => {
       try {
-        setLoading(true)
-        
+        setLoading(true);
+
         // Load cart
-        const cartData = await getCart(effectiveLangCode)
-        setCart(cartData)
+        const cartData = await getCart(effectiveLangCode);
+        setCart(cartData);
 
         // Load wallet if user is authenticated
         if (isAuthenticated && user?.id) {
           try {
-            const walletData = await getWalletByUserId(user.id)
-            setWallet(walletData)
+            const walletData = await getWalletByUserId(user.id);
+            setWallet(walletData);
           } catch (err) {
-            console.error('Failed to load wallet:', err)
+            console.error('Failed to load wallet:', err);
             // Wallet might not exist, which is okay
           }
         }
       } catch (err) {
-        console.error('Failed to load data:', err)
-        setError(err instanceof Error ? err.message : 'Failed to load data')
+        console.error('Failed to load data:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load data');
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
     if (!authLoading) {
-      loadData()
+      loadData();
     }
-  }, [effectiveLangCode, isAuthenticated, user, authLoading])
+  }, [effectiveLangCode, isAuthenticated, user, authLoading]);
 
   useEffect(() => {
-    if (paymentMethod !== 'online') return
+    if (paymentMethod !== 'online') return;
     const loadGateways = async () => {
-      setGatewaysLoading(true)
+      setGatewaysLoading(true);
       try {
-        const list = await getActivePaymentGateways()
-        setGateways(list)
+        const list = await getActivePaymentGateways();
+        setGateways(list);
       } catch (err) {
-        console.error('Failed to load gateways:', err)
+        console.error('Failed to load gateways:', err);
       } finally {
-        setGatewaysLoading(false)
+        setGatewaysLoading(false);
       }
-    }
-    loadGateways()
-  }, [paymentMethod])
+    };
+    loadGateways();
+  }, [paymentMethod]);
 
   useEffect(() => {
     if (paymentMethod !== 'online' || gateways.length === 0) {
-      setSelectedGatewayId(null)
+      setSelectedGatewayId(null);
     } else if (!selectedGatewayId && gateways.length > 0) {
-      setSelectedGatewayId(gateways[0].id)
+      setSelectedGatewayId(gateways[0].id);
     }
-  }, [paymentMethod, gateways, selectedGatewayId])
+  }, [paymentMethod, gateways, selectedGatewayId]);
 
   const handlePay = async () => {
     if (paymentMethod === 'wallet') {
       // TODO: Wallet payment flow
-      return
+      return;
     }
     if (paymentMethod === 'online') {
-      const gatewayId = gateways.length > 0 ? selectedGatewayId : undefined
-      if (gateways.length > 0 && !selectedGatewayId) return
-      const selectedGateway = gateways.find((g) => g.id === (selectedGatewayId ?? gatewayId))
-      const isZarinPal = selectedGateway?.providerName?.toLowerCase() === 'zarinpal'
-      setPaying(true)
+      const gatewayId = gateways.length > 0 ? selectedGatewayId : undefined;
+      if (gateways.length > 0 && !selectedGatewayId) return;
+      const selectedGateway = gateways.find((g) => g.id === (selectedGatewayId ?? gatewayId));
+      const isZarinPal = selectedGateway?.providerName?.toLowerCase() === 'zarinpal';
+      setPaying(true);
       try {
         const res = isZarinPal
           ? await requestZarinPalPayment(effectiveLangCode, gatewayId ?? undefined)
-          : await requestZibalPayment(effectiveLangCode, gatewayId ?? undefined)
+          : await requestZibalPayment(effectiveLangCode, gatewayId ?? undefined);
         if (res?.redirectUrl) {
-          console.log(res)
-          window.location.href = res.redirectUrl
+          window.location.href = res.redirectUrl;
         }
       } catch (err) {
-        console.error('Payment request failed:', err)
-        setError(err instanceof Error ? err.message : 'Payment request failed')
+        console.error('Payment request failed:', err);
+        setError(err instanceof Error ? err.message : 'Payment request failed');
       } finally {
-        setPaying(false)
+        setPaying(false);
       }
     }
-  }
+  };
 
   const handleApplyCoupon = async () => {
     if (!discountCode.trim() || !cart) {
-      return
+      return;
     }
 
-    setApplyingCoupon(true)
-    setCouponError(null)
+    setApplyingCoupon(true);
+    setCouponError(null);
 
     try {
-      const result = await validateCoupon({
-        code: discountCode.trim(),
-        orderAmount: cart.subtotal,
-        currencyCode: cart.currencyCode,
-      }, effectiveLangCode)
+      const result = await validateCoupon(
+        {
+          code: discountCode.trim(),
+          orderAmount: cart.subtotal,
+          currencyCode: cart.currencyCode,
+        },
+        effectiveLangCode,
+      );
 
       if (result.isValid && result.coupon) {
-        setAppliedCoupon(result.coupon)
-        setCouponDiscount(result.discountAmount)
-        setShowDiscountInput(false)
+        setAppliedCoupon(result.coupon);
+        setCouponDiscount(result.discountAmount);
+        setShowDiscountInput(false);
       } else {
-        setCouponError(result.message || t('payment.invalidCoupon') || 'Invalid coupon code')
+        setCouponError(result.message || t('payment.invalidCoupon') || 'Invalid coupon code');
       }
     } catch (err) {
-      setCouponError(err instanceof Error ? err.message : t('payment.couponError') || 'Failed to apply coupon')
+      setCouponError(
+        err instanceof Error ? err.message : t('payment.couponError') || 'Failed to apply coupon',
+      );
     } finally {
-      setApplyingCoupon(false)
+      setApplyingCoupon(false);
     }
-  }
+  };
 
   const handleRemoveCoupon = () => {
-    setAppliedCoupon(null)
-    setCouponDiscount(0)
-    setDiscountCode('')
-    setCouponError(null)
-  }
+    setAppliedCoupon(null);
+    setCouponDiscount(0);
+    setDiscountCode('');
+    setCouponError(null);
+  };
 
   const calculateTotals = () => {
-    if (!cart) return { subtotal: 0, shipping: 0, discount: 0, total: 0 }
+    if (!cart) return { subtotal: 0, shipping: 0, discount: 0, total: 0 };
 
-    const subtotal = cart.subtotal
-    const shipping = 0 // TODO: Calculate shipping cost based on address
-    const discount = cart.totalDiscount + couponDiscount
-    const total = Math.max(0, subtotal + shipping - discount)
+    const subtotal = cart.subtotal;
+    const shipping = 0; // TODO: Calculate shipping cost based on address
+    const discount = cart.totalDiscount + couponDiscount;
+    const total = Math.max(0, subtotal + shipping - discount);
 
-    return { subtotal, shipping, discount, total }
-  }
+    return { subtotal, shipping, discount, total };
+  };
 
-  const { subtotal, shipping, discount, total } = calculateTotals()
+  const { subtotal, shipping, discount, total } = calculateTotals();
 
-  const walletBalance = wallet?.balance || 0
-  const canUseWallet = walletBalance > 0 && walletBalance >= total
+  const walletBalance = wallet?.balance || 0;
+  const canUseWallet = walletBalance > 0 && walletBalance >= total;
 
   return (
     <div className="min-h-screen flex flex-col">
       {/* Main Content */}
       <main dir={dir} className="flex-1 container mx-auto px-4 py-6">
-        {/* Page Header */}
+        <CheckoutStepper currentStep={3} />
         <div className="mb-6">
           <div className="flex items-center justify-between gap-3 mb-2">
             <div className="flex items-center gap-3">
@@ -220,9 +226,7 @@ export default function PaymentPage() {
                 <CreditCard className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold">
-                  {t('payment.title') || 'Payment'}
-                </h1>
+                <h1 className="text-3xl font-bold">{t('payment.title') || 'Payment'}</h1>
                 <p className="text-muted-foreground flex items-center gap-2 mt-1">
                   <Package className="h-4 w-4" />
                   {t('payment.selectPaymentMethod') || 'Select Payment Method'}
@@ -252,7 +256,10 @@ export default function PaymentPage() {
                 <AlertCircle className="h-12 w-12 text-red-600 dark:text-red-400" />
               </div>
               <p className="text-red-600 dark:text-red-400 text-lg font-medium">{error}</p>
-              <Button onClick={() => window.location.reload()} className="bg-red-600 hover:bg-red-700">
+              <Button
+                onClick={() => window.location.reload()}
+                className="bg-red-600 hover:bg-red-700"
+              >
                 {t('common.retry') || 'Retry'}
               </Button>
             </div>
@@ -283,12 +290,16 @@ export default function PaymentPage() {
                     onClick={() => setPaymentMethod('online')}
                   >
                     <div className="flex items-start gap-4">
-                      <div className={`mt-1 ${paymentMethod === 'online' ? 'text-blue-500' : 'text-gray-400'}`}>
-                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                          paymentMethod === 'online'
-                            ? 'border-blue-500 bg-blue-500'
-                            : 'border-gray-300 dark:border-gray-600'
-                        }`}>
+                      <div
+                        className={`mt-1 ${paymentMethod === 'online' ? 'text-blue-500' : 'text-gray-400'}`}
+                      >
+                        <div
+                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                            paymentMethod === 'online'
+                              ? 'border-blue-500 bg-blue-500'
+                              : 'border-gray-300 dark:border-gray-600'
+                          }`}
+                        >
                           {paymentMethod === 'online' && (
                             <div className="w-3 h-3 rounded-full bg-white"></div>
                           )}
@@ -296,20 +307,24 @@ export default function PaymentPage() {
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <CreditCard className={`h-5 w-5 ${paymentMethod === 'online' ? 'text-blue-500' : 'text-gray-400'}`} />
+                          <CreditCard
+                            className={`h-5 w-5 ${paymentMethod === 'online' ? 'text-blue-500' : 'text-gray-400'}`}
+                          />
                           <h3 className="font-semibold">
                             {t('payment.onlinePayment') || 'Online Payment'}
                           </h3>
                         </div>
                         <p className="text-sm text-muted-foreground mb-2">
-                          {t('payment.onlinePaymentDescription') || 'Online payment with all bank cards'}
+                          {t('payment.onlinePaymentDescription') ||
+                            'Online payment with all bank cards'}
                         </p>
                         {paymentMethod === 'online' && (
                           <>
                             <div className="flex items-start gap-2 mt-3 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
                               <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
                               <p className="text-xs text-blue-800 dark:text-blue-200">
-                                {t('payment.onlinePaymentInfo') || 'According to Central Bank regulations, the payment gateway limit is 195 million Tomans. Therefore, by paying this amount first, your order will be finalized and reserved, and the remainder can be paid in a separate transaction.'}
+                                {t('payment.onlinePaymentInfo') ||
+                                  'According to Central Bank regulations, the payment gateway limit is 195 million Tomans. Therefore, by paying this amount first, your order will be finalized and reserved, and the remainder can be paid in a separate transaction.'}
                               </p>
                             </div>
                             {gatewaysLoading ? (
@@ -325,8 +340,8 @@ export default function PaymentPage() {
                                     key={g.id}
                                     type="button"
                                     onClick={(e) => {
-                                      e.stopPropagation()
-                                      setSelectedGatewayId(g.id)
+                                      e.stopPropagation();
+                                      setSelectedGatewayId(g.id);
                                     }}
                                     className={`flex items-center gap-2 p-3 border rounded-lg transition-colors text-left ${
                                       selectedGatewayId === g.id
@@ -335,13 +350,19 @@ export default function PaymentPage() {
                                     }`}
                                   >
                                     {g.iconUrl ? (
-                                      <img src={g.iconUrl} alt="" className="h-8 w-8 object-contain flex-shrink-0" />
+                                      <img
+                                        src={g.iconUrl}
+                                        alt=""
+                                        className="h-8 w-8 object-contain flex-shrink-0"
+                                      />
                                     ) : (
                                       <div className="h-8 w-8 rounded flex items-center justify-center bg-gray-100 dark:bg-gray-700 flex-shrink-0">
                                         <CreditCard className="h-5 w-5 text-gray-500 dark:text-gray-400" />
                                       </div>
                                     )}
-                                    <span className="text-sm font-medium truncate">{g.displayName}</span>
+                                    <span className="text-sm font-medium truncate">
+                                      {g.displayName}
+                                    </span>
                                   </button>
                                 ))}
                               </div>
@@ -362,12 +383,16 @@ export default function PaymentPage() {
                     onClick={() => canUseWallet && setPaymentMethod('wallet')}
                   >
                     <div className="flex items-start gap-4">
-                      <div className={`mt-1 ${paymentMethod === 'wallet' ? 'text-blue-500' : 'text-gray-400'}`}>
-                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                          paymentMethod === 'wallet'
-                            ? 'border-blue-500 bg-blue-500'
-                            : 'border-gray-300 dark:border-gray-600'
-                        }`}>
+                      <div
+                        className={`mt-1 ${paymentMethod === 'wallet' ? 'text-blue-500' : 'text-gray-400'}`}
+                      >
+                        <div
+                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                            paymentMethod === 'wallet'
+                              ? 'border-blue-500 bg-blue-500'
+                              : 'border-gray-300 dark:border-gray-600'
+                          }`}
+                        >
                           {paymentMethod === 'wallet' && (
                             <div className="w-3 h-3 rounded-full bg-white"></div>
                           )}
@@ -375,19 +400,21 @@ export default function PaymentPage() {
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <Wallet className={`h-5 w-5 ${paymentMethod === 'wallet' ? 'text-blue-500' : 'text-gray-400'}`} />
-                          <h3 className="font-semibold">
-                            {t('payment.wallet') || 'Wallet'}
-                          </h3>
+                          <Wallet
+                            className={`h-5 w-5 ${paymentMethod === 'wallet' ? 'text-blue-500' : 'text-gray-400'}`}
+                          />
+                          <h3 className="font-semibold">{t('payment.wallet') || 'Wallet'}</h3>
                         </div>
                         <p className="text-sm text-muted-foreground mb-2">
-                          {t('payment.walletBalance') || 'Balance'} {formatPrice(walletBalance, cart?.currencySymbol, effectiveLangCode, isPersian)}
+                          {t('payment.walletBalance') || 'Balance'}{' '}
+                          <PriceDisplay amount={walletBalance} languageCode={effectiveLangCode} />
                         </p>
                         {!canUseWallet && walletBalance < total && (
                           <div className="flex items-start gap-2 mt-3 p-3 bg-red-50 dark:bg-red-900/30 rounded-lg border border-red-200 dark:border-red-800">
                             <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
                             <p className="text-xs text-red-800 dark:text-red-200">
-                              {t('payment.insufficientWalletBalance') || 'Your wallet balance is not sufficient for this order. You can increase your wallet balance up to 200 million Tomans daily, but your order amount is more than this.'}
+                              {t('payment.insufficientWalletBalance') ||
+                                'Your wallet balance is not sufficient for this order. You can increase your wallet balance up to 200 million Tomans daily, but your order amount is more than this.'}
                             </p>
                           </div>
                         )}
@@ -437,7 +464,8 @@ export default function PaymentPage() {
                           {appliedCoupon.code}
                         </span>
                         <span className="text-sm text-green-600 dark:text-green-400">
-                          -{formatPrice(couponDiscount, cart?.currencySymbol, effectiveLangCode, isPersian)}
+                          -
+                          <PriceDisplay amount={couponDiscount} languageCode={effectiveLangCode} />
                         </span>
                       </div>
                       <Button
@@ -453,7 +481,8 @@ export default function PaymentPage() {
                 ) : (
                   <>
                     <p className="text-sm text-muted-foreground mb-4">
-                      {t('payment.discountCodeDescription') || 'You can select from saved codes if available, or enter a code yourself.'}
+                      {t('payment.discountCodeDescription') ||
+                        'You can select from saved codes if available, or enter a code yourself.'}
                     </p>
                     {showDiscountInput && (
                       <div className="space-y-3">
@@ -465,7 +494,7 @@ export default function PaymentPage() {
                             className="flex-1"
                             onKeyDown={(e) => {
                               if (e.key === 'Enter') {
-                                handleApplyCoupon()
+                                handleApplyCoupon();
                               }
                             }}
                           />
@@ -474,7 +503,9 @@ export default function PaymentPage() {
                             disabled={applyingCoupon || !discountCode.trim()}
                             className="bg-green-600 hover:bg-green-700"
                           >
-                            {applyingCoupon ? t('common.loading') || 'Loading...' : t('payment.apply') || 'Apply'}
+                            {applyingCoupon
+                              ? t('common.loading') || 'Loading...'
+                              : t('payment.apply') || 'Apply'}
                           </Button>
                         </div>
                         {couponError && (
@@ -549,11 +580,13 @@ export default function PaymentPage() {
                       </div>
 
                       {/* Price of Items */}
-                      <div className={`flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg ${isRTL ? 'flex-row-reverse' : ''}`}>
+                      <div
+                        className={`flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg ${isRTL ? 'flex-row-reverse' : ''}`}
+                      >
                         {isPersian ? (
                           <>
                             <span className="font-semibold">
-                              {formatPrice(subtotal, cart.currencySymbol, effectiveLangCode, isPersian)}
+                              <PriceDisplay amount={subtotal} languageCode={effectiveLangCode} />
                             </span>
                             <span className="text-muted-foreground flex items-center gap-2">
                               <ShoppingCart className="h-4 w-4" />
@@ -567,7 +600,7 @@ export default function PaymentPage() {
                               {t('payment.priceOfItems') || 'Price of items'} ({cart.itemCount})
                             </span>
                             <span className="font-semibold">
-                              {formatPrice(subtotal, cart.currencySymbol, effectiveLangCode, isPersian)}
+                              <PriceDisplay amount={subtotal} languageCode={effectiveLangCode} />
                             </span>
                           </>
                         )}
@@ -575,11 +608,13 @@ export default function PaymentPage() {
 
                       {/* Shipping Cost */}
                       {shipping > 0 && (
-                        <div className={`flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg ${isRTL ? 'flex-row-reverse' : ''}`}>
+                        <div
+                          className={`flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg ${isRTL ? 'flex-row-reverse' : ''}`}
+                        >
                           {isPersian ? (
                             <>
                               <span className="font-semibold">
-                                {formatPrice(shipping, cart.currencySymbol, effectiveLangCode, isPersian)}
+                                <PriceDisplay amount={shipping} languageCode={effectiveLangCode} />
                               </span>
                               <span className="text-muted-foreground">
                                 {t('payment.shippingCost') || 'Shipping cost'}
@@ -591,7 +626,7 @@ export default function PaymentPage() {
                                 {t('payment.shippingCost') || 'Shipping cost'}
                               </span>
                               <span className="font-semibold">
-                                {formatPrice(shipping, cart.currencySymbol, effectiveLangCode, isPersian)}
+                                <PriceDisplay amount={shipping} languageCode={effectiveLangCode} />
                               </span>
                             </>
                           )}
@@ -600,11 +635,14 @@ export default function PaymentPage() {
 
                       {/* Discount */}
                       {discount > 0 && (
-                        <div className={`flex justify-between items-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                        <div
+                          className={`flex justify-between items-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 ${isRTL ? 'flex-row-reverse' : ''}`}
+                        >
                           {isPersian ? (
                             <>
                               <span className="font-semibold text-green-600 dark:text-green-400">
-                                -{formatPrice(discount, cart.currencySymbol, effectiveLangCode, isPersian)}
+                                -
+                                <PriceDisplay amount={discount} languageCode={effectiveLangCode} />
                               </span>
                               <span className="text-green-700 dark:text-green-300 flex items-center gap-2">
                                 <Tag className="h-4 w-4" />
@@ -618,7 +656,8 @@ export default function PaymentPage() {
                                 {t('payment.discount') || 'Discount'}
                               </span>
                               <span className="font-semibold text-green-600 dark:text-green-400">
-                                -{formatPrice(discount, cart.currencySymbol, effectiveLangCode, isPersian)}
+                                -
+                                <PriceDisplay amount={discount} languageCode={effectiveLangCode} />
                               </span>
                             </>
                           )}
@@ -626,11 +665,13 @@ export default function PaymentPage() {
                       )}
 
                       {/* Total Payable */}
-                      <div className={`flex justify-between items-center pt-4 border-t-2 border-gray-200 dark:border-gray-700 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                      <div
+                        className={`flex justify-between items-center pt-4 border-t-2 border-gray-200 dark:border-gray-700 ${isRTL ? 'flex-row-reverse' : ''}`}
+                      >
                         {isPersian ? (
                           <>
                             <span className="font-bold text-lg text-red-600 dark:text-red-400">
-                              {formatPrice(total, cart.currencySymbol, effectiveLangCode, isPersian)}
+                              <PriceDisplay amount={total} languageCode={effectiveLangCode} />
                             </span>
                             <span className="text-foreground font-bold flex items-center gap-2">
                               <CheckCircle className="h-5 w-5 text-red-500" />
@@ -644,7 +685,7 @@ export default function PaymentPage() {
                               {t('payment.amountPayable') || 'Amount payable'}
                             </span>
                             <span className="font-bold text-lg text-red-600 dark:text-red-400">
-                              {formatPrice(total, cart.currencySymbol, effectiveLangCode, isPersian)}
+                              <PriceDisplay amount={total} languageCode={effectiveLangCode} />
                             </span>
                           </>
                         )}
@@ -655,11 +696,15 @@ export default function PaymentPage() {
                   <div className="pt-4 border-t dark:border-gray-700">
                     <Button
                       onClick={handlePay}
-                      disabled={total <= 0 || (paymentMethod === 'online' && gateways.length > 0 && !selectedGatewayId) || paying}
+                      disabled={
+                        total <= 0 ||
+                        (paymentMethod === 'online' && gateways.length > 0 && !selectedGatewayId) ||
+                        paying
+                      }
                       className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg transition-all duration-200"
                       size="lg"
                     >
-                      {paying ? (t('common.loading') || 'Loading...') : (t('payment.pay') || 'Pay')}
+                      {paying ? t('common.loading') || 'Loading...' : t('payment.pay') || 'Pay'}
                     </Button>
                   </div>
                 </div>
@@ -669,8 +714,5 @@ export default function PaymentPage() {
         )}
       </main>
     </div>
-  )
+  );
 }
-
-
-

@@ -1,11 +1,26 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MessageCircle, Star, Clock, Tag, Zap, Droplet, Snowflake, Box, Info } from 'lucide-react';
+import {
+  MessageCircle,
+  Star,
+  Clock,
+  Tag,
+  Zap,
+  Droplet,
+  Snowflake,
+  Box,
+  Info,
+  Truck,
+  Shield,
+  Send,
+} from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/utils/cn';
 import { useTranslation } from '@/i18n/useTranslation';
 import type { ProductDetail, ProductAttributeValue } from '@/utils/shopApi';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import cleanText from '@/utils/cleanText';
+import { ShareSocialMedia } from '@/components/reusable-components/ShareSocialMedia/ShareSocialMedia';
 
 interface ProductInfoProps {
   product: ProductDetail | null;
@@ -24,29 +39,11 @@ const attributeIcons: Record<string, React.ComponentType<{ className?: string }>
 };
 
 // Helper function to strip HTML tags and convert to plain text
-const stripHtml = (html: string): string => {
-  if (!html) return '';
-  // Check if we're in a browser environment
-  if (typeof document === 'undefined') {
-    // Fallback for SSR: use regex to strip tags
-    return html
-      .replace(/<[^>]*>/g, '')
-      .replace(/&nbsp;/g, ' ')
-      .trim();
-  }
-  // Create a temporary DOM element to parse HTML
-  const tmp = document.createElement('div');
-  tmp.innerHTML = html;
-  // Get text content and clean up extra whitespace
-  return (tmp.textContent || tmp.innerText || '').trim();
-};
 
 export function ProductInfo({ product, loading, languageCode }: ProductInfoProps) {
   const { t } = useTranslation();
   const localizedPath = useLocalizedPath();
-
   const translation = product?.translation || product?.translations?.[0];
-
   // Get icon for attribute
   const getAttributeIcon = (attr: ProductAttributeValue) => {
     const code = attr.attributeCode?.toLowerCase() || '';
@@ -56,7 +53,6 @@ export function ProductInfo({ product, loading, languageCode }: ProductInfoProps
     if (code.includes('frost')) return attributeIcons.frost;
     return attributeIcons.default;
   };
-
   if (loading || !product) {
     return (
       <div className="space-y-6">
@@ -66,149 +62,105 @@ export function ProductInfo({ product, loading, languageCode }: ProductInfoProps
       </div>
     );
   }
-
   return (
     <div>
+      {product?.categories?.length ? (
+        <div className="flex flex-wrap font-s-light text-secound">
+          <span className="text-sm">{product.categories[product.categories.length - 1]?.name}</span>
+        </div>
+      ) : null}
       <motion.h1
-        className="text-2xl font-s-sbold first-text-color"
+        className="text-xl font-s-bold first-text-color"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
         {translation?.name}
       </motion.h1>
-      {translation?.shortDescription && (
-        <motion.div
-          className=""
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <p className="text-sm first-text-color-for-paragraph mt-2">
-            {stripHtml(translation.shortDescription)}
-          </p>
-        </motion.div>
-      )}
-      <div className="flex items-center gap-3 flex-wrap">
-        {product.reviewCount !== undefined && (
-          <div className="flex items-center gap-2 text-sm">
-            <MessageCircle className="h-4 w-4 text-muted-foreground" />
-            <span className="text-muted-foreground">
-              {product.reviewCount} {t('product.reviews') || 'reviews'}
-            </span>
-          </div>
+      <div className="">
+        {translation?.description && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <p className="w-full text-sm first-text-color-for-paragraph leading-7 mt-2  ">
+              {cleanText(translation.shortDescription)}
+            </p>
+          </motion.div>
         )}
-
-        {product.averageRating !== undefined && (
-          <div className="flex items-center gap-2">
-            <div className="flex items-center">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className={cn(
-                    'h-4 w-4',
-                    i < Math.round(product.averageRating!)
-                      ? 'fill-yellow-400 text-yellow-400 dark:fill-yellow-500 dark:text-yellow-500'
-                      : 'text-gray-300 dark:text-gray-600',
-                  )}
-                />
-              ))}
-            </div>
-            <span className="text-sm font-medium">{product.averageRating.toFixed(1)} / 5</span>
-          </div>
-        )}
-
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Clock className="h-4 w-4" />
-          <span>
-            {(() => {
-              try {
-                return new Date(product.updatedAt).toLocaleDateString(
-                  languageCode === 'fa' ? 'fa-IR' : 'en-US',
-                  {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  },
-                );
-              } catch {
-                return new Date(product.updatedAt).toLocaleDateString();
-              }
-            })()}
-          </span>
-        </div>
       </div>
-      {/* All Attributes - Displayed under title */}
       {product.attributeValues && product.attributeValues.length > 0 && (
-        <div className="pt-2 pb-3 border-t dark:border-gray-700">
-          <div className="flex flex-wrap gap-2">
-            {product.attributeValues.map((attr) => {
+        <>
+          <h2 className="w-full font-s-medium first-text-color text-lg mt-2">
+            {t('product.keyFeatures')}
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 font-s-bold gap-2 mt-2">
+            {product.attributeValues.map((attr, index) => {
               const Icon = getAttributeIcon(attr);
               const value = attr.optionLabel || attr.customValue || attr.optionValue || '-';
-
               return (
                 <motion.div
                   key={attr.id}
-                  className={cn(
-                    'inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border',
-                    'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800',
-                  )}
+                  className="flex flex-col text-sm rounded-sm gap-1 bg-color-for-layer-sec px-2 py-2"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: product.attributeValues!.indexOf(attr) * 0.03 }}
+                  transition={{ delay: index * 0.03 }}
                 >
-                  <Icon className="h-4 w-4 text-green-600 dark:text-green-400 shrink-0" />
-                  <span className="text-muted-foreground dark:text-gray-400 font-medium">
-                    {attr.attributeName}:
-                  </span>
-                  <span className="text-green-600 dark:text-green-400 font-semibold">{value}</span>
+                  {/* ATTRIBUTE NAME */}
+                  <div className="group relative flex items-center gap-1">
+                    {/* {Icon && (
+                      <Icon className="h-4 w-4 shrink-0 text-first" />
+                    )} */}
+                    <span className="first-text-color-for-paragraph w-full truncate whitespace-nowrap overflow-hidden text-xs block">
+                      {attr.attributeName}
+                    </span>
+
+                    {/* Tooltip */}
+                    <div className="absolute left-0 top-full mt-1 hidden group-hover:block z-50 bg-color-for-body-opposite  first-text-color-for-paragraph-opposite font-f-normal text-sm px-2 py-1 rounded">
+                      {attr.attributeName}
+                    </div>
+                  </div>
+                  <div className="group relative flex items-center gap-1">
+                    <span className="first-text-color w-full truncate whitespace-nowrap overflow-hidden block">
+                      {value}
+                    </span>
+                    <div className="absolute left-0 top-full mt-1 hidden group-hover:block z-50 bg-color-for-body-opposite  first-text-color-for-paragraph-opposite font-f-normal text-sm px-2 py-1 rounded ">
+                      {value}
+                    </div>
+                  </div>
                 </motion.div>
               );
             })}
           </div>
-        </div>
+        </>
       )}
-
-      {/* Brand, SKU, and Tags */}
-      <div className="pt-3 border-t dark:border-gray-700 space-y-2">
-        <div className="flex items-center gap-4 flex-wrap">
-          {/* Brand */}
-          {product.brand && (
-            <div className="flex items-center gap-2 text-sm">
-              <Tag className="h-4 w-4 text-muted-foreground" />
-              <span className="text-muted-foreground">
-                {t('product.brand') || 'Brand'}:{' '}
-                <span className="text-foreground font-medium">{product.brand.name}</span>
-              </span>
-            </div>
-          )}
-
-          {/* SKU */}
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-muted-foreground">
-              SKU: <span className="text-foreground font-medium">{product.sku}</span>
-            </span>
-          </div>
-
-          {/* Tags */}
-          {product.tags && product.tags.length > 0 && (
-            <div className="flex items-center gap-2 flex-wrap">
-              {product.tags.map((tag) => (
-                <Link
-                  key={tag.id}
-                  to={localizedPath(`/products?tag=${tag.slug}`)}
-                  className="inline-flex items-center gap-1 px-3 py-1 bg-muted dark:bg-gray-800 rounded-full text-sm hover:bg-muted/80 dark:hover:bg-gray-700 transition-colors"
-                >
-                  <Tag className="h-3 w-3" />
-                  {tag.name}
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
+      <div className=" mt-4  rounded-sm ">
+        <h2 className="w-full  font-s-medium first-text-color text-lg mb-2">
+          برای دریافت مشاوره با ما در ارتباط باشید.
+        </h2>
+        <ShareSocialMedia
+          options={['rubika', 'soroush', 'eitaa']}
+          className="grid grid-cols-3 gap-2"
+          customItems={{
+            rubika: {
+              displayMode: 'image',
+              className:
+                'flex items-center justify-center text-color-first border border-secound-200 gap-2  first-text-color px-2 py-2 rounded-md transition hover:bg-secound-200',
+            },
+            soroush: {
+              displayMode: 'image',
+              className:
+                'flex items-center justify-center text-color-first border border-secound-200 gap-2  first-text-color px-2 py-2 rounded-md transition  hover:bg-secound-200',
+            },
+            eitaa: {
+              displayMode: 'image',
+              className:
+                'flex items-center justify-center text-color-first border border-secound-200 gap-2  first-text-color px-2 py-2 rounded-md transition  hover:bg-secound-200',
+            },
+          }}
+        />
       </div>
-
-      {/* Product Description */}
     </div>
   );
 }

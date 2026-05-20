@@ -1,131 +1,207 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/utils/cn";
-import { useTranslation } from "@/i18n/useTranslation";
-import type { ProductDetail } from "@/utils/shopApi";
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/utils/cn';
+import { useTranslation } from '@/i18n/useTranslation';
+import type { ProductDetail } from '@/utils/shopApi';
+import cleanText from '@/utils/cleanText';
+import { FileText, ListChecks } from 'lucide-react';
 
 interface ProductTabsProps {
   product: ProductDetail | null;
 }
 
-type TabType = "description" | "specifications";
+type TabType = 'description' | 'specifications';
 
 export function ProductTabs({ product }: ProductTabsProps) {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<TabType>("description");
+  const [activeTab, setActiveTab] = useState<TabType>('description');
+
   const translation = product?.translation || product?.translations?.[0];
 
-  const tabs: Array<{ id: TabType; label: string }> = [
-    { id: "description", label: t("product.description") || "Description" },
+  const tabs: Array<{ id: TabType; label: string; icon: React.ReactNode }> = [
     {
-      id: "specifications",
-      label: t("product.specifications") || "Specifications",
+      id: 'description',
+      label: t('product.description') || 'Description',
+      icon: <FileText className="w-4 h-4" />,
+    },
+    {
+      id: 'specifications',
+      label: t('product.specifications') || 'Specifications',
+      icon: <ListChecks className="w-4 h-4" />,
     },
   ];
 
+  // ===== UI COMPONENTS =====
+
+  const InfoBox = ({ children }: { children: React.ReactNode }) => (
+    <div className="mt-6 rounded-2xl border border-gray-100 dark:border-gray-800 bg-white/60 dark:bg-gray-900/30 backdrop-blur-sm px-5">
+      {children}
+    </div>
+  );
+
+  const InfoRow = ({ label, value }: { label: string; value?: string | number | null }) => (
+    <div className="flex items-center justify-between py-3">
+      <span className="text-sm text-muted-foreground">{label}</span>
+      <span className="text-sm font-s-medium text-first bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-lg">
+        {value || '-'}
+      </span>
+    </div>
+  );
+
   return (
     <div className="mb-8">
-      <div className="border-b dark:border-gray-700">
-        <div className="flex gap-3 overflow-x-auto">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={cn(
-                "px-3 py-1.5 border-b-2 transition-colors whitespace-nowrap text-sm",
-                activeTab === tab.id
-                  ? "border-primary font-medium text-primary"
-                  : "border-transparent text-muted-foreground hover:text-foreground dark:hover:text-gray-200"
-              )}
-            >
-              {tab.label}
-            </button>
-          ))}
+      <div className="border-b border-gray-200 dark:border-gray-800">
+        <div className="flex gap-2 overflow-x-auto pb-2">
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.id;
+
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  'relative flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm transition-all duration-300 whitespace-nowrap border backdrop-blur-sm',
+                  isActive
+                    ? 'bg-first text-white border-first shadow-md shadow-first/20 scale-[1.02]'
+                    : 'bg-gray-100/70 dark:bg-gray-800/60 border-transparent hover:border-gray-300 dark:hover:border-gray-700 hover:bg-gray-200/80 dark:hover:bg-gray-700/70 text-muted-foreground',
+                )}
+              >
+                <span className={cn('transition-transform duration-300', isActive && 'scale-110')}>
+                  {tab.icon}
+                </span>
+                <span className={cn(isActive ? 'font-s-bold' : 'font-s-medium')}>{tab.label}</span>
+
+                {isActive && (
+                  <motion.div
+                    layoutId="activeTabGlow"
+                    className="absolute inset-0 rounded-xl border border-white/10"
+                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                  />
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 
+      {/* ===== CONTENT ===== */}
       <AnimatePresence mode="wait">
         <motion.div
           key={activeTab}
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
+          exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.2 }}
-          className="mt-4"
+          className="mt-6"
         >
-          {activeTab === "description" && (
+          {/* ================= DESCRIPTION TAB ================= */}
+          {activeTab === 'description' && (
             <div>
-              {translation?.description ? (
-                <div
-                  className="prose max-w-none prose-headings:font-semibold prose-p:text-muted-foreground"
-                  dangerouslySetInnerHTML={{ __html: translation.description }}
-                />
-              ) : (
-                <p className="text-muted-foreground">
-                  {t("product.noDescription") || "No description available."}
+              <h2 className="w-full font-s-bold first-text-color text-xl mt-2">
+                {t('product.description')}
+              </h2>
+              <p className="text leading-8 text-muted-foreground">
+                {translation?.description
+                  ? cleanText(translation.description)
+                  : t('product.noDescription') || 'No description available.'}
+              </p>
+              {product?.attributeValues?.length > 0 && (
+                <InfoBox>
+                  {product.attributeValues.map((attr) => (
+                    <InfoRow key={attr.id} label={attr.attributeName} value={attr.customValue} />
+                  ))}
+                </InfoBox>
+              )}
+
+              {/* ===== Product Info ===== */}
+              <InfoBox>
+                {product?.categories?.length > 0 && (
+                  <InfoRow
+                    label={t('product.category') || 'Category'}
+                    value={product.categories.map((c) => c.name).join(' / ')}
+                  />
+                )}
+
+                {product?.translation?.countryOfOriginDisplay && (
+                  <InfoRow
+                    label={t('product.country') || 'Country'}
+                    value={product.translation.countryOfOriginDisplay}
+                  />
+                )}
+
+                {product?.translation?.moneyBackPolicy && (
+                  <InfoRow
+                    label={t('product.return') || 'Return'}
+                    value={product.translation.moneyBackPolicy}
+                  />
+                )}
+
+                {product?.translation?.shippingLeadTime && (
+                  <InfoRow
+                    label={t('product.shippingTime') || 'Shipping'}
+                    value={product.translation.shippingLeadTime}
+                  />
+                )}
+              </InfoBox>
+
+              {/* Shipping description */}
+              {product?.translation?.shippingMethodsDescription && (
+                <p className="mt-4 text-sm text-muted-foreground leading-7">
+                  {product.translation.shippingMethodsDescription}
                 </p>
+              )}
+
+              {/* Tags */}
+              {product?.tags?.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-5">
+                  {product.tags.map((tag) => (
+                    <span
+                      key={tag.id}
+                      className="text-xs px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-muted-foreground"
+                    >
+                      {tag.name}
+                    </span>
+                  ))}
+                </div>
               )}
             </div>
           )}
 
-          {activeTab === "specifications" && (
+          {/* ================= SPECIFICATIONS TAB ================= */}
+          {activeTab === 'specifications' && (
             <div>
               {product?.specificationsJson ? (
                 (() => {
                   try {
-                    const parsedSpecifications = JSON.parse(
-                      product.specificationsJson
-                    ) as unknown;
-                    const specifications =
-                      parsedSpecifications &&
-                      typeof parsedSpecifications === "object"
-                        ? (parsedSpecifications as Record<
-                            string,
-                            string | number | boolean | null
-                          >)
-                        : {};
-                    const entries = Object.entries(specifications);
+                    const data = JSON.parse(product.specificationsJson);
+                    const entries = Object.entries(data || {});
 
-                    if (entries.length > 0) {
+                    if (!entries.length) {
                       return (
-                        <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {entries.map(([key, value], index) => (
-                            <motion.div
-                              key={key}
-                              className="border-b dark:border-gray-700 pb-2"
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: index * 0.05 }}
-                            >
-                              <dt className="font-medium text-sm text-muted-foreground dark:text-gray-400">
-                                {key}
-                              </dt>
-                              <dd className="mt-1 dark:text-gray-300">
-                                {String(value ?? "-")}
-                              </dd>
-                            </motion.div>
-                          ))}
-                        </dl>
+                        <p className="text-sm text-muted-foreground">
+                          {t('product.noSpecifications') || 'No specifications available.'}
+                        </p>
                       );
                     }
-                  } catch (error) {
-                    console.error(
-                      "Failed to parse product specifications:",
-                      error
+
+                    return (
+                      <InfoBox>
+                        {entries.map(([key, value]) => (
+                          <InfoRow key={key} label={key} value={String(value)} />
+                        ))}
+                      </InfoBox>
+                    );
+                  } catch {
+                    return (
+                      <p className="text-sm text-muted-foreground">
+                        {t('product.noSpecifications') || 'No specifications available.'}
+                      </p>
                     );
                   }
-
-                  return (
-                    <p className="text-muted-foreground">
-                      {t("product.noSpecifications") ||
-                        "No specifications available."}
-                    </p>
-                  );
                 })()
               ) : (
-                <p className="text-muted-foreground">
-                  {t("product.noSpecifications") ||
-                    "No specifications available."}
+                <p className="text-sm text-muted-foreground">
+                  {t('product.noSpecifications') || 'No specifications available.'}
                 </p>
               )}
             </div>

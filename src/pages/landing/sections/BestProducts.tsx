@@ -1,6 +1,7 @@
 import { Showcase } from "@/hooks/useShowcases";
-import { formatPrice } from "@/utils/formatPrice";
 import { Link } from "react-router-dom";
+import { PriceDisplay } from "@/components/ui/PriceDisplay";
+import { useLangStore } from "@/stores/languageStore";
 
 interface Props {
   showcase?: Showcase
@@ -8,6 +9,9 @@ interface Props {
 
 
 const BestProducts = ({showcase}: Props) => {
+  const lang = useLangStore((s) => s.lang);
+  const currency = lang === "fa" ? "IRT" : "USD";
+
   return (
      <div className="p-4 bg-color-for-layer-on-body pb-0 lg:pb-4 flex flex-col relative mt-4  lg:mb-4 lg:mt-0 rounded-2xl">
       <div className="flex-wrap items-center gap-2 flex">
@@ -74,7 +78,7 @@ const BestProducts = ({showcase}: Props) => {
                       <>
                         <span className="text-sm flex items-center">
                           <span className="h-2 leading-4 pe-1 first-text-color-for-paragraph font-f-normal text-sm">
-                            {formatPrice(item?.product.price)}
+                            <PriceDisplay amount={item?.product.price} currency={currency} currencyMode="none" languageCode={lang} />
                           </span>
                           <span className="first-text-color-svg">
                             <svg
@@ -96,13 +100,13 @@ const BestProducts = ({showcase}: Props) => {
                           </span>
                         </span>
                         <h4 className="text-sm line-through opacity-70 first-text-color-for-paragraph">
-                          {formatPrice(item?.product.originalPrice || 0)}
+                          <PriceDisplay amount={item?.product.originalPrice || 0} currency={currency} currencyMode="none" languageCode={lang} />
                         </h4>
                       </>
                     ) : (
                       <span className="text-sm flex items-center">
                         <span className="h-2 leading-4 first-text-color-for-paragraph text-xs pe-1">
-                          {formatPrice(item?.product.price)}
+                          <PriceDisplay amount={item?.product.price} currency={currency} currencyMode="none" languageCode={lang} />
                         </span>
                         <span className="first-text-color-svg">
                           <svg

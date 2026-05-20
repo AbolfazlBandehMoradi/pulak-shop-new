@@ -5,8 +5,9 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperType } from 'swiper';
 import { Showcase } from '@/hooks/useShowcases';
 import cleanText from '@/utils/cleanText';
-import { formatPrice } from '@/utils/formatPrice';
 import formatRating from '@/utils/formatRating';
+import { PriceDisplay } from '@/components/ui/PriceDisplay';
+import { useLangStore } from '@/stores/languageStore';
 
 interface Props {
   showCase?: Showcase;
@@ -17,6 +18,8 @@ const ProductSlider = ({ showCase }: Props) => {
   const nextRef = useRef<HTMLDivElement>(null);
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
+  const lang = useLangStore((s) => s.lang);
+  const currency = lang === 'fa' ? 'IRT' : 'USD';
 
   return (
     <section className="product-slider relative sm:container mx-auto mt-8 lg:mt-16 px-4 ">
@@ -251,11 +254,11 @@ const ProductSlider = ({ showCase }: Props) => {
                             {item.product.discount ? (
                               <>
                                 <h4 className="text-sm line-through opacity-70 first-text-color-for-paragraph">
-                                  {formatPrice(item.product.price)}
+                                  <PriceDisplay amount={item.product.price} currency={currency} currencyMode="none" languageCode={lang} />
                                 </h4>
                                 <span className="text-sm flex items-center">
                                   <span className="h-2 leading-4 pe-1 font-sm-bold first-text-color-for-paragraph  text-base">
-                                    {formatPrice(item.product.price * item.product.discount)}
+                                    <PriceDisplay amount={item.product.price * item.product.discount} currency={currency} currencyMode="none" languageCode={lang} />
                                   </span>
                                   <span className="first-text-color-svg">
                                     <svg
@@ -280,7 +283,7 @@ const ProductSlider = ({ showCase }: Props) => {
                             ) : (
                               <span className="text-sm flex items-center">
                                 <span className="h-2 leading-4 first-text-color-for-paragraph text-base pe-1">
-                                  {formatPrice(item.product.price)}
+                                  <PriceDisplay amount={item.product.price} currency={currency} currencyMode="none" languageCode={lang} />
                                 </span>
                                 <span className="first-text-color-svg">
                                   <svg

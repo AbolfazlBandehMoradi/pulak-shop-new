@@ -1,89 +1,80 @@
-import { useState, useRef, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { Skeleton } from '@/components/ui/skeleton'
-import { useTranslation } from '@/i18n/useTranslation'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import type { RelatedProduct } from '@/utils/shopApi'
-import { useLocalizedPath } from '@/hooks/useLocalizedPath'
+import { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useTranslation } from '@/i18n/useTranslation';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { PriceDisplay } from '@/components/ui/PriceDisplay';
+import type { RelatedProduct } from '@/utils/shopApi';
+import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 
 interface RelatedProductsProps {
-  relatedProducts: RelatedProduct[] | undefined
-  languageCode: string
-  loading?: boolean
+  relatedProducts: RelatedProduct[] | undefined;
+  languageCode: string;
+  loading?: boolean;
 }
 
-export function RelatedProducts({
-  relatedProducts,
-  languageCode,
-  loading
-}: RelatedProductsProps) {
-  const { t } = useTranslation()
-  const localizedPath = useLocalizedPath()
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
-  const [canScrollLeft, setCanScrollLeft] = useState(false)
-  const [canScrollRight, setCanScrollRight] = useState(true)
+export function RelatedProducts({ relatedProducts, languageCode, loading }: RelatedProductsProps) {
+  const { t } = useTranslation();
+  const localizedPath = useLocalizedPath();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
 
   const getImageUrl = (filePath?: string) => {
-    if (!filePath) return null
-    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5299'
+    if (!filePath) return null;
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5299';
     if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
-      return filePath
+      return filePath;
     }
-    return `${apiBaseUrl}${filePath}`
-  }
-
-  const formatPrice = (price: number, currencySymbol?: string) => {
-    const symbol = currencySymbol || ''
-    return `${symbol}${price.toLocaleString()}`
-  }
+    return `${apiBaseUrl}${filePath}`;
+  };
 
   const calculateDiscount = (price?: number, salePrice?: number) => {
-    if (!price || !salePrice || price <= salePrice) return null
-    return Math.round(((price - salePrice) / price) * 100)
-  }
+    if (!price || !salePrice || price <= salePrice) return null;
+    return Math.round(((price - salePrice) / price) * 100);
+  };
 
   const checkScrollability = () => {
-    if (!scrollContainerRef.current) return
-    const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current
-    setCanScrollLeft(scrollLeft > 0)
-    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10)
-  }
+    if (!scrollContainerRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+    setCanScrollLeft(scrollLeft > 0);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+  };
 
   const scroll = (direction: 'left' | 'right') => {
-    if (!scrollContainerRef.current) return
-    const scrollAmount = 336 // Card width (320px) + gap (16px)
-    const currentScroll = scrollContainerRef.current.scrollLeft
-    const newScroll = direction === 'left' 
-      ? currentScroll - scrollAmount 
-      : currentScroll + scrollAmount
-    
+    if (!scrollContainerRef.current) return;
+    const scrollAmount = 336; // Card width (320px) + gap (16px)
+    const currentScroll = scrollContainerRef.current.scrollLeft;
+    const newScroll =
+      direction === 'left' ? currentScroll - scrollAmount : currentScroll + scrollAmount;
+
     scrollContainerRef.current.scrollTo({
       left: newScroll,
-      behavior: 'smooth'
-    })
-    
+      behavior: 'smooth',
+    });
+
     // Update button visibility after scroll animation
-    setTimeout(() => checkScrollability(), 300)
-  }
+    setTimeout(() => checkScrollability(), 300);
+  };
 
   // Initialize scroll state and check on resize
   useEffect(() => {
     // Use setTimeout to ensure DOM is fully rendered
     const timer = setTimeout(() => {
-      checkScrollability()
-    }, 100)
-    
+      checkScrollability();
+    }, 100);
+
     const handleResize = () => {
-      setTimeout(() => checkScrollability(), 100)
-    }
-    
-    window.addEventListener('resize', handleResize)
+      setTimeout(() => checkScrollability(), 100);
+    };
+
+    window.addEventListener('resize', handleResize);
     return () => {
-      clearTimeout(timer)
-      window.removeEventListener('resize', handleResize)
-    }
-  }, [relatedProducts])
+      clearTimeout(timer);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [relatedProducts]);
 
   if (loading) {
     return (
@@ -91,7 +82,10 @@ export function RelatedProducts({
         <Skeleton className="h-8 w-64 mb-6" />
         <div className="flex gap-4 overflow-hidden">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="flex-shrink-0 w-80 border dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-800">
+            <div
+              key={i}
+              className="flex-shrink-0 w-80 border dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-800"
+            >
               <Skeleton className="aspect-square w-full" />
               <div className="p-4 space-y-2">
                 <Skeleton className="h-4 w-full" />
@@ -102,11 +96,11 @@ export function RelatedProducts({
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   if (!relatedProducts || relatedProducts.length === 0) {
-    return null
+    return null;
   }
 
   return (
@@ -116,10 +110,9 @@ export function RelatedProducts({
       transition={{ duration: 0.5 }}
       className="relative"
     >
-      <h2 className="text-xl font-bold mb-6">
+      <h2 className="w-full font-s-bold first-text-color text-xl mb-4 ">
         {t('product.relatedProducts') || 'Related Products'}
       </h2>
-      
       <div className="relative">
         {/* Navigation Arrows */}
         {relatedProducts.length > 0 && (
@@ -156,10 +149,13 @@ export function RelatedProducts({
           }}
         >
           {relatedProducts.map((rel, index) => {
-            const product = rel.relatedProduct
-            const imageUrl = getImageUrl(product.mainImage?.filePath)
-            const discount = calculateDiscount(product.price, product.salePrice)
-            const isLowStock = product.stockQuantity !== undefined && product.stockQuantity > 0 && product.stockQuantity <= 5
+            const product = rel.relatedProduct;
+            const imageUrl = getImageUrl(product.mainImage?.filePath);
+            const discount = calculateDiscount(product.price, product.salePrice);
+            const isLowStock =
+              product.stockQuantity !== undefined &&
+              product.stockQuantity > 0 &&
+              product.stockQuantity <= 5;
 
             return (
               <motion.div
@@ -190,10 +186,12 @@ export function RelatedProducts({
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <span className="text-muted-foreground dark:text-gray-400 text-sm">No image</span>
+                        <span className="text-muted-foreground dark:text-gray-400 text-sm">
+                          No image
+                        </span>
                       </div>
                     )}
-                    
+
                     {/* Discount Badge */}
                     {discount && discount > 0 && (
                       <div className="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-md">
@@ -225,7 +223,8 @@ export function RelatedProducts({
                     {/* Stock Alert */}
                     {isLowStock && (
                       <div className="text-xs text-orange-600 dark:text-orange-400 font-medium">
-                        {t('product.lowStock') || 'Only'} {product.stockQuantity} {t('product.itemsLeft') || 'items left in stock'}
+                        {t('product.lowStock') || 'Only'} {product.stockQuantity}{' '}
+                        {t('product.itemsLeft') || 'items left in stock'}
                       </div>
                     )}
 
@@ -234,18 +233,18 @@ export function RelatedProducts({
                       {product.isOnSale && product.salePrice ? (
                         <>
                           <span className="font-bold text-lg text-gray-900 dark:text-gray-100">
-                            {formatPrice(product.salePrice, product.currencySymbol)}
+                            <PriceDisplay amount={product.salePrice} languageCode={languageCode} />
                           </span>
                           {product.price && (
                             <span className="text-sm text-gray-500 dark:text-gray-400 line-through">
-                              {formatPrice(product.price, product.currencySymbol)}
+                              <PriceDisplay amount={product.price} languageCode={languageCode} />
                             </span>
                           )}
                         </>
                       ) : (
                         product.price && (
                           <span className="font-bold text-lg text-gray-900 dark:text-gray-100">
-                            {formatPrice(product.price, product.currencySymbol)}
+                            <PriceDisplay amount={product.price} languageCode={languageCode} />
                           </span>
                         )
                       )}
@@ -253,7 +252,7 @@ export function RelatedProducts({
                   </div>
                 </Link>
               </motion.div>
-            )
+            );
           })}
         </div>
       </div>
@@ -264,6 +263,5 @@ export function RelatedProducts({
         }
       `}</style>
     </motion.section>
-  )
+  );
 }
-

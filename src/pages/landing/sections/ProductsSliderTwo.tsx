@@ -3,14 +3,18 @@ import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import formatRating from '@/utils/formatRating';
-import { formatPrice } from '@/utils/formatPrice';
 import cleanText from '@/utils/cleanText';
+import { PriceDisplay } from '@/components/ui/PriceDisplay';
+import { useLangStore } from '@/stores/languageStore';
 
 interface Props {
   showcase?: Showcase;
 }
 
 const ProductsSliderTwo = ({ showcase }: Props) => {
+  const lang = useLangStore((s) => s.lang);
+  const currency = lang === 'fa' ? 'IRT' : 'USD';
+
   return (
     <section className="product-slider relative sm:container mx-auto mt-8 lg:mt-16 px-4 ">
       <div className="flex flex-wrap items-center justify-between">
@@ -212,11 +216,11 @@ const ProductsSliderTwo = ({ showcase }: Props) => {
                               {item.product.discount ? (
                                 <>
                                   <h4 className="text-sm line-through opacity-70 first-text-color-for-paragraph">
-                                    {formatPrice(item.product?.originalPrice || 0)}
+                                    <PriceDisplay amount={item.product?.originalPrice || 0} currency={currency} currencyMode="none" languageCode={lang} />
                                   </h4>
                                   <span className="text-sm flex items-center">
                                     <span className="h-2 leading-4 pe-1 font-sm-bold first-text-color-for-paragraph  text-base">
-                                      {formatPrice(item.product?.price)}
+                                      <PriceDisplay amount={item.product?.price} currency={currency} currencyMode="none" languageCode={lang} />
                                     </span>
                                     <span className="first-text-color-svg">
                                       <svg
@@ -241,7 +245,7 @@ const ProductsSliderTwo = ({ showcase }: Props) => {
                               ) : (
                                 <span className="text-sm flex items-center">
                                   <span className="h-2 leading-4 first-text-color-for-paragraph text-base pe-1">
-                                    {formatPrice(item.product.price)}
+                                    <PriceDisplay amount={item.product.price} currency={currency} currencyMode="none" languageCode={lang} />
                                   </span>
                                   <span className="first-text-color-svg">
                                     <svg
