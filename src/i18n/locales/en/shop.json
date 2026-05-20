@@ -1,0 +1,37 @@
+{
+  "hero": {
+    "title": "Welcome to Our Shop",
+    "shopName": "GammaTeb",
+    "shopNameTwo": "Asia",
+    "caption": "Gamma Teb Asia Company, as one of the leading manufacturers in the field of medical equipment, began its activities in 2002. Since 2021, with an innovative approach and focusing on hygiene products used in the food and pharmaceutical industries, the company has, for the first time, specialized in producing oral freshening sprays.",
+    "subtitle": "Best Products with Best Prices",
+    "cta": "View Products",
+    "ctaSecondary": "About Us"
+  },
+  "whyUs": {
+    "title": "Why Gamma Teb",
+    "imageAlt": "Gamma Teb medical products",
+    "features": {
+      "production": {
+        "title": "Our Production",
+        "description": "All strile products are manufactured and supplied in our Class C clean room located at the Gamma Teb Asia factory."
+      },
+      "certification": {
+        "title": "Reliable Supply",
+        "description": "Gamma Teb provides the highest-quality products in raw material sourcing due to its ISO 13485 certification."
+      },
+      "delivery": {
+        "title": "Fast Delivery",
+        "description": "After your order, Gamma Teb makes every effort to deliver it as quickly as possible."
+      },
+      "experience": {
+        "title": "Experience",
+        "description": "Since 2002, Gamma Teb has been producing disposable covers and prioritizes quality in all products."
+      }
+    }
+  },
+  "testimonials": {
+    "title": "Customer Reviews",
+    "subtitle": "Our Customers' Shopping Experience"
+  }
+}

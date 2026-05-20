@@ -1,0 +1,33 @@
+{
+  "title": "Customer Reviews",
+  "review": "review",
+  "reviews": "reviews",
+  "writeReview": "Write a Review",
+  "basedOn": "Based on",
+  "ratingBreakdown": "Rating Breakdown",
+  "stars": "stars",
+  "verifiedPurchase": "Verified Purchase",
+  "rating": "Rating",
+  "name": "Name",
+  "namePlaceholder": "Your name",
+  "email": "Email",
+  "emailPlaceholder": "your.email@example.com",
+  "titleLabel": "Title",
+  "titlePlaceholder": "Review title",
+  "optional": "optional",
+  "content": "Review",
+  "contentPlaceholder": "Share your thoughts about this product...",
+  "submitting": "Submitting...",
+  "submit": "Submit Review",
+  "noReviews": "No reviews yet. Be the first to review this product!",
+  "helpful": "Helpful",
+  "error": {
+    "load": "Failed to load reviews",
+    "required": "Please fill in all required fields",
+    "rating": "Please select a rating",
+    "create": "Failed to submit review"
+  },
+  "success": {
+    "create": "Review submitted successfully! It will be visible after approval."
+  }
+}

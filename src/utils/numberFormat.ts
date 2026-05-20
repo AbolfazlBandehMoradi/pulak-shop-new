@@ -53,11 +53,24 @@ export function formatNumber(
 }
 
 /**
- * Formats a price with currency symbol
+ * Converts a backend price to a display price by language
+ * - fa: convert Rial to Toman by dividing by 10
+ * - en: keep value as-is
+ */
+export function normalizePriceForLanguage(
+  price: number,
+  languageCode: string = 'en'
+): number {
+  const safePrice = Number.isFinite(price) ? price : 0
+  return languageCode === 'fa' ? safePrice / 10 : safePrice
+}
+
+/**
+ * Formats a price number only (without currency symbol)
  * @param price - The price to format
- * @param currencySymbol - The currency symbol (e.g., 'ریال', '$')
+ * @param currencySymbol - Ignored for backward compatibility
  * @param languageCode - The language code (e.g., 'fa', 'en')
- * @param putSymbolAfter - Whether to put currency symbol after the price (default: false)
+ * @param putSymbolAfter - Ignored for backward compatibility
  */
 export function formatPrice(
   price: number,
@@ -65,28 +78,22 @@ export function formatPrice(
   languageCode: string = 'en',
   putSymbolAfter: boolean = false
 ): string {
+  void currencySymbol
+  void putSymbolAfter
+
   const isPersian = languageCode === 'fa'
   const locale = isPersian ? 'fa-IR' : 'en-US'
+  const normalizedPrice = normalizePriceForLanguage(price, languageCode)
   
   // Format the number with locale
-  const formattedNumber = formatNumber(price, locale, {
+  const formattedNumber = formatNumber(normalizedPrice, locale, {
     minimumFractionDigits: 0,
-    maximumFractionDigits: 2
+    maximumFractionDigits: 0
   })
   
   // Convert to Persian numerals if needed
   const finalNumber = isPersian ? toPersianNumbers(formattedNumber) : formattedNumber
   
-  // Add currency symbol
-  const symbol = currencySymbol || ''
-  if (!symbol) {
-    return finalNumber
-  }
-  
-  if (putSymbolAfter) {
-    return `${finalNumber} ${symbol}`
-  }
-  
-  return `${symbol}${finalNumber}`
+  return finalNumber
 }
 
