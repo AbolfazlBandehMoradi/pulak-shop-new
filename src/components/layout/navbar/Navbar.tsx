@@ -14,8 +14,8 @@ import { useTranslation } from 'react-i18next';
 type CategoryId = string | null;
 
 export const Navbar: React.FC = () => {
-  const { i18n } = useTranslation();
-  const { isAuthenticated, user } = useAuth();
+  const { i18n, t } = useTranslation();
+  const { isAuthenticated, user, logout } = useAuth();
   const { data: categories } = useCategories();
   const dir = useLangStore((s) => s.dir);
 
@@ -117,6 +117,13 @@ export const Navbar: React.FC = () => {
     setOpenSubMenu(null);
   };
 
+  const handleLogout = () => {
+    setIsProfileMenuOpen(false);
+    closeDrawer();
+    logout();
+    navigate(localizedPath('/'));
+  };
+
   return (
     <nav className="navbar-shell">
       {!isMobile && (
@@ -211,6 +218,13 @@ export const Navbar: React.FC = () => {
                         >
                           {navLabels.cart}
                         </Link>
+                        <button
+                          type="button"
+                          onClick={handleLogout}
+                          className="block w-full rounded-lg px-3 py-2 text-start text-sm text-red-600 hover:bg-red-50"
+                        >
+                          {t('shared.nav.logout')}
+                        </button>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -600,6 +614,17 @@ export const Navbar: React.FC = () => {
                     {navLabels.blog}
                   </Link>
                 </li>
+                {isAuthenticated && (
+                  <li>
+                    <button
+                      type="button"
+                      className="block w-full rounded-xl px-3 py-2 text-start text-sm text-red-600 hover:bg-red-50"
+                      onClick={handleLogout}
+                    >
+                      {t('shared.nav.logout')}
+                    </button>
+                  </li>
+                )}
               </ul>
             </div>
           </div>

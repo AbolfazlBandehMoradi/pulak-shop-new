@@ -9,6 +9,7 @@ import { useTranslation } from '@/i18n/useTranslation';
 import { useLangStore } from '@/stores/languageStore';
 import { useAuth } from '@/context/AuthContext';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import { OTP_LENGTH } from '@/utils/authConstants';
 import OtpStep from './OtpStep';
 import OtpStepMobile from './OtpStepMobile';
 
@@ -16,6 +17,7 @@ type AuthErrorContext = 'mobile' | 'sendOtp' | 'verifyOtp';
 
 const RESEND_TIME = 60;
 const MOBILE_REGEX = /^09\d{9}$/;
+const createEmptyOtp = () => Array.from({ length: OTP_LENGTH }, () => '');
 
 const toEnglishDigits = (value: string) =>
   value
@@ -24,7 +26,7 @@ const toEnglishDigits = (value: string) =>
 
 export default function Auth() {
   const [mobile, setMobile] = useState('');
-  const [otp, setOtp] = useState(['', '', '', '', '']);
+  const [otp, setOtp] = useState(createEmptyOtp);
   const [step, setStep] = useState<'mobile' | 'otp'>('mobile');
   const [focusTrigger, setFocusTrigger] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +38,7 @@ export default function Auth() {
   const { t } = useTranslation();
   const lang = useLangStore((s) => s.lang);
   const localizedPath = useLocalizedPath();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, setAuthSession } = useAuth();
 
   const redirectUrl =
     (location.state as { redirectUrl?: string })?.redirectUrl || localizedPath('/');
@@ -133,7 +135,7 @@ export default function Auth() {
 
   const handleBackToMobile = () => {
     setStep('mobile');
-    setOtp(['', '', '', '', '']);
+    setOtp(createEmptyOtp());
     setError(null);
 
     if (resendIntervalRef.current) {
@@ -158,7 +160,7 @@ export default function Auth() {
 
       await sendOtp(mobile, lang);
 
-      setOtp(['', '', '', '', '']);
+      setOtp(createEmptyOtp());
       setStep('otp');
       startResendTimer();
       setFocusTrigger((prev) => prev + 1);
@@ -174,7 +176,7 @@ export default function Auth() {
 
     const code = otp.join('');
 
-    if (code.length !== 5) {
+    if (code.length !== OTP_LENGTH) {
       setError(t('auth.login.otpInvalid'));
       return;
     }
@@ -190,18 +192,10 @@ export default function Auth() {
         rememberMe: true,
       });
 
-      localStorage.setItem('auth_token', res.token);
-      localStorage.setItem('refresh_token', res.refreshToken);
-      localStorage.setItem('auth_user', JSON.stringify(res.user));
-
-      window.dispatchEvent(
-        new CustomEvent('auth-token-refreshed', {
-          detail: { token: res.token, user: res.user },
-        }),
-      );
+      setAuthSession(res);
     } catch (apiError) {
       setError(mapAuthErrorMessage('verifyOtp', apiError));
-      setOtp(['', '', '', '', '']);
+      setOtp(createEmptyOtp());
       setFocusTrigger((prev) => prev + 1);
     } finally {
       setVerifying(false);

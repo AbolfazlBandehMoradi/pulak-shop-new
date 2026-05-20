@@ -15,6 +15,7 @@ import {
 } from "@/utils/authApi";
 import { clearCartSessionId } from "@/utils/cartApi";
 import useCartStore from "@/stores/cartStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface AuthContextType {
   user: User | null;
@@ -22,6 +23,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (credentials: LoginRequest) => Promise<void>;
+  setAuthSession: (session: LoginResponse) => void;
   logout: () => void;
   refreshAuthToken: () => Promise<void>;
 }
@@ -46,9 +48,19 @@ function parseStoredUser(storedUser: string | null): User | null {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const queryClient = useQueryClient();
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const setAuthSession = useCallback((session: LoginResponse) => {
+    localStorage.setItem(TOKEN_KEY, session.token);
+    localStorage.setItem(REFRESH_TOKEN_KEY, session.refreshToken);
+    localStorage.setItem(USER_KEY, JSON.stringify(session.user));
+
+    setToken(session.token);
+    setUser(session.user);
+  }, []);
 
   const clearAuthAndCartState = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
@@ -57,10 +69,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     clearCartSessionId();
     useCartStore.getState().setCart(null);
+    queryClient.removeQueries({ queryKey: ["cart"] });
+    queryClient.removeQueries({ queryKey: ["wallet"] });
+    queryClient.removeQueries({ queryKey: ["checkout"] });
+    queryClient.removeQueries({ queryKey: ["payment"] });
+    queryClient.removeQueries({ queryKey: ["profile"] });
 
     setToken(null);
     setUser(null);
-  }, []);
+  }, [queryClient]);
 
   const refreshAuthToken = useCallback(async () => {
     const storedRefreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
@@ -174,13 +191,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     try {
       const response: LoginResponse = await loginApi(credentials);
-
-      localStorage.setItem(TOKEN_KEY, response.token);
-      localStorage.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
-      localStorage.setItem(USER_KEY, JSON.stringify(response.user));
-
-      setToken(response.token);
-      setUser(response.user);
+      setAuthSession(response);
     } finally {
       setIsLoading(false);
     }
@@ -196,6 +207,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAuthenticated: Boolean(token),
     isLoading,
     login,
+    setAuthSession,
     logout,
     refreshAuthToken,
   };

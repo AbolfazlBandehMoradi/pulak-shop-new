@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLangStore } from '@/stores/languageStore';
 import { useTranslation } from '@/i18n/useTranslation';
+import { OTP_LENGTH } from '@/utils/authConstants';
 
 type OtpStepProps = {
   mobile: string;
@@ -45,15 +46,88 @@ export default function OtpStep({
     otpRefs.current[0]?.focus();
   }, [focusTrigger]);
 
+  const applyOtpCode = (startIndex: number, rawValue: string) => {
+    const digits = toEnglishDigits(rawValue).replace(/\D/g, '');
+    if (!digits) return;
+
+    const next = [...otp];
+    const maxDigits = OTP_LENGTH - startIndex;
+    digits
+      .slice(0, maxDigits)
+      .split('')
+      .forEach((digit, offset) => {
+        next[startIndex + offset] = digit;
+      });
+
+    setOtp(next);
+
+    const lastIndex = Math.min(startIndex + digits.length, OTP_LENGTH) - 1;
+    if (lastIndex >= 0) {
+      otpRefs.current[lastIndex]?.focus();
+    }
+  };
+
+  useEffect(() => {
+    if (verifying) {
+      return;
+    }
+
+    if (typeof window === 'undefined' || !('OTPCredential' in window) || !navigator.credentials) {
+      return;
+    }
+
+    const abortController = new AbortController();
+
+    navigator.credentials
+      .get({
+        otp: { transport: ['sms'] },
+        signal: abortController.signal,
+      } as CredentialRequestOptions)
+      .then((otpCredential) => {
+        const receivedCode =
+          typeof otpCredential === 'object' &&
+          otpCredential !== null &&
+          'code' in otpCredential &&
+          typeof otpCredential.code === 'string'
+            ? otpCredential.code
+            : '';
+
+        if (!receivedCode) {
+          return;
+        }
+
+        applyOtpCode(0, receivedCode);
+      })
+      .catch(() => {
+        // Silently ignore abort/unsupported/runtime errors for non-WebOTP browsers.
+      });
+
+    return () => {
+      abortController.abort();
+    };
+  }, [verifying]);
+
   const handleOtpChange = (index: number, nextValue: string) => {
     if (otpError) setOtpError(null);
 
-    const single = toEnglishDigits(nextValue).replace(/\D/g, '').slice(-1);
+    const digits = toEnglishDigits(nextValue).replace(/\D/g, '');
+    if (!digits) {
+      const next = [...otp];
+      next[index] = '';
+      setOtp(next);
+      return;
+    }
+
+    if (digits.length > 1) {
+      applyOtpCode(index, digits);
+      return;
+    }
+
     const next = [...otp];
-    next[index] = single;
+    next[index] = digits;
     setOtp(next);
 
-    if (single && index < 4) {
+    if (digits && index < OTP_LENGTH - 1) {
       otpRefs.current[index + 1]?.focus();
     }
   };
@@ -75,26 +149,19 @@ export default function OtpStep({
 
   const handlePaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
     event.preventDefault();
-    const pasted = toEnglishDigits(event.clipboardData.getData('text')).replace(/\D/g, '').slice(0, 5);
+    const pasted = toEnglishDigits(event.clipboardData.getData('text'))
+      .replace(/\D/g, '')
+      .slice(0, OTP_LENGTH);
     if (!pasted) return;
 
-    const next = [...otp];
-    pasted.split('').forEach((digit, index) => {
-      next[index] = digit;
-    });
-    setOtp(next);
-
-    const lastIndex = Math.min(pasted.length, 5) - 1;
-    if (lastIndex >= 0) {
-      otpRefs.current[lastIndex]?.focus();
-    }
+    applyOtpCode(0, pasted);
   };
 
   const handleVerify = async () => {
     if (verifying) return;
 
     const code = otp.join('');
-    if (code.length !== 5) {
+    if (code.length !== OTP_LENGTH) {
       setOtpError(incompleteOtpError);
       return;
     }
@@ -139,6 +206,7 @@ export default function OtpStep({
             className="h-13 w-12 rounded-xl border border-gray-300 bg-color-for-layer-on-body text-center text-xl font-semibold first-text-color outline-none transition-all focus:border-first focus:ring-2 focus:ring-first/20 sm:w-14"
             inputMode="numeric"
             autoComplete={index === 0 ? 'one-time-code' : 'off'}
+            pattern="[0-9]*"
             aria-label={`OTP digit ${index + 1}`}
           />
         ))}
