@@ -1,4 +1,4 @@
-import { apiRequest } from './api'
+import { apiRequest, isTokenExpired } from './api'
 
 const AUTH_TOKEN_KEY = 'auth_token'
 const CART_SESSION_KEY = 'cart_session_id'
@@ -67,7 +67,9 @@ export interface UpdateCartItemRequest {
 
 function isAuthenticated(): boolean {
   if (typeof window === 'undefined') return false
-  return Boolean(localStorage.getItem(AUTH_TOKEN_KEY))
+  const token = localStorage.getItem(AUTH_TOKEN_KEY)
+  if (!token) return false
+  return !isTokenExpired(token)
 }
 
 export function getCartSessionId(): string | null {

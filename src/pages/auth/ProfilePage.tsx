@@ -229,7 +229,7 @@ const ProfilePage = () => {
     setError(null);
 
     try {
-      const authToken = token || localStorage.getItem("auth_token");
+      const authToken = token;
       if (!authToken) {
         throw new Error(
           translateRefOr("login.error.unauthorized", "Authentication required")

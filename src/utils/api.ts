@@ -4,6 +4,8 @@ import apiClient from '@/services/apiClient'
 
 const TOKEN_KEY = 'auth_token'
 const REFRESH_TOKEN_KEY = 'refresh_token'
+const USER_KEY = 'auth_user'
+const UNAUTHORIZED_STATUSES = new Set([401, 403])
 
 type ApiErrorPayload = {
   detail?: string
@@ -15,6 +17,7 @@ type ApiErrorPayload = {
 interface LoginResponse {
   token: string
   refreshToken: string
+  expiresAt?: string
   user?: unknown
 }
 
@@ -22,9 +25,25 @@ export interface ApiRequestOptions extends RequestInit {
   params?: Record<string, unknown>
 }
 
-// Store a flag to prevent multiple simultaneous refresh attempts
-let isRefreshing = false
-let refreshPromise: Promise<string | null> | null = null
+export interface TokenRefreshedEventDetail {
+  token: string
+  user: unknown | null
+}
+
+export type AuthRefreshResult =
+  | {
+      status: 'success'
+      token: string
+      refreshToken: string
+      expiresAt: string | null
+      user: unknown | null
+    }
+  | {
+      status: 'no_refresh_token' | 'unauthorized' | 'network_error' | 'error'
+      error?: Error & { status?: number }
+    }
+
+let refreshPromise: Promise<AuthRefreshResult> | null = null
 
 /**
  * Get the authentication token from localStorage
@@ -32,6 +51,73 @@ let refreshPromise: Promise<string | null> | null = null
 function getAuthToken(): string | null {
   if (typeof window === 'undefined') return null
   return localStorage.getItem(TOKEN_KEY)
+}
+
+function decodeBase64Url(value: string): string | null {
+  if (typeof atob !== 'function') {
+    return null
+  }
+
+  const normalized = value.replace(/-/g, '+').replace(/_/g, '/')
+  const padding = '='.repeat((4 - (normalized.length % 4)) % 4)
+
+  try {
+    return atob(`${normalized}${padding}`)
+  } catch {
+    return null
+  }
+}
+
+export function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  const parts = token.split('.')
+  if (parts.length < 2) {
+    return null
+  }
+
+  const decodedPayload = decodeBase64Url(parts[1])
+  if (!decodedPayload) {
+    return null
+  }
+
+  try {
+    return JSON.parse(decodedPayload) as Record<string, unknown>
+  } catch {
+    return null
+  }
+}
+
+export function getTokenExpiryTimestamp(token: string): number | null {
+  const payload = decodeJwtPayload(token)
+  const expValue = payload?.exp
+
+  const exp =
+    typeof expValue === 'number'
+      ? expValue
+      : typeof expValue === 'string'
+      ? Number(expValue)
+      : Number.NaN
+
+  if (!Number.isFinite(exp)) {
+    return null
+  }
+
+  return exp * 1000
+}
+
+export function isTokenExpired(token: string, skewSeconds: number = 0): boolean {
+  const expiryTimestamp = getTokenExpiryTimestamp(token)
+  if (expiryTimestamp == null) {
+    return true
+  }
+
+  return Date.now() >= expiryTimestamp - skewSeconds * 1000
+}
+
+export function isTokenExpiringSoon(
+  token: string,
+  thresholdSeconds: number = 0
+): boolean {
+  return isTokenExpired(token, thresholdSeconds)
 }
 
 function toHeaderRecord(headers?: HeadersInit): Record<string, string> {
@@ -113,71 +199,114 @@ function createApiError(error: unknown): Error & { status?: number } {
   return error instanceof Error ? error : new Error('Request failed')
 }
 
-/**
- * Attempt to refresh the authentication token
- */
-async function attemptTokenRefresh(): Promise<string | null> {
-  if (typeof window === 'undefined') {
-    return null
+function isNetworkError(error: unknown): boolean {
+  if (!axios.isAxiosError(error)) {
+    return false
   }
 
-  if (isRefreshing && refreshPromise) {
+  if (!error.response) {
+    return true
+  }
+
+  return error.code === 'ERR_NETWORK' || error.code === 'ECONNABORTED'
+}
+
+function clearStoredAuthState() {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  localStorage.removeItem(TOKEN_KEY)
+  localStorage.removeItem(REFRESH_TOKEN_KEY)
+  localStorage.removeItem(USER_KEY)
+}
+
+function dispatchTokenRefreshed(detail: TokenRefreshedEventDetail) {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  window.dispatchEvent(
+    new CustomEvent<TokenRefreshedEventDetail>('auth-token-refreshed', {
+      detail,
+    })
+  )
+}
+
+function dispatchTokenExpired() {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  window.dispatchEvent(new CustomEvent('auth-token-expired'))
+}
+
+/**
+ * Refresh the authentication token with a single shared in-flight promise.
+ */
+export async function refreshAccessToken(): Promise<AuthRefreshResult> {
+  if (typeof window === 'undefined') {
+    return {
+      status: 'error',
+      error: new Error('Token refresh is unavailable on server'),
+    }
+  }
+
+  if (refreshPromise) {
     return refreshPromise
   }
 
-  isRefreshing = true
   refreshPromise = (async () => {
-    try {
-      const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY)
-      if (!refreshToken) {
-        return null
-      }
+    const storedRefreshToken = localStorage.getItem(REFRESH_TOKEN_KEY)
+    if (!storedRefreshToken) {
+      clearStoredAuthState()
+      dispatchTokenExpired()
+      return { status: 'no_refresh_token' } as const
+    }
 
+    try {
       const response = await apiClient.post<LoginResponse>(
         normalizeEndpoint('/api/ui/auth/refresh'),
-        { refreshToken }
+        { refreshToken: storedRefreshToken }
       )
 
-      // Update tokens in localStorage
       localStorage.setItem(TOKEN_KEY, response.data.token)
       localStorage.setItem(REFRESH_TOKEN_KEY, response.data.refreshToken)
 
-      if (response.data.user !== undefined) {
-        localStorage.setItem('auth_user', JSON.stringify(response.data.user))
-      }
-
-      let refreshedUser: unknown = null
-      if (response.data.user !== undefined) {
-        refreshedUser = response.data.user
+      const nextUser = response.data.user ?? null
+      if (response.data.user !== undefined && response.data.user !== null) {
+        localStorage.setItem(USER_KEY, JSON.stringify(response.data.user))
       } else {
-        const storedUser = localStorage.getItem('auth_user')
-        if (storedUser) {
-          try {
-            refreshedUser = JSON.parse(storedUser)
-          } catch {
-            localStorage.removeItem('auth_user')
-          }
-        }
+        localStorage.removeItem(USER_KEY)
       }
 
-      // Dispatch custom event to notify AuthContext
-      window.dispatchEvent(
-        new CustomEvent('auth-token-refreshed', {
-          detail: { token: response.data.token, user: refreshedUser },
-        })
-      )
+      dispatchTokenRefreshed({
+        token: response.data.token,
+        user: nextUser,
+      })
 
-      return response.data.token
-    } catch {
-      // Refresh failed - clear auth data and notify AuthContext
-      localStorage.removeItem(TOKEN_KEY)
-      localStorage.removeItem(REFRESH_TOKEN_KEY)
-      localStorage.removeItem('auth_user')
+      return {
+        status: 'success',
+        token: response.data.token,
+        refreshToken: response.data.refreshToken,
+        expiresAt: response.data.expiresAt ?? null,
+        user: nextUser,
+      } as const
+    } catch (error) {
+      const parsedError = createApiError(error)
+      const status = parsedError.status
+      if (status != null && UNAUTHORIZED_STATUSES.has(status)) {
+        clearStoredAuthState()
+        dispatchTokenExpired()
+        return { status: 'unauthorized', error: parsedError } as const
+      }
 
-      window.dispatchEvent(new CustomEvent('auth-token-expired'))
-      return null
+      if (isNetworkError(error)) {
+        return { status: 'network_error', error: parsedError } as const
+      }
+
+      return { status: 'error', error: parsedError } as const
     } finally {
-      isRefreshing = false
       refreshPromise = null
     }
   })()
@@ -226,10 +355,10 @@ export async function apiRequest<T = unknown>(
     return response.data
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.status === 401 && retryOn401 && token) {
-      const newToken = await attemptTokenRefresh()
+      const refreshResult = await refreshAccessToken()
 
-      if (newToken) {
-        headers.Authorization = `Bearer ${newToken}`
+      if (refreshResult.status === 'success') {
+        headers.Authorization = `Bearer ${refreshResult.token}`
         const retryResponse = await apiClient.request<T>({
           ...requestConfig,
           headers,
@@ -240,7 +369,18 @@ export async function apiRequest<T = unknown>(
         return retryResponse.data
       }
 
-      throw new Error('AUTH_EXPIRED')
+      if (
+        refreshResult.status === 'unauthorized' ||
+        refreshResult.status === 'no_refresh_token'
+      ) {
+        throw new Error('AUTH_EXPIRED')
+      }
+
+      if (refreshResult.error) {
+        throw refreshResult.error
+      }
+
+      throw new Error('Request failed')
     }
 
     throw createApiError(error)
