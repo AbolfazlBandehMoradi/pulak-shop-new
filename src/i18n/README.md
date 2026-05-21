@@ -34,6 +34,22 @@ This project now supports a page-by-page i18n migration with a clear split betwe
 
 - Full: `npm run i18n:audit`
 - Namespace: `npm run i18n:audit -- --prefix=nav`
+- Locale: `npm run i18n:audit -- --locale=en`
+- Dry run (default): `npm run i18n:audit -- --dry-run`
+- Apply key cleanup: `npm run i18n:audit -- --write`
+- Apply key cleanup + delete unused namespace files:
+  `npm run i18n:audit -- --write --delete-files`
+- Verbose output: `npm run i18n:audit -- --verbose`
 
-The audit reports potential missing and unused keys based on literal `t("...")` usage.
-Treat it as a safe guide, then confirm dynamic key cases manually.
+Flags:
+
+- `--locale=<code>` target locale folder
+- `--prefix=<key>` analyze only a namespace/key subtree
+- `--write` apply JSON key removals
+- `--delete-files` delete fully unused namespace files (requires `--write`)
+- `--dry-run` preview without modifying files
+- `--verbose` print detailed output
+
+The script reports missing/unused keys, can prune unused keys from JSON files, and can
+optionally delete unused translation files. Dynamic keys are ignored on purpose and should
+still be reviewed manually.
