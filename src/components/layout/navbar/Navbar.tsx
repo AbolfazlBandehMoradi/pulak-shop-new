@@ -12,6 +12,7 @@ import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 import { useTranslation } from 'react-i18next';
 import { LanguageToggle } from './LanguageWithClick';
 import { ThemeToggleButton } from '@/components/ui/ThemeToggleButton';
+import { User2 } from 'lucide-react';
 
 type CategoryId = string | null;
 
@@ -128,7 +129,7 @@ export const Navbar: React.FC = () => {
   return (
     <nav className="navbar-shell">
       {!isMobile && (
-        <div dir={dir} className="container mx-auto my-4 px-4">
+        <div dir={dir} className="container mx-auto my-4 px-4 max-w-7xl">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex w-full items-center gap-3 lg:w-8/12">
               <Link className="hidden w-16 md:block" to={localizedPath('/')}>
@@ -190,16 +191,7 @@ export const Navbar: React.FC = () => {
                     onClick={() => setIsProfileMenuOpen((prev) => !prev)}
                     className="flex h-12 items-center gap-2 rounded-xl bg-color-for-layer-on-body px-3 first-text-color"
                   >
-                    {user?.avatar?.filePath ? (
-                      <img
-                        src={user.avatar.filePath}
-                        alt={user?.firstName || navLabels.profile}
-                        className="h-8 w-8 rounded-full object-cover"
-                      />
-                    ) : (
-                      <span className="h-8 w-8 rounded-full bg-color-for-layer-sec" />
-                    )}
-                    <span className="text-sm">{user?.firstName || navLabels.profile}</span>
+                    <User2 className='text-first' />
                   </button>
 
                   <AnimatePresence>
@@ -215,12 +207,6 @@ export const Navbar: React.FC = () => {
                           className="block rounded-lg px-3 py-2 text-sm first-text-color-for-paragraph hover:bg-color-for-layer-sec"
                         >
                           {navLabels.profile}
-                        </Link>
-                        <Link
-                          to={localizedPath('/cart')}
-                          className="block rounded-lg px-3 py-2 text-sm first-text-color-for-paragraph hover:bg-color-for-layer-sec"
-                        >
-                          {navLabels.cart}
                         </Link>
                         <button
                           type="button"
@@ -260,7 +246,7 @@ export const Navbar: React.FC = () => {
 
       <div className="mx-auto bg-color-for-layer-on-body p-4">
         {!isMobile ? (
-          <div className="container mx-auto flex items-center justify-between px-4">
+          <div className="container mx-auto max-w-7xl flex items-center justify-between px-4">
             <ul className="flex items-center gap-8">
               <li className="text-base font-f-normal first-text-color">
                 <Link to={localizedPath('/')} className="first-header__ul-link">
@@ -293,7 +279,7 @@ export const Navbar: React.FC = () => {
                 </button>
 
                 {isDesktopCategoryOpen && (
-                  <div className="absolute start-0 top-full z-40 mt-3 w-212.5 overflow-hidden rounded-2xl bg-color-for-layer-on-body shadow-dark-sm">
+                  <div className="absolute -right-15  border border-gray-300/60 top-full z-40 mt-3 w-212.5 overflow-hidden rounded-2xl bg-color-for-layer-on-body shadow-dark-sm">
                     <div className="flex">
                       <ul className="w-64 border-e border-gray-300/60 bg-color-for-layer-sec p-4">
                         {categories?.map((category, index) => (
@@ -368,7 +354,7 @@ export const Navbar: React.FC = () => {
             </ul>
           </div>
         ) : (
-          <div className="container mx-auto px-1 pb-2">
+          <div className="mx-auto px-1 pb-2">
             <div className="space-y-2">
               <div className="flex items-center justify-between rounded-2xl">
                 <button

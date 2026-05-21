@@ -24,7 +24,7 @@ const MainPage = () => {
   }
 
   return (
-    <main className='pb-10'>
+    <main className='pb-10 max-w-7xl mx-auto'>
       <Hero />
       <CategoriesSlider categories={index?.categories ?? []} />
       <ProductSlider showCase={showcases && showcases[0]} />

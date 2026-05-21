@@ -26,7 +26,7 @@ const Hero = () => {
   ];
 
   return (
-    <section className="sm:container my-8 mx-auto px-4 relative">
+    <section className="my-8 mx-auto px-4 relative">
       <div className="first-slider">
         <Swiper
           className="rounded-2xl"
@@ -48,7 +48,7 @@ const Hero = () => {
           autoplay={{ delay: 5000, disableOnInteraction: false }}
         >
           {slides.map((slide, idx) => (
-            <SwiperSlide key={idx}>
+            <SwiperSlide key={idx} className='rounded-2xl' >
               <img className="w-full h-auto object-cover" src={slide.image} alt={slide.title} />
             </SwiperSlide>
           ))}
