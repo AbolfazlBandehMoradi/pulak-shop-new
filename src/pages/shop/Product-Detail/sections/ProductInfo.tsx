@@ -1,24 +1,14 @@
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  MessageCircle,
-  Star,
-  Clock,
-  Tag,
   Zap,
   Droplet,
   Snowflake,
   Box,
   Info,
-  Truck,
-  Shield,
-  Send,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/utils/cn';
 import { useTranslation } from '@/i18n/useTranslation';
 import type { ProductDetail, ProductAttributeValue } from '@/utils/shopApi';
-import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 import cleanText from '@/utils/cleanText';
 import { ShareSocialMedia } from '@/components/reusable-components/ShareSocialMedia/ShareSocialMedia';
 
@@ -40,9 +30,8 @@ const attributeIcons: Record<string, React.ComponentType<{ className?: string }>
 
 // Helper function to strip HTML tags and convert to plain text
 
-export function ProductInfo({ product, loading, languageCode }: ProductInfoProps) {
+export function ProductInfo({ product, loading, languageCode: _languageCode }: ProductInfoProps) {
   const { t } = useTranslation();
-  const localizedPath = useLocalizedPath();
   const translation = product?.translation || product?.translations?.[0];
   // Get icon for attribute
   const getAttributeIcon = (attr: ProductAttributeValue) => {
@@ -109,9 +98,9 @@ export function ProductInfo({ product, loading, languageCode }: ProductInfoProps
                 >
                   {/* ATTRIBUTE NAME */}
                   <div className="group relative flex items-center gap-1">
-                    {/* {Icon && (
+                    {Icon && (
                       <Icon className="h-4 w-4 shrink-0 text-first" />
-                    )} */}
+                    )}
                     <span className="first-text-color-for-paragraph w-full truncate whitespace-nowrap overflow-hidden text-xs block">
                       {attr.attributeName}
                     </span>

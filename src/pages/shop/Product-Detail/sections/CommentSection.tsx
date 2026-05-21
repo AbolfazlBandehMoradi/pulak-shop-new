@@ -3,7 +3,6 @@ import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 import {
-  MessageSquare,
   Send,
   Reply,
   Edit2,

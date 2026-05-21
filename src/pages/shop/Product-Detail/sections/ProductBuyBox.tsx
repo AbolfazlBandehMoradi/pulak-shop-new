@@ -1,8 +1,6 @@
 import { motion } from 'framer-motion';
 import {
   ShoppingCart,
-  Check,
-  X,
   Shield,
   Truck,
   Minus,

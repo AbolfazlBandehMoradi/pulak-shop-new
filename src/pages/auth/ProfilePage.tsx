@@ -16,7 +16,7 @@ import { useAuth } from "@/context/AuthContext";
 import apiClient from "@/services/apiClient";
 import { useTranslation } from "@/i18n/useTranslation";
 import { useLangStore } from "@/stores/languageStore";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
 

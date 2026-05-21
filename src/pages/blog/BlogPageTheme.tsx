@@ -258,7 +258,7 @@ export default function BlogPage() {
   const [blog, setBlog] = useState<BlogDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [relatedArticles, setRelatedArticles] = useState<BlogListItem[]>([]);
+  const [relatedArticles] = useState<BlogListItem[]>([]);
   const author = getMockAuthor(currentLanguage);
 
   // Determine language code - prioritize route param, then context, then default

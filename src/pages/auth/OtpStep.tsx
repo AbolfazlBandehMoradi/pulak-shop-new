@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { useLangStore } from '@/stores/languageStore';
 import { useTranslation } from '@/i18n/useTranslation';
 import { OTP_LENGTH } from '@/utils/authConstants';

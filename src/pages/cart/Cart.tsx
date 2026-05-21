@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { ShoppingCart, ArrowLeft, Package, ShoppingBag, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { CartItem } from './sections/CartItem';
 import { CartSummary } from './sections/CartSummary';
 import useCartStore from '@/stores/cartStore';

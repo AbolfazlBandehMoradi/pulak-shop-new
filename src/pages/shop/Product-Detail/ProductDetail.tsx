@@ -5,7 +5,7 @@ import { ChevronLeft } from 'lucide-react';
 import { useTranslation } from '@/i18n/useTranslation';
 import { useLangStore } from '@/stores/languageStore';
 import { cn } from '@/utils/cn';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import useCartStore from '@/stores/cartStore';
 import ProductDetailSkeleton from './sections/ProductDetailSkeleton';
 import { ProductGallery } from './sections/ProductGallery';

@@ -3,7 +3,6 @@
  */
 export function toPersianNumbers(str: string | number): string {
   const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹']
-  const englishDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
   
   const strValue = String(str)
   return strValue.replace(/\d/g, (digit) => {

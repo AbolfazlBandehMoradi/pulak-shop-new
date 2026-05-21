@@ -33,6 +33,7 @@ export function CartItem({ item }: CartItemProps) {
   const [openConfirm, setOpenConfirm] = useState(false);
   const [pendingTo, setPendingTo] = useState<string | null>(null);
   const navigate = useNavigate();
+  const hasReachedStockLimit = item.stockQuantity != null && item.quantity >= item.stockQuantity;
 
   return (
     <>
@@ -269,14 +270,14 @@ export function CartItem({ item }: CartItemProps) {
                 onClick={() =>
                   updateCartItem.mutate({ itemId: item.id, quantity: item.quantity + 1 })
                 }
-                disabled={isMutating || item.quantity >= item.stock}
+                disabled={isMutating || hasReachedStockLimit}
               >
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
           </div>
         </div>
-        {item.quantity === item.stock && (
+        {hasReachedStockLimit && (
           <span className="text-xs w-full flex justify-center mt-2 first-text-color-red">
             {t('cart.maximum') || 'Maximum'} {isPersian ? toPersianNumbers(item.quantity) : item.quantity}
           </span>

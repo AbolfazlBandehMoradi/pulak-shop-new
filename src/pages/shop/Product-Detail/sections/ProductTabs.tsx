@@ -17,6 +17,9 @@ export function ProductTabs({ product }: ProductTabsProps) {
   const [activeTab, setActiveTab] = useState<TabType>('description');
 
   const translation = product?.translation || product?.translations?.[0];
+  const attributeValues = product?.attributeValues ?? [];
+  const categories = product?.categories ?? [];
+  const tags = product?.tags ?? [];
 
   const tabs: Array<{ id: TabType; label: string; icon: React.ReactNode }> = [
     {
@@ -105,9 +108,9 @@ export function ProductTabs({ product }: ProductTabsProps) {
                   ? cleanText(translation.description)
                   : t('product.noDescription') || 'No description available.'}
               </p>
-              {product?.attributeValues?.length > 0 && (
+              {attributeValues.length > 0 && (
                 <InfoBox>
-                  {product.attributeValues.map((attr) => (
+                  {attributeValues.map((attr) => (
                     <InfoRow key={attr.id} label={attr.attributeName} value={attr.customValue} />
                   ))}
                 </InfoBox>
@@ -115,10 +118,10 @@ export function ProductTabs({ product }: ProductTabsProps) {
 
               {/* ===== Product Info ===== */}
               <InfoBox>
-                {product?.categories?.length > 0 && (
+                {categories.length > 0 && (
                   <InfoRow
                     label={t('product.category') || 'Category'}
-                    value={product.categories.map((c) => c.name).join(' / ')}
+                    value={categories.map((c) => c.name).join(' / ')}
                   />
                 )}
 
@@ -152,9 +155,9 @@ export function ProductTabs({ product }: ProductTabsProps) {
               )}
 
               {/* Tags */}
-              {product?.tags?.length > 0 && (
+              {tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-5">
-                  {product.tags.map((tag) => (
+                  {tags.map((tag) => (
                     <span
                       key={tag.id}
                       className="text-xs px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-muted-foreground"

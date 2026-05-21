@@ -13,7 +13,6 @@ import {
   CheckCircle,
   ShoppingCart,
   Package,
-  ShoppingBag,
 } from 'lucide-react';
 import { useTranslation } from '@/i18n/useTranslation';
 import { useAuth } from '@/context/AuthContext';

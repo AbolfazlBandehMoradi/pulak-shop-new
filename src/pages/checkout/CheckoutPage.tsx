@@ -15,19 +15,10 @@ import {
   ArrowLeft,
   MapPin,
   CheckCircle2,
-  Plus,
   Edit2,
   Trash2,
   MapPinHouseIcon,
   MapPinPlus,
-  ShoppingBag,
-  Package,
-  User,
-  Phone,
-  Building2,
-  Home,
-  Mail,
-  FileText,
   MapPinHouse,
   Save,
   ArrowRight,
@@ -40,7 +31,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { useTranslation } from '@/i18n/useTranslation';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SearchableSelect } from '@/components/ui/searchable-select';
@@ -96,7 +87,6 @@ export default function CheckoutPage() {
   const [editingAddress, setEditingAddress] = useState<UserAddress | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [deletingAddressId, setDeletingAddressId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cart, setCart] = useState<Cart | null>(null);
 
@@ -277,7 +267,6 @@ export default function CheckoutPage() {
   };
 
   const handleDeleteAddress = async (addressId: number) => {
-    setDeletingAddressId(addressId);
     setError(null);
 
     try {
@@ -307,8 +296,6 @@ export default function CheckoutPage() {
           ? err.message
           : t('checkout.addressDeleteError') || 'Failed to delete address',
       );
-    } finally {
-      setDeletingAddressId(null);
     }
   };
 

@@ -30,8 +30,8 @@ export function RelatedProducts({ relatedProducts, languageCode, loading }: Rela
     return `${apiBaseUrl}${filePath}`;
   };
 
-  const calculateDiscount = (price?: number, salePrice?: number) => {
-    if (!price || !salePrice || price <= salePrice) return null;
+  const calculateDiscount = (price?: number | null, salePrice?: number | null) => {
+    if (price == null || salePrice == null || price <= salePrice) return null;
     return Math.round(((price - salePrice) / price) * 100);
   };
 
@@ -152,10 +152,11 @@ export function RelatedProducts({ relatedProducts, languageCode, loading }: Rela
             const product = rel.relatedProduct;
             const imageUrl = getImageUrl(product.mainImage?.filePath);
             const discount = calculateDiscount(product.price, product.salePrice);
+            const stockQuantity = product.stockQuantity ?? null;
             const isLowStock =
-              product.stockQuantity !== undefined &&
-              product.stockQuantity > 0 &&
-              product.stockQuantity <= 5;
+              stockQuantity != null &&
+              stockQuantity > 0 &&
+              stockQuantity <= 5;
 
             return (
               <motion.div
@@ -223,7 +224,7 @@ export function RelatedProducts({ relatedProducts, languageCode, loading }: Rela
                     {/* Stock Alert */}
                     {isLowStock && (
                       <div className="text-xs text-orange-600 dark:text-orange-400 font-medium">
-                        {t('product.lowStock') || 'Only'} {product.stockQuantity}{' '}
+                        {t('product.lowStock') || 'Only'} {stockQuantity}{' '}
                         {t('product.itemsLeft') || 'items left in stock'}
                       </div>
                     )}

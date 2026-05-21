@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import RemainingTime from "@/components/ui/RemainingTime";
 import { Product } from "@/types";
 import { useEffect, useRef } from "react";

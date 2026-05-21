@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { CheckCircle2 } from 'lucide-react';
 import { useTranslation } from '@/i18n/useTranslation';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 
 interface AddToCartSuccessModalProps {
   isOpen: boolean;

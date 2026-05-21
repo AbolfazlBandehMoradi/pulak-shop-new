@@ -1,5 +1,3 @@
-import React from 'react';
-
 const TomanIcon = ({ className = '', ...props }) => (
   <svg
     width="24"
