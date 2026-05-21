@@ -9,14 +9,12 @@ import enContact from './en/contact.json';
 import enFaq from './en/faq.json';
 import enMainPage from './en/mainpage.json';
 import enPayment from './en/payment.json';
-import enPrivete from './en/privete.json';
 import enProfile from './en/profile.json';
 import enProduct from './en/product.json';
 import enProductDetail from './en/productDetail.json';
 import enProductsFilter from './en/productsFilter.json';
 import enReturnPolicy from './en/returnPolicy.json';
 import enReview from './en/review.json';
-import enStatic from './en/static.json';
 
 import faAbout from './fa/about.json';
 import faAuth from './fa/auth.json';
@@ -29,14 +27,12 @@ import faContact from './fa/contact.json';
 import faFaq from './fa/faq.json';
 import faMainPage from './fa/mainpage.json';
 import faPayment from './fa/payment.json';
-import faPrivete from './fa/privete.json';
 import faProfile from './fa/profile.json';
 import faProduct from './fa/product.json';
 import faProductDetail from './fa/productDetail.json';
 import faProductsFilter from './fa/productsFilter.json';
 import faReturnPolicy from './fa/returnPolicy.json';
 import faReview from './fa/review.json';
-import faStatic from './fa/static.json';
 
 export const pageTranslations = {
   en: {
@@ -51,15 +47,12 @@ export const pageTranslations = {
     faq: enFaq,
     mainpage: enMainPage,
     payment: enPayment,
-    privete: enPrivete,
-    private: enPrivete,
     profile: enProfile,
     product: enProduct,
     productDetail: enProductDetail,
     productsFilter: enProductsFilter,
     returnPolicy: enReturnPolicy,
     review: enReview,
-    static: enStatic,
   },
   fa: {
     about: faAbout,
@@ -73,14 +66,11 @@ export const pageTranslations = {
     faq: faFaq,
     mainpage: faMainPage,
     payment: faPayment,
-    privete: faPrivete,
-    private: faPrivete,
     profile: faProfile,
     product: faProduct,
     productDetail: faProductDetail,
     productsFilter: faProductsFilter,
     returnPolicy: faReturnPolicy,
     review: faReview,
-    static: faStatic,
   },
 };
