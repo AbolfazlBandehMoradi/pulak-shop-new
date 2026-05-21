@@ -142,6 +142,7 @@ export const Navbar: React.FC = () => {
                 onSubmit={handleSearchSubmit}
               >
                 <input
+                  dir={dir}
                   ref={searchRef}
                   name="search"
                   type="search"
@@ -191,7 +192,7 @@ export const Navbar: React.FC = () => {
                     onClick={() => setIsProfileMenuOpen((prev) => !prev)}
                     className="flex h-12 items-center gap-2 rounded-xl bg-color-for-layer-on-body px-3 first-text-color"
                   >
-                    <User2 className='text-first' />
+                    <User2 className="text-first" />
                   </button>
 
                   <AnimatePresence>
@@ -433,6 +434,7 @@ export const Navbar: React.FC = () => {
                 onSubmit={handleSearchSubmit}
               >
                 <input
+                  dir={dir}
                   ref={searchRef}
                   name="search"
                   type="search"

@@ -6,6 +6,7 @@ import formatRating from '@/utils/formatRating';
 import cleanText from '@/utils/cleanText';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { useLangStore } from '@/stores/languageStore';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   showcase?: Showcase;
@@ -14,6 +15,7 @@ interface Props {
 const ProductsSliderTwo = ({ showcase }: Props) => {
   const lang = useLangStore((s) => s.lang);
   const currency = lang === 'fa' ? 'IRT' : 'USD';
+  const { t } = useTranslation();
 
   return (
     <section className="product-slider relative sm:container mx-auto mt-8 lg:mt-16 px-4 ">
@@ -39,7 +41,13 @@ const ProductsSliderTwo = ({ showcase }: Props) => {
             </div>
             <div>
               <h2 className="font-s-sbold first-text-color text-xl">
-                {showcase?.translation.title}
+                {t('mainpage.featured.titlePrefix') && (
+                  <span>{t('mainpage.featured.titlePrefix')} </span>
+                )}
+                <span className="text-first me-3 inline-block">
+                  {t('mainpage.featured.titleAccent')}
+                </span>
+                {t('mainpage.featured.titleSuffix')}
               </h2>
             </div>
           </div>
@@ -50,7 +58,9 @@ const ProductsSliderTwo = ({ showcase }: Props) => {
               to={`/products`}
               className="button-with-icon-on-secound-layout   text-sm flex items-center h-14 px-4 rounded-2xl gap-2"
             >
-              <span className="button-with-icon-on-secound-layout__span">محصولات بیشتر ...</span>
+              <span className="button-with-icon-on-secound-layout__span">
+                {t('mainpage.featured.more')}
+              </span>
               <span className="button-with-icon-on-secound-layout__svg h-8 flex justify-center items-center rounded-full w-8">
                 <svg
                   width="24"
@@ -137,7 +147,7 @@ const ProductsSliderTwo = ({ showcase }: Props) => {
                 </span>
                 <div>
                   <h3 className="text-base font-font-f-light first-text-color-const">
-                    محصولات ویژه
+                    {t('mainpage.featured.cardTitle')}
                   </h3>
                 </div>
               </div>
@@ -185,7 +195,7 @@ const ProductsSliderTwo = ({ showcase }: Props) => {
                             <img
                               src={item.product.image}
                               className="h-full w-full object-contain "
-                              alt={item.product.name}
+                              alt={item.product.name || t('common.product')}
                             />
                           </div>
                         </div>
@@ -198,7 +208,7 @@ const ProductsSliderTwo = ({ showcase }: Props) => {
                               {item.product.discount}٪
                             </span>
                             <span className="text-xs inline-block w-full  first-text-color-for-paragraph">
-                              تخفیف
+                              {t('mainpage.featured.discountBadge')}
                             </span>
                           </span>
                         )}
@@ -216,11 +226,21 @@ const ProductsSliderTwo = ({ showcase }: Props) => {
                               {item.product.discount ? (
                                 <>
                                   <h4 className="text-sm line-through opacity-70 first-text-color-for-paragraph">
-                                    <PriceDisplay amount={item.product?.originalPrice || 0} currency={currency} currencyMode="none" languageCode={lang} />
+                                    <PriceDisplay
+                                      amount={item.product?.originalPrice || 0}
+                                      currency={currency}
+                                      currencyMode="none"
+                                      languageCode={lang}
+                                    />
                                   </h4>
                                   <span className="text-sm flex items-center">
                                     <span className="h-2 leading-4 pe-1 font-sm-bold first-text-color-for-paragraph  text-base">
-                                      <PriceDisplay amount={item.product?.price} currency={currency} currencyMode="none" languageCode={lang} />
+                                      <PriceDisplay
+                                        amount={item.product?.price}
+                                        currency={currency}
+                                        currencyMode="none"
+                                        languageCode={lang}
+                                      />
                                     </span>
                                     <span className="first-text-color-svg">
                                       <svg
@@ -245,7 +265,12 @@ const ProductsSliderTwo = ({ showcase }: Props) => {
                               ) : (
                                 <span className="text-sm flex items-center">
                                   <span className="h-2 leading-4 first-text-color-for-paragraph text-base pe-1">
-                                    <PriceDisplay amount={item.product.price} currency={currency} currencyMode="none" languageCode={lang} />
+                                    <PriceDisplay
+                                      amount={item.product.price}
+                                      currency={currency}
+                                      currencyMode="none"
+                                      languageCode={lang}
+                                    />
                                   </span>
                                   <span className="first-text-color-svg">
                                     <svg
@@ -273,7 +298,7 @@ const ProductsSliderTwo = ({ showcase }: Props) => {
                                 {formatRating(item.product.rating || 0)}
                               </span>
                               <span className="text-nowrap text-xs first-text-color-for-paragraph">
-                                از
+                                {t('mainpage.featured.ratingOutOf')}
                               </span>
                               <span className="text-nowrap text-xs first-text-color-for-paragraph">
                                 5
@@ -301,7 +326,9 @@ const ProductsSliderTwo = ({ showcase }: Props) => {
                               to={`/products/${item.product.slug}`}
                               className="bg-first flex justify-between text-center p-2 rounded-md text-white group"
                             >
-                              <span className="text-base w-21/24 font-s-regular">مشاهده محصول</span>
+                              <span className="text-base w-21/24 font-s-regular">
+                                {t('mainpage.featured.viewProduct')}
+                              </span>
                               <span className=" relative flex justify-center w-3/24">
                                 <svg
                                   width="12"

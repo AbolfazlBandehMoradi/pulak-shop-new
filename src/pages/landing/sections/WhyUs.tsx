@@ -8,23 +8,23 @@ const WhyUs = () => {
   const features = [
     {
       icon: '🏢',
-      titleKey: 'whyUs.features.production.title',
-      descKey: 'whyUs.features.production.description',
+      titleKey: 'mainpage.whyUs.features.production.title',
+      descKey: 'mainpage.whyUs.features.production.description',
     },
     {
       icon: '🏅',
-      titleKey: 'whyUs.features.certification.title',
-      descKey: 'whyUs.features.certification.description',
+      titleKey: 'mainpage.whyUs.features.certification.title',
+      descKey: 'mainpage.whyUs.features.certification.description',
     },
     {
       icon: '🚚',
-      titleKey: 'whyUs.features.delivery.title',
-      descKey: 'whyUs.features.delivery.description',
+      titleKey: 'mainpage.whyUs.features.delivery.title',
+      descKey: 'mainpage.whyUs.features.delivery.description',
     },
     {
       icon: '📝',
-      titleKey: 'whyUs.features.experience.title',
-      descKey: 'whyUs.features.experience.description',
+      titleKey: 'mainpage.whyUs.features.experience.title',
+      descKey: 'mainpage.whyUs.features.experience.description',
     },
   ];
   const { lang } = useLangStore();
@@ -42,7 +42,7 @@ const WhyUs = () => {
           }`}
           id="why-us-heading"
         >
-          {t('whyUs.title')}
+          {t('mainpage.whyUs.title')}
         </h2>
       </header>
 
@@ -85,7 +85,7 @@ const WhyUs = () => {
           <div className="rounded-xl overflow-hidden shadow-lg w-full max-w-[32rem] lg:max-w-none">
             <img
               src={PlusImage}
-              alt={t('whyUs.imageAlt')}
+              alt={t('mainpage.whyUs.imageAlt')}
               loading="lazy"
               className="w-full h-full object-cover"
             />

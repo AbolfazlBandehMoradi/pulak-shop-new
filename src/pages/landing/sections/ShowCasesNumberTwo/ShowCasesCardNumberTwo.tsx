@@ -22,7 +22,7 @@ export const ShowCasesCardNumberTwo: React.FC<ProductCardProps> = ({ showCaseIte
   const lang = useLangStore((s) => s.lang);
   const imageUrl = imageError
     ? `https://placehold.co/600x400/f1f5f9/475569?text=${encodeURIComponent(
-        product.nameEn || 'Product',
+        product.nameEn || t('common.product'),
       )}`
     : product.image;
 
@@ -56,7 +56,7 @@ export const ShowCasesCardNumberTwo: React.FC<ProductCardProps> = ({ showCaseIte
           <img
             src={imageUrl}
             onError={() => setImageError(true)}
-            alt={product?.name || 'Product'}
+            alt={product?.name || t('common.product')}
             className="h-full w-full object-contain"
           />
         </div>
@@ -70,7 +70,7 @@ export const ShowCasesCardNumberTwo: React.FC<ProductCardProps> = ({ showCaseIte
                 isHovered ? 'bg-yellow-400 text-black' : 'bg-third/10 text-third'
               }`}
             >
-              {product.discount}% {isRTL ? 'تخفیف' : 'OFF'}
+              {product.discount}% {t('product.discountBadge')}
             </Badge>
           )}
           <div className="flex items-center gap-1.5">

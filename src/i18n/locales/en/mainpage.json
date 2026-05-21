@@ -21,6 +21,26 @@
     "productCountSuffix": "items",
     "empty": "No categories found."
   },
+  "specials": {
+    "titlePrefix": "",
+    "titleAccent": "Professional",
+    "titleSuffix": "Products",
+    "description": "Pulak with the highest quality",
+    "more": "More products...",
+    "discountBadge": "Discount",
+    "ratingOutOf": "of",
+    "viewProduct": "View product"
+  },
+  "featured": {
+    "titlePrefix": "",
+    "titleAccent": "Featured",
+    "titleSuffix": "Products",
+    "cardTitle": "Featured products",
+    "more": "More products...",
+    "discountBadge": "Discount",
+    "ratingOutOf": "of",
+    "viewProduct": "View product"
+  },
   "discount": {
     "remainingTime": "Time left",
     "buy": "Buy",
@@ -43,5 +63,27 @@
   "banner": {
     "firstAlt": "Promotional banner 1",
     "secondAlt": "Promotional banner 2"
+  },
+  "whyUs": {
+    "title": "Why Pulak Beauty Paradise",
+    "imageAlt": "Pulak beauty and personal care products",
+    "features": {
+      "production": {
+        "title": "A complete beauty lineup",
+        "description": "Discover beauty and personal care essentials from trusted brands in one place."
+      },
+      "certification": {
+        "title": "Authenticity and quality you can trust",
+        "description": "Every product is selected carefully so you can shop with more confidence."
+      },
+      "delivery": {
+        "title": "Fast and reliable delivery",
+        "description": "Your order is packed securely and shipped as quickly as possible."
+      },
+      "experience": {
+        "title": "Special offers with real support",
+        "description": "Great prices, useful offers, and responsive support make shopping easier."
+      }
+    }
   }
 }
