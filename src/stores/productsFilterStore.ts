@@ -1,6 +1,12 @@
 // stores/productsFilterStore.ts
 import { create } from "zustand";
 
+const normalizeCategoryIds = (ids: string[]): string[] =>
+  Array.from(new Set(ids.map((id) => id.trim()).filter(Boolean))).sort();
+
+const areSameCategoryIds = (a: string[], b: string[]): boolean =>
+  a.length === b.length && a.every((item, index) => item === b[index]);
+
 interface ShopStore {
   // Filters
   search?: string;
@@ -42,27 +48,54 @@ export const useShopStore = create<ShopStore>((set) => ({
   viewMode: "grid",
 
   setSearch: (value) =>
-    set(() => ({ search: value?.trim() || undefined })),
+    set((state) => {
+      const nextSearch = value?.trim() || undefined;
+      return state.search === nextSearch ? state : { search: nextSearch };
+    }),
 
   setCategoryIds: (ids) =>
-    set(() => ({ categoryIds: ids })),
+    set((state) => {
+      const nextCategoryIds = normalizeCategoryIds(ids);
+      return areSameCategoryIds(state.categoryIds, nextCategoryIds)
+        ? state
+        : { categoryIds: nextCategoryIds };
+    }),
 
   setHasOffer: (value) =>
-    set(() => ({ hasOffer: value })),
+    set((state) => {
+      const nextHasOffer = value ? true : undefined;
+      return state.hasOffer === nextHasOffer ? state : { hasOffer: nextHasOffer };
+    }),
 
   toggleCategoryId: (id) =>
     set((state) => ({
-      categoryIds: state.categoryIds.includes(id)
-        ? state.categoryIds.filter((c) => c !== id)
-        : [...state.categoryIds, id],
+      categoryIds: normalizeCategoryIds(
+        state.categoryIds.includes(id)
+          ? state.categoryIds.filter((c) => c !== id)
+          : [...state.categoryIds, id]
+      ),
     })),
 
   setFilters: (filters) =>
-    set(() => ({
-      search: filters.search?.trim() || undefined,
-      categoryIds: filters.categoryIds,
-      hasOffer: filters.hasOffer,
-    })),
+    set((state) => {
+      const nextSearch = filters.search?.trim() || undefined;
+      const nextCategoryIds = normalizeCategoryIds(filters.categoryIds);
+      const nextHasOffer = filters.hasOffer ? true : undefined;
+
+      if (
+        state.search === nextSearch &&
+        state.hasOffer === nextHasOffer &&
+        areSameCategoryIds(state.categoryIds, nextCategoryIds)
+      ) {
+        return state;
+      }
+
+      return {
+        search: nextSearch,
+        categoryIds: nextCategoryIds,
+        hasOffer: nextHasOffer,
+      };
+    }),
 
   setSort: (sortBy, descending = false) =>
     set(() => ({

@@ -5,19 +5,87 @@ import { useInfiniteProducts } from '@/hooks/useInfiniteProducts';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useShopStore } from '@/stores/productsFilterStore';
 import useCategories from '@/hooks/useCategories';
-import { type Category } from '@/types';
 import { useLangStore } from '@/stores/languageStore';
 import { areSameStrings, parseCategoryIdsParam, parseHasOfferParam } from '@/utils/urlHelpers';
 import { FilterPanelSkeleton, ProductsContentSkeleton } from './sections/FilterPageSkeletons';
-import { getCategoryChildren } from '@/utils/categoryHelpers';
 import FiltersSidebar from './sections/FiltersSidebar';
-import { GridViewProduct } from './sections/GridViewProducts';
 import Spinner from '@/components/ui/Spinner';
 import ApiError from '@/pages/error/ApiError';
-import { CatalogProduct } from '@/types/productView.types';
+import { type CatalogProduct } from '@/types/productView.types';
+import ProductCard from './sections/ProductCard';
 
 const GRID_SKELETON_COUNT = 9;
 const MAX_GRID_SKELETON_COUNT = 12;
+const MANAGED_QUERY_KEYS = ['q', 'search', 'categoryIds', 'minPrice', 'maxPrice', 'hasOffer'] as const;
+
+type ShopFiltersSnapshot = {
+  search?: string;
+  categoryIds: string[];
+  hasOffer?: boolean;
+};
+
+const normalizeSearchValue = (value?: string) => value?.trim() || undefined;
+
+const normalizeCategoryIds = (ids: string[]) =>
+  Array.from(new Set(ids.map((item) => item.trim()).filter(Boolean))).sort();
+
+const normalizeHasOffer = (value?: boolean) => (value ? true : undefined);
+
+const normalizeFilters = (filters: ShopFiltersSnapshot): ShopFiltersSnapshot => ({
+  search: normalizeSearchValue(filters.search),
+  categoryIds: normalizeCategoryIds(filters.categoryIds),
+  hasOffer: normalizeHasOffer(filters.hasOffer),
+});
+
+const areSameFilters = (a: ShopFiltersSnapshot, b: ShopFiltersSnapshot) => {
+  const normalizedA = normalizeFilters(a);
+  const normalizedB = normalizeFilters(b);
+
+  return (
+    normalizedA.search === normalizedB.search &&
+    normalizedA.hasOffer === normalizedB.hasOffer &&
+    areSameStrings(normalizedA.categoryIds, normalizedB.categoryIds)
+  );
+};
+
+const parseFiltersFromSearch = (searchValue: string): ShopFiltersSnapshot => {
+  const params = new URLSearchParams(searchValue);
+  const parsedHasOffer = parseHasOfferParam(params.get('hasOffer'));
+
+  return normalizeFilters({
+    search: params.get('search') ?? params.get('q') ?? undefined,
+    categoryIds: parseCategoryIdsParam(params.get('categoryIds')),
+    hasOffer: parsedHasOffer === false ? undefined : parsedHasOffer,
+  });
+};
+
+const buildSearchParams = (currentSearch: string, filters: ShopFiltersSnapshot): URLSearchParams => {
+  const normalizedFilters = normalizeFilters(filters);
+  const params = new URLSearchParams(currentSearch);
+
+  MANAGED_QUERY_KEYS.forEach((key) => params.delete(key));
+
+  if (normalizedFilters.search) {
+    params.set('search', normalizedFilters.search);
+  }
+
+  if (normalizedFilters.categoryIds.length > 0) {
+    params.set('categoryIds', normalizedFilters.categoryIds.join(','));
+  }
+
+  if (normalizedFilters.hasOffer) {
+    params.set('hasOffer', 'true');
+  }
+
+  return params;
+};
+
+const toStableQueryString = (params: URLSearchParams): string => {
+  const snapshot = new URLSearchParams(params);
+  snapshot.sort();
+
+  return snapshot.toString();
+};
 
 export default function ProductsFilterPage() {
   const [, setSearchParams] = useSearchParams();
@@ -27,19 +95,18 @@ export default function ProductsFilterPage() {
   const lang = useLangStore((s) => s.lang);
   const dir = useLangStore((s) => s.dir);
 
-  const {
-    search,
-    categoryIds,
-    hasOffer,
-    setSearch,
-    setCategoryIds,
-    setHasOffer,
-    setFilters,
-    clearFilters,
-  } = useShopStore();
+  const search = useShopStore((s) => s.search);
+  const categoryIds = useShopStore((s) => s.categoryIds);
+  const hasOffer = useShopStore((s) => s.hasOffer);
+  const setSearch = useShopStore((s) => s.setSearch);
+  const setCategoryIds = useShopStore((s) => s.setCategoryIds);
+  const setHasOffer = useShopStore((s) => s.setHasOffer);
+  const setFilters = useShopStore((s) => s.setFilters);
+  const clearFilters = useShopStore((s) => s.clearFilters);
 
   const [isUrlHydrated, setIsUrlHydrated] = useState(false);
   const [componentError, setComponentError] = useState<string | null>(null);
+  const syncedQueryRef = useRef<string>('');
 
   const {
     data,
@@ -53,10 +120,21 @@ export default function ProductsFilterPage() {
 
   const products = data?.pages.flatMap((page) => page.products) ?? [];
 
-  const showProductsSkeleton = (isLoading || isFetching) && !isFetchingNextPage;
+  const normalizedActiveFilters = useMemo<ShopFiltersSnapshot>(
+    () =>
+      normalizeFilters({
+        search,
+        categoryIds,
+        hasOffer,
+      }),
+    [search, categoryIds, hasOffer],
+  );
+
+  const hasProducts = products.length > 0;
+  const showProductsSkeleton = !hasProducts && (isLoading || isFetching) && !isFetchingNextPage;
   const skeletonCount = Math.min(
     Math.max(products.length, GRID_SKELETON_COUNT),
-    MAX_GRID_SKELETON_COUNT
+    MAX_GRID_SKELETON_COUNT,
   );
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -70,90 +148,72 @@ export default function ProductsFilterPage() {
 
   const showInitialPageSkeleton = !hasCompletedInitialLoadRef.current && isLoading;
 
-  // ------------------ URL hydration ------------------
   useEffect(() => {
     try {
-      const currentParams = new URLSearchParams(location.search);
-      const nextSearch =
-        (currentParams.get('search') ?? currentParams.get('q') ?? '').trim() || undefined;
-      const nextCategoryIds = parseCategoryIdsParam(currentParams.get('categoryIds'));
-      const parsedHasOffer = parseHasOfferParam(currentParams.get('hasOffer'));
-      const nextHasOffer = parsedHasOffer === false ? undefined : parsedHasOffer;
+      const stableCurrentQuery = toStableQueryString(new URLSearchParams(location.search));
+      const nextFilters = parseFiltersFromSearch(location.search);
       const currentFilters = useShopStore.getState();
 
-      const hasChanged =
-        nextSearch !== currentFilters.search ||
-        !areSameStrings(nextCategoryIds, currentFilters.categoryIds) ||
-        nextHasOffer !== currentFilters.hasOffer;
+      const storeFilters = normalizeFilters({
+        search: currentFilters.search,
+        categoryIds: currentFilters.categoryIds,
+        hasOffer: currentFilters.hasOffer,
+      });
 
-      if (hasChanged) {
-        setFilters({
-          search: nextSearch,
-          categoryIds: nextCategoryIds,
-          hasOffer: nextHasOffer,
-        });
+      if (!areSameFilters(nextFilters, storeFilters)) {
+        setFilters(nextFilters);
       }
+
+      syncedQueryRef.current = stableCurrentQuery;
 
       if (!isUrlHydrated) {
         setIsUrlHydrated(true);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error hydrating URL params:', err);
-      setComponentError(err?.message ?? t('productsFilter.failedToParseUrlParams'));
+      setComponentError(err instanceof Error ? err.message : t('productsFilter.failedToParseUrlParams'));
     }
   }, [isUrlHydrated, location.search, setFilters, t]);
 
-  // ------------------ Update URL ------------------
   useEffect(() => {
     try {
-      if (!isUrlHydrated) return;
+      if (!isUrlHydrated) {
+        return;
+      }
 
-      const nextParams = new URLSearchParams(location.search);
+      const nextParams = buildSearchParams(location.search, normalizedActiveFilters);
+      const nextStableQuery = toStableQueryString(nextParams);
 
-      if (search) nextParams.set('search', search);
-      else nextParams.delete('search');
-
-      nextParams.delete('q');
-
-      if (categoryIds.length > 0) nextParams.set('categoryIds', categoryIds.join(','));
-      else nextParams.delete('categoryIds');
-
-      nextParams.delete('minPrice');
-      nextParams.delete('maxPrice');
-
-      if (hasOffer) nextParams.set('hasOffer', 'true');
-      else nextParams.delete('hasOffer');
-
-      const currentSearch = location.search.startsWith('?') ? location.search.slice(1) : location.search;
-      if (nextParams.toString() !== currentSearch) {
+      if (nextStableQuery !== syncedQueryRef.current) {
+        syncedQueryRef.current = nextStableQuery;
         setSearchParams(nextParams, { replace: true });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error updating URL:', err);
-      setComponentError(err?.message ?? t('productsFilter.failedToUpdateUrl'));
+      setComponentError(err instanceof Error ? err.message : t('productsFilter.failedToUpdateUrl'));
     }
-  }, [isUrlHydrated, location.search, setSearchParams, search, categoryIds, hasOffer, t]);
+  }, [isUrlHydrated, location.search, normalizedActiveFilters, setSearchParams, t]);
 
-  // ------------------ Infinite scroll ------------------
   useEffect(() => {
-    if (!hasNextPage || !loadMoreRef.current) return;
+    if (!hasNextPage || !loadMoreRef.current) {
+      return;
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          fetchNextPage();
+        if (entry.isIntersecting && !isFetchingNextPage) {
+          void fetchNextPage();
         }
       },
-      { rootMargin: '200px' }
+      { rootMargin: '200px' },
     );
 
     observer.observe(loadMoreRef.current);
     return () => observer.disconnect();
-  }, [hasNextPage, fetchNextPage]);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const handleClearFilters = () => {
     clearFilters();
-    setSearchParams({});
   };
 
   const [expanded, setExpanded] = useState<Record<string, boolean>>({
@@ -162,34 +222,23 @@ export default function ProductsFilterPage() {
 
   const toggleSection = (key: string) => setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
 
-  const hasActiveFilters = categoryIds.length > 0 || Boolean(search) || Boolean(hasOffer);
-
-  const categoryNameById = useMemo(() => {
-    const map = new Map<string, string>();
-
-    const visit = (items: Category[] = []) => {
-      items.forEach((category) => {
-        map.set(category.id, category.name);
-        visit(getCategoryChildren(category));
-      });
-    };
-
-    visit(categories ?? []);
-    return map;
-  }, [categories]);
+  const hasActiveFilters =
+    normalizedActiveFilters.categoryIds.length > 0 ||
+    Boolean(normalizedActiveFilters.search) ||
+    Boolean(normalizedActiveFilters.hasOffer);
 
   const activeFilterTags = useMemo(() => {
     const tags: Array<{ key: string; label: string; onRemove: () => void }> = [];
 
-    if (search) {
+    if (normalizedActiveFilters.search) {
       tags.push({
         key: 'search',
-        label: `${t('productsFilter.activeSearchLabel')}: ${search}`,
+        label: `${t('productsFilter.activeSearchLabel')}: ${normalizedActiveFilters.search}`,
         onRemove: () => setSearch(undefined),
       });
     }
 
-    if (hasOffer) {
+    if (normalizedActiveFilters.hasOffer) {
       tags.push({
         key: 'has-offer',
         label: t('productsFilter.onlyDiscountedProducts'),
@@ -197,29 +246,36 @@ export default function ProductsFilterPage() {
       });
     }
 
-    categoryIds.forEach((categoryId) => {
+    if (normalizedActiveFilters.categoryIds.length > 0) {
       tags.push({
-        key: `category-${categoryId}`,
-        label:
-          categoryNameById.get(categoryId) ??
-          `${t('productsFilter.activeCategoryLabel')}: ${categoryId}`,
-        onRemove: () =>
-          setCategoryIds(categoryIds.filter((id) => id !== categoryId)),
+        key: 'categories',
+        label: `${t('productsFilter.filters')}: ${t('productsFilter.categories')}`,
+        onRemove: () => setCategoryIds([]),
       });
-    });
+    }
 
     return tags;
-  }, [search, hasOffer, categoryIds, categoryNameById, t, setSearch, setHasOffer, setCategoryIds]);
+  }, [
+    normalizedActiveFilters.search,
+    normalizedActiveFilters.hasOffer,
+    normalizedActiveFilters.categoryIds,
+    t,
+    setSearch,
+    setHasOffer,
+    setCategoryIds,
+  ]);
 
   const getImageUrl = (product: CatalogProduct): string | null => {
-    if (!product.mainImage?.filePath) return null;
+    if (!product.mainImage?.filePath) {
+      return null;
+    }
+
     const base = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5299';
     return product.mainImage.filePath.startsWith('http')
       ? product.mainImage.filePath
       : `${base}${product.mainImage.filePath}`;
   };
 
-  // ------------------ Error Handling ------------------
   if (componentError || isCategoriesError || isProductsError) {
     return <ApiError onRetry={() => window.location.reload()} />;
   }
@@ -239,7 +295,6 @@ export default function ProductsFilterPage() {
     );
   }
 
-  // ------------------ Main Render ------------------
   return (
     <main dir={dir} className="relative mx-auto mt-8 px-4 sm:container lg:mt-16">
       <div className="flex flex-wrap justify-between gap-y-6">
@@ -253,6 +308,7 @@ export default function ProductsFilterPage() {
           hasActiveFilters={hasActiveFilters}
           handleClearFilters={handleClearFilters}
         />
+
         <section className="w-full md:w-32/96 lg:w-75/96">
           {hasActiveFilters && (
             <div className="mb-4 flex flex-wrap items-center gap-2">
@@ -264,7 +320,7 @@ export default function ProductsFilterPage() {
                   className="inline-flex items-center gap-1 rounded-full border border-first-100 bg-color-for-layer-on-body px-3 py-1 text-xs first-text-color-for-paragraph transition-colors hover:border-first hover:text-first"
                 >
                   <span>{tag.label}</span>
-                  <X className="w-3 h-3" />
+                  <X className="h-3 w-3" />
                 </button>
               ))}
             </div>
@@ -272,8 +328,16 @@ export default function ProductsFilterPage() {
 
           {showProductsSkeleton ? (
             <ProductsContentSkeleton count={skeletonCount} />
+          ) : hasProducts ? (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {products.map((product) => (
+                <ProductCard key={product.id} product={product} lang={lang} getImageUrl={getImageUrl} />
+              ))}
+            </div>
           ) : (
-            <GridViewProduct products={products} lang={lang} getImageUrl={getImageUrl} />
+            <div className="rounded-xl border border-first-100/70 bg-color-for-layer-on-body p-8 text-center first-text-color-for-paragraph">
+              {t('shop.noProducts')}
+            </div>
           )}
 
           <div ref={loadMoreRef} className="mt-4 flex h-16 justify-center">
