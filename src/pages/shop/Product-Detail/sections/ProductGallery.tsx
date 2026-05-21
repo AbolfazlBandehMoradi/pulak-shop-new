@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ZoomIn, X } from 'lucide-react';
 import { cn } from '@/utils/cn';
-import { Button } from '@/components/ui/IconButton';
 import type { MediaFile } from '@/utils/shopApi';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode, Thumbs } from 'swiper/modules';
@@ -46,12 +44,6 @@ export function ProductGallery({ images = [], mainImage, productName }: ProductG
       </div>
     );
   }
-  const maxThumbs = 3;
-
-  const visibleThumbs =
-    displayImages.length > maxThumbs ? displayImages.slice(0, maxThumbs) : displayImages;
-
-  const hasMoreThanThree = displayImages.length > maxThumbs;
   return (
     <>
       <div className="w-full  rounded-lg relative">

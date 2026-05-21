@@ -129,7 +129,7 @@ export default function ProductDetail() {
                   transition={{ duration: 0.5, delay: 0.1 }}
                 >
                   <ProductGallery
-                    images={product.images || []}
+                    images={(product.images || []).map((image) => image.mediaFile)}
                     mainImage={product.mainImage}
                     productName={translation?.name}
                     loading={loading}
