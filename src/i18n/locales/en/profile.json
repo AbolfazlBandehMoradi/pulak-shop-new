@@ -1,0 +1,24 @@
+{
+  "error": {
+    "loadFailed": "Failed to load profile data"
+  },
+  "defaultName": "User",
+  "emailMissing": "No email added yet",
+  "phoneMissing": "No phone number added yet",
+  "title": "My Profile",
+  "subtitle": "Account details and recent orders",
+  "nameMissing": "Your first and last name are not set yet.",
+  "roles": "Roles",
+  "noRoles": "No roles are assigned to this account yet.",
+  "recentOrders": "Recent Orders",
+  "totalOrders": "total orders",
+  "noOrders": "You have no orders yet.",
+  "emptyOrdersPage": "No orders were found on this page.",
+  "noOrdersHint": "After your first purchase, your order history will appear here.",
+  "emptyOrdersPageHint": "More orders may be available on another page.",
+  "orderId": "Order",
+  "status": "Status",
+  "date": "Date",
+  "items": "Items",
+  "total": "Total"
+}
