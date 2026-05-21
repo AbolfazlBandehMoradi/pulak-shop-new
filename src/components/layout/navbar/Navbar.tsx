@@ -247,7 +247,7 @@ export const Navbar: React.FC = () => {
 
       <div className="mx-auto bg-color-for-layer-on-body p-4">
         {!isMobile ? (
-          <div className="container mx-auto max-w-7xl flex items-center justify-between px-4">
+          <div dir={dir}  className="container mx-auto max-w-7xl flex items-center justify-between px-4">
             <ul className="flex items-center gap-8">
               <li className="text-base font-f-normal first-text-color">
                 <Link to={localizedPath('/')} className="first-header__ul-link">
@@ -280,7 +280,7 @@ export const Navbar: React.FC = () => {
                 </button>
 
                 {isDesktopCategoryOpen && (
-                  <div className="absolute -right-15  border border-gray-300/60 top-full z-40 mt-3 w-212.5 overflow-hidden rounded-2xl bg-color-for-layer-on-body shadow-dark-sm">
+                  <div className={`absolute ${dir == 'rtl' ? " -right-15" : "left-15" } border border-gray-300/60 top-full z-40 mt-3 w-212.5 overflow-hidden rounded-2xl bg-color-for-layer-on-body shadow-dark-sm`}>
                     <div className="flex">
                       <ul className="w-64 border-e border-gray-300/60 bg-color-for-layer-sec p-4">
                         {categories?.map((category, index) => (
