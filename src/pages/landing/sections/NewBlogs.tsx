@@ -1,5 +1,6 @@
 import { Blog } from '@/types';
 import cleanText from '@/utils/cleanText';
+import { Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -92,7 +93,7 @@ const NewBlogs = ({ blogs }: Props) => {
                   {blogs[blogs.length - 1]?.title}
                 </h3>
                 <h3 className="mt-1 text-sm font-f-light  first-text-color-for-paragraph line-clamp-4">
-                  {cleanText(blogs[blogs.length - 1]?.excerpt)}
+                  {cleanText(blogs[blogs.length - 1]?.content)}
                 </h3>
                 <hr className="first-text-color-hr mt-2 mb-2 " />
                 <div className="flex justify-between">
@@ -126,28 +127,7 @@ const NewBlogs = ({ blogs }: Props) => {
                       </span>
                       <div className="h-8 w-8 rounded-full flex justify-center items-center ">
                         <span className="first-text-color-svg">
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M12 5C8.24261 5 5.43602 7.4404 3.76737 9.43934C2.51521 10.9394 2.51521 13.0606 3.76737 14.5607C5.43602 16.5596 8.24261 19 12 19C15.7574 19 18.564 16.5596 20.2326 14.5607C21.4848 13.0606 21.4848 10.9394 20.2326 9.43934C18.564 7.4404 15.7574 5 12 5Z"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                            <path
-                              d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
+                         <Clock />
                         </span>
                       </div>
                     </div>
@@ -179,7 +159,7 @@ const NewBlogs = ({ blogs }: Props) => {
                   </h3>
                   <div>
                     <h3 className="mt-1 text-sm font-f-light  first-text-color-for-paragraph line-clamp-1">
-                      {cleanText(blog?.excerpt)}
+                      {cleanText(blog?.content)}
                     </h3>
                     <hr className="opacity-5 mt-2 mb-2 " />
                     <div className="flex justify-between">
@@ -213,28 +193,7 @@ const NewBlogs = ({ blogs }: Props) => {
                           </span>
                           <div className="h-8 w-8 rounded-full flex justify-center items-center ">
                             <span className="first-text-color-svg">
-                              <svg
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M12 5C8.24261 5 5.43602 7.4404 3.76737 9.43934C2.51521 10.9394 2.51521 13.0606 3.76737 14.5607C5.43602 16.5596 8.24261 19 12 19C15.7574 19 18.564 16.5596 20.2326 14.5607C21.4848 13.0606 21.4848 10.9394 20.2326 9.43934C18.564 7.4404 15.7574 5 12 5Z"
-                                  stroke="currentColor"
-                                  strokeWidth="1.5"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                                <path
-                                  d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z"
-                                  stroke="currentColor"
-                                  strokeWidth="1.5"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                              </svg>
+                              <Clock />
                             </span>
                           </div>
                         </div>

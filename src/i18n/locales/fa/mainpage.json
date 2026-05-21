@@ -33,8 +33,8 @@
   },
   "featured": {
     "titlePrefix": "",
-    "titleAccent": "ویژه",
-    "titleSuffix": "محصولات",
+    "titleAccent": "محصولات",
+    "titleSuffix": "ویژه",
     "cardTitle": "محصولات ویژه",
     "more": "محصولات بیشتر ...",
     "discountBadge": "تخفیف",
