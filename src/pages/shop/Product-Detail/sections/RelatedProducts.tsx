@@ -121,7 +121,7 @@ export function RelatedProducts({ relatedProducts, languageCode, loading }: Rela
               <button
                 onClick={() => scroll('left')}
                 className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border border-gray-200 dark:border-gray-700"
-                aria-label="Previous products"
+                aria-label={t('productDetail.related.previousProducts') || 'Previous products'}
               >
                 <ChevronLeft className="w-6 h-6" />
               </button>
@@ -130,7 +130,7 @@ export function RelatedProducts({ relatedProducts, languageCode, loading }: Rela
               <button
                 onClick={() => scroll('right')}
                 className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border border-gray-200 dark:border-gray-700"
-                aria-label="Next products"
+                aria-label={t('productDetail.related.nextProducts') || 'Next products'}
               >
                 <ChevronRight className="w-6 h-6" />
               </button>
@@ -187,7 +187,7 @@ export function RelatedProducts({ relatedProducts, languageCode, loading }: Rela
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <span className="text-muted-foreground dark:text-gray-400 text-sm">
-                          No image
+                          {t('productDetail.gallery.noImage') || 'No image'}
                         </span>
                       </div>
                     )}

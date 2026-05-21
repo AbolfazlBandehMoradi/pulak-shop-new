@@ -8,6 +8,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode, Thumbs } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
 import { ChevronLeftIcon } from '@heroicons/react/24/outline';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface ProductGalleryProps {
   images: MediaFile[]; // ✅ اصلاح شد
@@ -18,6 +19,7 @@ interface ProductGalleryProps {
 }
 
 export function ProductGallery({ images = [], mainImage, productName }: ProductGalleryProps) {
+  const { t } = useTranslation();
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
   const [mainSwiper, setMainSwiper] = useState<SwiperType | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -40,7 +42,7 @@ export function ProductGallery({ images = [], mainImage, productName }: ProductG
   if (!displayImages.length) {
     return (
       <div className="aspect-square flex items-center justify-center bg-gray-100 rounded-lg">
-        No image
+        {t('productDetail.gallery.noImage') || 'No image'}
       </div>
     );
   }
@@ -70,7 +72,7 @@ export function ProductGallery({ images = [], mainImage, productName }: ProductG
               >
                 <img
                   src={getImageUrl(img.filePath)}
-                  alt={productName || 'Product'}
+                  alt={productName || t('productDetail.gallery.imageAlt') || 'Product image'}
                   className="w-full h-full object-contain p-4 transition-transform duration-300 group-hover:scale-105"
                   loading="lazy"
                 />

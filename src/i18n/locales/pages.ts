@@ -11,6 +11,8 @@ import enMainPage from './en/mainpage.json';
 import enPayment from './en/payment.json';
 import enPrivete from './en/privete.json';
 import enProduct from './en/product.json';
+import enProductDetail from './en/productDetail.json';
+import enProductsFilter from './en/productsFilter.json';
 import enReview from './en/review.json';
 import enStatic from './en/static.json';
 
@@ -27,6 +29,8 @@ import faMainPage from './fa/mainpage.json';
 import faPayment from './fa/payment.json';
 import faPrivete from './fa/privete.json';
 import faProduct from './fa/product.json';
+import faProductDetail from './fa/productDetail.json';
+import faProductsFilter from './fa/productsFilter.json';
 import faReview from './fa/review.json';
 import faStatic from './fa/static.json';
 
@@ -46,6 +50,8 @@ export const pageTranslations = {
     privete: enPrivete,
     private: enPrivete,
     product: enProduct,
+    productDetail: enProductDetail,
+    productsFilter: enProductsFilter,
     review: enReview,
     static: enStatic,
   },
@@ -64,6 +70,8 @@ export const pageTranslations = {
     privete: faPrivete,
     private: faPrivete,
     product: faProduct,
+    productDetail: faProductDetail,
+    productsFilter: faProductsFilter,
     review: faReview,
     static: faStatic,
   },

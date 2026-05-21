@@ -1,0 +1,13 @@
+{
+  "consultation": {
+    "title": "برای دریافت مشاوره با ما در ارتباط باشید."
+  },
+  "gallery": {
+    "noImage": "تصویری موجود نیست",
+    "imageAlt": "تصویر محصول"
+  },
+  "related": {
+    "previousProducts": "محصولات قبلی",
+    "nextProducts": "محصولات بعدی"
+  }
+}

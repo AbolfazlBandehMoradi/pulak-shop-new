@@ -1,0 +1,13 @@
+{
+  "consultation": {
+    "title": "Contact us to get consultation."
+  },
+  "gallery": {
+    "noImage": "No image",
+    "imageAlt": "Product image"
+  },
+  "related": {
+    "previousProducts": "Previous products",
+    "nextProducts": "Next products"
+  }
+}

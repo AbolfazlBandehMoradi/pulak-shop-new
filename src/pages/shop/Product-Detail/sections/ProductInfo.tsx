@@ -137,7 +137,7 @@ export function ProductInfo({ product, loading, languageCode }: ProductInfoProps
       )}
       <div className=" mt-4  rounded-sm ">
         <h2 className="w-full  font-s-medium first-text-color text-lg mb-2">
-          برای دریافت مشاوره با ما در ارتباط باشید.
+          {t('productDetail.consultation.title')}
         </h2>
         <ShareSocialMedia
           options={['rubika', 'soroush', 'eitaa']}
