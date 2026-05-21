@@ -1,5 +1,9 @@
 import { type Language } from "@/types";
-import { type Product, type ProductTranslation } from "@/utils/shopApi";
+import {
+  type Product,
+  type ProductListTranslation,
+  type ProductTranslation,
+} from "@/utils/shopApi";
 
 export type CatalogProduct = Product & {
   inStock?: boolean;
@@ -29,18 +33,24 @@ export interface ProductViewProps {
   getImageUrl: GetProductImageUrl;
 }
 
+export type ProductCardTranslation = ProductTranslation | ProductListTranslation;
+
 export const getProductTranslation = (
   product: CatalogProduct,
   lang: Language
-): ProductTranslation | undefined => {
-  const translations = Array.isArray(product.translations)
-    ? product.translations
-    : [];
+): ProductCardTranslation | undefined => {
+  if (Array.isArray(product.translations)) {
+    return (
+      product.translations.find((translation) => translation.languageCode === lang) ??
+      product.translations[0]
+    );
+  }
 
-  return (
-    translations.find((translation) => translation.languageCode === lang) ??
-    translations[0]
-  );
+  if (product.translations && typeof product.translations === "object") {
+    return product.translations;
+  }
+
+  return undefined;
 };
 
 export const getProductPrice = (product: CatalogProduct): number => {

@@ -1,19 +1,16 @@
-import { Star } from 'lucide-react';
+import { ArrowUpRight, Clock3, ImageOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from '@/i18n/useTranslation';
 import { Badge } from '@/components/ui/Badge';
-import cleanText from '@/utils/cleanText';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import {
   type CatalogProduct,
-  getProductDiscount,
-  getProductOriginalPrice,
-  getProductPrice,
   getProductTranslation,
   isProductInStock,
 } from '@/types/productView.types';
 import { type Language } from '@/types';
+import { useEffect, useMemo, useState } from 'react';
 
 type ProductCardProps = {
   product: CatalogProduct;
@@ -21,93 +18,244 @@ type ProductCardProps = {
   getImageUrl: (product: CatalogProduct) => string | null;
 };
 
+type RemainingTime = {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+};
+
+type OfferCountdownProps = {
+  lang: Language;
+  saleEndDateUtc: string;
+};
+
+const getRemainingTime = (endAtMs: number): RemainingTime | null => {
+  const difference = endAtMs - Date.now();
+
+  if (difference <= 0) {
+    return null;
+  }
+
+  return {
+    days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+    minutes: Math.floor((difference / (1000 * 60)) % 60),
+    seconds: Math.floor((difference / 1000) % 60),
+  };
+};
+
+function OfferCountdown({ lang, saleEndDateUtc }: OfferCountdownProps) {
+  const endAtMs = useMemo(() => Date.parse(saleEndDateUtc), [saleEndDateUtc]);
+  const [remainingTime, setRemainingTime] = useState<RemainingTime | null>(() =>
+    Number.isFinite(endAtMs) ? getRemainingTime(endAtMs) : null,
+  );
+
+  useEffect(() => {
+    if (!Number.isFinite(endAtMs)) {
+      setRemainingTime(null);
+      return;
+    }
+
+    const updateTime = () => setRemainingTime(getRemainingTime(endAtMs));
+
+    updateTime();
+    const intervalId = window.setInterval(updateTime, 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, [endAtMs]);
+
+  if (!remainingTime) {
+    return null;
+  }
+
+  const locale = lang === 'fa' ? 'fa-IR' : 'en-US';
+  const numberFormatter = new Intl.NumberFormat(locale, {
+    minimumIntegerDigits: 2,
+    useGrouping: false,
+  });
+  const offerLabel = lang === 'fa' ? '\u067e\u0627\u06cc\u0627\u0646 \u067e\u06cc\u0634\u0646\u0647\u0627\u062f' : 'Offer ends in';
+  const units = [
+    { key: lang === 'fa' ? '\u0631\u0648\u0632' : 'd', value: remainingTime.days },
+    { key: lang === 'fa' ? '\u0633' : 'h', value: remainingTime.hours },
+    { key: lang === 'fa' ? '\u062f' : 'm', value: remainingTime.minutes },
+  ];
+
+  return (
+    <div className="mt-2 rounded-lg border border-third/35 bg-third/10 px-2.5 py-1.5">
+      <div className="flex items-center gap-1.5">
+        <Clock3 className="h-3.5 w-3.5 text-first" />
+        <span className="text-[11px] font-s-medium first-text-color-for-paragraph">{offerLabel}</span>
+        <div className="ms-auto flex items-center gap-1">
+          {units.map((unit) => (
+            <span
+              key={unit.key}
+              className="inline-flex items-center gap-0.5 rounded bg-first/90 px-1.5 py-0.5 text-[10px] font-s-medium text-white"
+            >
+              <span>{numberFormatter.format(unit.value)}</span>
+              <span className="opacity-85">{unit.key}</span>
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ProductCard({ product, lang, getImageUrl }: ProductCardProps) {
   const { t } = useTranslation();
   const localizedPath = useLocalizedPath();
+  const labels = {
+    freeShipping: lang === 'fa' ? '\u0627\u0631\u0633\u0627\u0644 \u0631\u0627\u06cc\u06af\u0627\u0646' : 'Free shipping',
+    unavailableImage: lang === 'fa' ? '\u062a\u0635\u0648\u06cc\u0631 \u0646\u062f\u0627\u0631\u062f' : 'No image',
+  };
 
-  const isRTL = lang === 'fa';
   const translation = getProductTranslation(product, lang);
-  const currentPrice = getProductPrice(product);
-  const originalPrice = getProductOriginalPrice(product);
-  const discount = getProductDiscount(product);
   const inStock = isProductInStock(product);
-  const rating = typeof product.rating === 'number' ? product.rating : 4.5;
   const imageUrl = getImageUrl(product);
 
+  const localizedPrice = useMemo(
+    () => product.prices.find((price) => price.languageCode === lang) ?? product.prices[0],
+    [lang, product.prices],
+  );
+
+  const basePrice = useMemo(
+    () => localizedPrice?.originalPrice ?? localizedPrice?.price ?? product.price ?? 0,
+    [localizedPrice, product.price],
+  );
+
+  const salePrice = useMemo(() => {
+    if (typeof localizedPrice?.salePrice === 'number') {
+      return localizedPrice.salePrice;
+    }
+
+    if (typeof product.salePrice === 'number') {
+      return product.salePrice;
+    }
+
+    return null;
+  }, [localizedPrice?.salePrice, product.salePrice]);
+
+  const hasDiscount =
+    typeof salePrice === 'number' &&
+    typeof basePrice === 'number' &&
+    basePrice > 0 &&
+    salePrice > 0 &&
+    salePrice < basePrice;
+
+  const currentPrice = hasDiscount ? salePrice : localizedPrice?.price ?? product.price ?? 0;
+  const originalPrice = hasDiscount ? basePrice : undefined;
+
+  const discount = useMemo(() => {
+    if (typeof localizedPrice?.discountPercent === 'number') {
+      return localizedPrice.discountPercent;
+    }
+
+    if (typeof product.discountPercent === 'number') {
+      return product.discountPercent;
+    }
+
+    if (hasDiscount) {
+      return Math.round(((basePrice - currentPrice) / basePrice) * 100);
+    }
+
+    return undefined;
+  }, [localizedPrice?.discountPercent, product.discountPercent, hasDiscount, basePrice, currentPrice]);
+
+  const showOfferTimer =
+    hasDiscount &&
+    Boolean(localizedPrice?.saleEndDateUtc) &&
+    (product.isOnSale || localizedPrice?.isSaleActive || localizedPrice?.hasSalePrice);
+
   return (
-    <article
-      className="relative flex h-95 flex-col justify-between rounded-xl border border-first-100/70 bg-color-for-layer-on-body p-4 shadow-[0_10px_26px_-20px_rgba(27,126,251,0.45)] transition-all duration-300 hover:border-first-300 hover:shadow-first-md"
-    >
-      <div className="relative flex h-1/2 w-full items-center justify-center">
-        <div className="absolute inset-x-0 top-0 flex items-start justify-between">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-first-100/70 bg-color-for-layer-on-body p-2.5 shadow-[0_12px_30px_-22px_rgba(15,23,42,0.5)] transition-all duration-300 hover:-translate-y-1 hover:border-first-300 hover:shadow-[0_16px_36px_-20px_rgba(27,126,251,0.35)]">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(27,126,251,0.09),transparent_52%)]" />
+
+      <div className="relative overflow-hidden rounded-xl border border-first-100/70 bg-color-for-layer-sec">
+        <Link
+          to={localizedPath(`/products/${product.slug}`)}
+          className="block aspect-[4/3] w-full"
+          aria-label={translation?.name ?? product.name}
+        >
+          {imageUrl ? (
+            <img
+              src={imageUrl}
+              className="h-full w-full object-contain p-3 transition-transform duration-500 group-hover:scale-105"
+              alt={translation?.name ?? product.name}
+              loading="lazy"
+            />
+          ) : (
+            <div className="flex h-full w-full flex-col items-center justify-center gap-2 first-text-color-for-paragraph">
+              <ImageOff className="h-8 w-8 opacity-70" />
+              <span className="text-xs">{labels.unavailableImage}</span>
+            </div>
+          )}
+        </Link>
+
+        <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between p-2">
           {typeof discount === 'number' && discount > 0 ? (
-            <div className="rounded-md bg-third/20 px-2 py-1">
-              <p className="text-[13px] text-first font-s-medium">{discount}%</p>
+            <div className="rounded-full bg-first px-2 py-0.5 text-[10px] font-s-medium text-white shadow-sm">
+              -{discount}%
             </div>
           ) : (
-            <div />
+            <span />
           )}
 
           {!inStock && (
-            <Badge className="bg-red-500 px-2 py-1 text-xs text-white">{t('productsFilter.outOfStock')}</Badge>
+            <Badge className="rounded-full bg-red-500 px-2 py-0.5 text-[10px] text-white">
+              {t('productsFilter.outOfStock')}
+            </Badge>
           )}
         </div>
-
-        <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-xl bg-color-for-layer-sec">
-          <img
-            src={imageUrl ?? ''}
-            className="h-full w-full object-contain"
-            alt={translation?.name ?? product.name}
-            loading="lazy"
-          />
-        </div>
       </div>
 
-      <div>
-        <h3 className="line-clamp-1 pb-1 pt-2 text-base font-s-medium first-text-color">
-          {translation?.name ?? product.name}
-        </h3>
-        <p className="line-clamp-2 text-sm font-f-light first-text-color-for-paragraph">
-          {cleanText(translation?.description)}
-        </p>
-      </div>
+      <div className="relative mt-3 flex flex-1 flex-col">
+        <Link to={localizedPath(`/products/${product.slug}`)} className="group/title">
+          <h3 className="line-clamp-2 min-h-[2.9rem] text-[15px] font-s-medium leading-[1.45] first-text-color transition-colors group-hover/title:text-first">
+            {translation?.name ?? product.name}
+          </h3>
+        </Link>
 
-      <div className="my-2 flex items-center justify-between">
-        <div className="flex flex-col">
-          {typeof originalPrice === 'number' && originalPrice > currentPrice && (
-            <h4 className="text-sm line-through opacity-70 first-text-color-for-paragraph">
-              <PriceDisplay
-                amount={originalPrice}
-                currency={isRTL ? 'IRT' : 'USD'}
+        <div className="mt-2.5 flex items-end justify-between gap-2">
+          <div className="flex flex-col justify-end">
+            {typeof originalPrice === 'number' && originalPrice > currentPrice && (
+              <h4 className="text-xs opacity-70 line-through first-text-color-for-paragraph">
+                <PriceDisplay
+                  amount={originalPrice}
+                  currency={localizedPrice?.currencyCode ?? product.currencyCode}
                 currencyMode="none"
                 languageCode={lang}
               />
             </h4>
+            )}
+
+            <span className="text-base font-sm-bold first-text-color-for-paragraph">
+              <PriceDisplay
+                amount={currentPrice}
+                currency={localizedPrice?.currencyCode ?? product.currencyCode}
+                currencyMode="none"
+                languageCode={lang}
+              />
+            </span>
+          </div>
+
+          {product.freeShipping && (
+            <span className="rounded-full border border-emerald-300/70 bg-emerald-100/60 px-2 py-0.5 text-[10px] font-s-medium text-emerald-700">
+              {labels.freeShipping}
+            </span>
           )}
-
-          <span className="text-base font-sm-bold first-text-color-for-paragraph">
-            <PriceDisplay
-              amount={currentPrice}
-              currency={isRTL ? 'IRT' : 'USD'}
-              currencyMode="none"
-              languageCode={lang}
-            />
-          </span>
         </div>
 
-        <div className="flex items-center gap-1 border-s border-first-100 ps-2">
-          <span className="text-xs first-text-color-for-paragraph">{rating.toFixed(1)}</span>
-          <span className="text-xs first-text-color-for-paragraph">/ 5</span>
-          <Star className="h-4 w-4 fill-amber-500 text-amber-500" />
-        </div>
-      </div>
+        {showOfferTimer && localizedPrice?.saleEndDateUtc && (
+          <OfferCountdown lang={lang} saleEndDateUtc={localizedPrice.saleEndDateUtc} />
+        )}
 
-      <div className="w-full">
         <Link
           to={localizedPath(`/products/${product.slug}`)}
-          className="block w-full rounded-lg bg-first px-4 py-2 text-center text-white transition-colors hover:bg-first-700"
+          className="mt-2.5 inline-flex items-center gap-1.5 self-start text-sm font-s-medium text-first transition-colors hover:text-first-700"
         >
-          {t('shop.viewProduct')}
+          {t('common.viewProduct')}
+          <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </Link>
       </div>
     </article>

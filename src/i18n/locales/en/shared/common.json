@@ -10,6 +10,9 @@
     "continueShopping": "Continue Shopping",
     "toggleTheme": "Toggle theme",
     "product": "Product",
-    "products": "Products"
+    "products": "Products",
+    "viewProduct": "View Product",
+    "addToCart": "Add to Cart",
+    "outOfStock": "Out of Stock"
   }
 }

@@ -4,9 +4,56 @@ export interface MediaFile {
   id: number;
   fileName: string;
   filePath: string;
-  thumbnailPath?: string;
-  alt?: string;
-  title?: string;
+  thumbnailPath?: string | null;
+  alt?: string | null;
+  title?: string | null;
+}
+
+export interface ProductListTranslation {
+  languageCode: string;
+  name: string;
+  slug: string;
+  shortDescription: string | null;
+  description: string | null;
+  metaTitle: string | null;
+  metaDescription: string | null;
+  countryOfOriginDisplay: string | null;
+  moneyBackPolicy: string | null;
+  warrantyTerms: string | null;
+  shippingLeadTime: string | null;
+  shippingMethodsDescription: string | null;
+  shippingCostRemarks: string | null;
+  exchangeTerms: string | null;
+  authenticityNote: string | null;
+}
+
+export interface ProductListPrice {
+  id: number;
+  productId: number;
+  variantId: number | null;
+  languageCode: string;
+  currencyCode: string;
+  currencySymbol: string;
+  price: number;
+  salePrice: number | null;
+  originalPrice: number | null;
+  discountPercent: number | null;
+  hasSalePrice: boolean;
+  isSaleActive: boolean;
+  saleStartDateUtc: string | null;
+  saleEndDateUtc: string | null;
+  saleStartDate: string | null;
+  saleStartTime: string | null;
+  saleEndDate: string | null;
+  saleEndTime: string | null;
+  saleStartDateShamsi: string | null;
+  saleEndDateShamsi: string | null;
+  cultureInfoName: string | null;
+  dateTimeShortDatePattern: string | null;
+  dateTimeShortTimePattern: string | null;
+  costPrice: number | null;
+  taxRate: number | null;
+  isTaxIncluded: boolean;
 }
 
 export interface Product {
@@ -17,20 +64,39 @@ export interface Product {
   isPublished: boolean;
   isFeatured: boolean;
   status: string;
-  mainImage?: MediaFile;
+  mainImage?: MediaFile | null;
   createdAt: string;
   updatedAt: string;
-  price?: number;
-  salePrice?: number | null;
-  currencyCode?: string;
-  currencySymbol?: string;
-  discountPercent?: number | null;
+  specificationsJson?: string | null;
+  price: number;
+  salePrice: number | null;
+  currencyCode: string;
+  currencySymbol: string;
+  discountPercent: number | null;
   isOnSale: boolean;
-  stockQuantity?: number | null;
-  translations: ProductTranslation[];
+  stockQuantity: number;
+  tracksInventory: boolean;
+  isFavorite: boolean;
+  hasWarranty: boolean;
+  warrantyType: string | null;
+  postalMethod: string | null;
+  vendorName: string | null;
+  authenticity: string;
+  countryOfOriginCode: string | null;
+  hasMoneyBackGuarantee: boolean;
+  warrantyDurationValue: number | null;
+  warrantyDurationUnit: string;
+  freeShipping: boolean;
+  fixedShippingPrice: number | null;
+  allowsExchange: boolean;
+  sellerKind: string;
+  prices: ProductListPrice[];
+  attributeValuesWithDefinitions: Array<Record<string, unknown>>;
+  translations: ProductListTranslation | ProductTranslation[] | null;
 }
 
 export interface ProductsResponse {
+  languageCode: string;
   products: Product[];
   totalCount: number;
   pageNumber: number;
@@ -165,9 +231,10 @@ export async function getFilters(langCode?: string): Promise<FiltersResponse> {
 
 // Product Detail Types
 export interface ProductTranslation {
-  id: number;
+  id?: number;
   languageCode: string;
   name: string;
+  slug?: string;
   shortDescription?: string;
   description?: string;
   metaTitle?: string;
@@ -175,6 +242,14 @@ export interface ProductTranslation {
   metaKeywords?: string;
   ogTitle?: string;
   ogDescription?: string;
+  countryOfOriginDisplay?: string | null;
+  moneyBackPolicy?: string | null;
+  warrantyTerms?: string | null;
+  shippingLeadTime?: string | null;
+  shippingMethodsDescription?: string | null;
+  shippingCostRemarks?: string | null;
+  exchangeTerms?: string | null;
+  authenticityNote?: string | null;
 }
 
 export interface ProductCategory {
