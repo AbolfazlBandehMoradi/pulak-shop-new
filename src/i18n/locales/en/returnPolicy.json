@@ -1,0 +1,16 @@
+{
+  "title": "Return Policy",
+  "description": "Your satisfaction is important to us. If you are not completely satisfied with your purchase, you may be eligible for a return under the terms outlined below.",
+  "imageAlt": "Return policy illustration",
+  "rulesList": "Return policy rules",
+  "rules": [
+    "Items must be returned within 7 days of delivery.",
+    "Products must be unused and in original packaging.",
+    "Customized or special-order items are not eligible for return.",
+    "Return shipping costs are the responsibility of the customer.",
+    "Refunds will be processed within 5–7 business days after inspection.",
+    "Damaged items must be reported within 24 hours of delivery."
+  ],
+  "contactTitle": "Have questions about returns?",
+  "contactButton": "Contact Support"
+}

@@ -41,7 +41,7 @@ const AboutUs = () => {
         <figure className="w-full lg:w-16/48 xl:w-12/48 2xl:w-12/48">
           <img
             src={ShopImage}
-            alt={aboutData.title || t("about.imageAlt")}
+            alt={aboutData.title}
             className="rounded-xl w-full h-auto object-cover"
             loading="lazy"
           />
@@ -62,7 +62,7 @@ const AboutUs = () => {
           </header>
 
           {/* Features List */}
-          <ul className="mt-4 space-y-1" aria-label={t("about.featuresList")}>
+          <ul className="mt-4 space-y-1" aria-label={aboutData.title}>
             {aboutData.features.map((feature, idx) => (
               <li key={idx} className="flex items-center gap-2">
                 <span className="bg-green-600 w-2 h-2 rotate-45 opacity-70 rounded-xs flex transition-opacity duration-300" aria-hidden="true"></span>

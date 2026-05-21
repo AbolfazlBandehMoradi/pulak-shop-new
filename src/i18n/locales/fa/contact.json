@@ -1,31 +1,7 @@
 {
-  "title": "About Gamma Teb Asia",
-  "description": "Gamma Teb Asia, as one of the leading manufacturers of medical equipment, has been operating since 2002. Starting in 2021, with an innovative approach and a focus on hygienic products for the food and pharmaceutical industries, the company specialized in producing oral freshener sprays. We are committed to producing all products with high quality, safety, and in accordance with national and international standards.",
-  "features": [
-    "Production of high-quality strile and non-strile medical equipment",
-    "Specialized production of oral freshener sprays with safe formulation",
-    "Strict quality control in accordance with international standards",
-    "Bulk order availability for medical centers and long-term cooperation",
-    "Fast and safe product delivery",
-    "Professional support and customer service"
-  ],
-  "contactTitle": "Get in Touch",
-  "contactAddress": "Alborz - Simin Dasht Industrial Town, 6th East Street, No.111",
-  "contactButton": "Contact Us",
-  "returnPolicy": {
-    "title": "Return Policy",
-    "description": "Your satisfaction is important to us. If you are not completely satisfied with your purchase, you may be eligible for a return under the terms outlined below.",
-    "imageAlt": "Return policy illustration",
-    "rulesList": "Return policy rules",
-    "rules": [
-      "Items must be returned within 7 days of delivery.",
-      "Products must be unused and in original packaging.",
-      "Customized or special-order items are not eligible for return.",
-      "Return shipping costs are the responsibility of the customer.",
-      "Refunds will be processed within 5–7 business days after inspection.",
-      "Damaged items must be reported within 24 hours of delivery."
-    ],
-    "contactTitle": "Have questions about returns?",
-    "contactButton": "Contact Support"
-  }
+  "phone": "تلفن دفتر مرکزی:66419417-021",
+  "phoneFactory": "تلفن  کارخانه:36670300-026",
+  "phoneSound": " صدای مشتری :09307587686",
+  "email": "ایمیل: info@gammatebasia.com",
+  "location": "البرز - شهرک صنعتی سیمین دشت خیابان ششم شرقی پلاک664"
 }

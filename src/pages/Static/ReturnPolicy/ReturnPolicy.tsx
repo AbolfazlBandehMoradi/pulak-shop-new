@@ -7,6 +7,8 @@ import { useLocalizedPath } from "@/hooks/useLocalizedPath";
 interface ReturnPolicyTranslation {
     title: string;
     description: string;
+    imageAlt: string;
+    rulesList: string;
     rules: string[];
     contactTitle: string;
     contactButton: string;
@@ -21,13 +23,15 @@ const ReturnPolicy = () => {
     const defaultPolicy = {
         title: "",
         description: "",
+        imageAlt: "",
+        rulesList: "",
         rules: [],
         contactTitle: "",
         contactButton: "",
     };
 
     const policyData =
-        (t("static.returnPolicy", { returnObjects: true }) as ReturnPolicyTranslation) ||
+        (t("returnPolicy", { returnObjects: true }) as ReturnPolicyTranslation) ||
         defaultPolicy;
 
     return (
@@ -42,7 +46,7 @@ const ReturnPolicy = () => {
                 <figure className="w-full lg:w-16/48 xl:w-12/48 2xl:w-12/48">
                     <img
                         src={ShopImage}
-                        alt={policyData.title || t("returnPolicy.imageAlt")}
+                        alt={policyData.imageAlt || policyData.title}
                         className="rounded-xl w-full h-auto object-cover"
                         loading="lazy"
                     />
@@ -65,7 +69,7 @@ const ReturnPolicy = () => {
                     {/* Rules List */}
                     <ul
                         className="mt-4 space-y-1"
-                        aria-label={t("returnPolicy.rulesList")}
+                        aria-label={policyData.rulesList || policyData.title}
                     >
                         {policyData.rules.map((rule, idx) => (
                             <li key={idx} className="flex items-center gap-2">

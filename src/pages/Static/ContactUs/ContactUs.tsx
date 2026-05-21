@@ -1,18 +1,34 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { AiOutlineMail, AiOutlinePhone } from 'react-icons/ai';
 import { GoLocation } from 'react-icons/go';
 
-const contactItems = [
-  { icon: AiOutlinePhone, textKey: 'footer.phone', href: 'tel:+982636670300' },
-  { icon: AiOutlinePhone, textKey: 'footer.phoneFactory', href: 'tel:+982636641417' },
-  { icon: AiOutlinePhone, textKey: 'footer.phoneSound', href: 'tel:+989307587686' },
-  { icon: AiOutlineMail, textKey: 'footer.email', href: 'mailto:info@gammatebasia.com' },
-  { icon: GoLocation, textKey: 'footer.LocateIcon' },
-];
+interface ContactTranslation {
+  phone: string;
+  phoneFactory: string;
+  phoneSound: string;
+  email: string;
+  location: string;
+}
 
-export const ContactUs: React.FC = () => {
+const defaultContact: ContactTranslation = {
+  phone: '',
+  phoneFactory: '',
+  phoneSound: '',
+  email: '',
+  location: '',
+};
+
+const ContactUs = () => {
   const { t } = useTranslation();
+  const contactData = (t('contact', { returnObjects: true }) as ContactTranslation) || defaultContact;
+
+  const contactItems = [
+    { icon: AiOutlinePhone, text: contactData.phone, href: 'tel:+982166419417' },
+    { icon: AiOutlinePhone, text: contactData.phoneFactory, href: 'tel:+982636670300' },
+    { icon: AiOutlinePhone, text: contactData.phoneSound, href: 'tel:+989307587686' },
+    { icon: AiOutlineMail, text: contactData.email, href: 'mailto:info@gammatebasia.com' },
+    { icon: GoLocation, text: contactData.location },
+  ];
 
   return (
     <section className="mx-auto mt-24 px-4 sm:container lg:mt-8">
@@ -28,7 +44,7 @@ export const ContactUs: React.FC = () => {
               <div className="w-10 h-10 flex items-center justify-center bg-blue-100 rounded-lg">
                 <item.icon className="text-blue-600 w-5 h-5" />
               </div>
-              <span className="text-sm text-white">{t(item.textKey)}</span>
+              <span className="text-sm text-white">{item.text}</span>
             </a>
           ))}
         </div>
@@ -36,6 +52,7 @@ export const ContactUs: React.FC = () => {
         {/* --- Map Section --- */}
         <div className="flex-1 h-[400px] lg:h-auto rounded-2xl overflow-hidden">
           <iframe
+            title={contactData.location}
             className="w-full h-full"
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3238.104929508516!2d51.02600307608302!3d35.74822562629037!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3f8deb83f8885b33%3A0xc1e0407eb87e5991!2z2q_Yp9mF2Kcg2LfYqCDYqNmK2Kkg2YXYr9mK2Ykg2YbZhNin2Kk!5e0!3m2!1sfa!2sir!4v1680000000000!5m2!1sfa!2sir"
             allowFullScreen
@@ -46,4 +63,5 @@ export const ContactUs: React.FC = () => {
     </section>
   );
 };
+
 export default ContactUs;

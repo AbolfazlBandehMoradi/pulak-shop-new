@@ -13,6 +13,7 @@ import enPrivete from './en/privete.json';
 import enProduct from './en/product.json';
 import enProductDetail from './en/productDetail.json';
 import enProductsFilter from './en/productsFilter.json';
+import enReturnPolicy from './en/returnPolicy.json';
 import enReview from './en/review.json';
 import enStatic from './en/static.json';
 
@@ -31,6 +32,7 @@ import faPrivete from './fa/privete.json';
 import faProduct from './fa/product.json';
 import faProductDetail from './fa/productDetail.json';
 import faProductsFilter from './fa/productsFilter.json';
+import faReturnPolicy from './fa/returnPolicy.json';
 import faReview from './fa/review.json';
 import faStatic from './fa/static.json';
 
@@ -52,6 +54,7 @@ export const pageTranslations = {
     product: enProduct,
     productDetail: enProductDetail,
     productsFilter: enProductsFilter,
+    returnPolicy: enReturnPolicy,
     review: enReview,
     static: enStatic,
   },
@@ -72,6 +75,7 @@ export const pageTranslations = {
     product: faProduct,
     productDetail: faProductDetail,
     productsFilter: faProductsFilter,
+    returnPolicy: faReturnPolicy,
     review: faReview,
     static: faStatic,
   },
