@@ -1,5 +1,6 @@
 import { Blog } from '@/types';
 import cleanText from '@/utils/cleanText';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 interface Props {
@@ -7,6 +8,8 @@ interface Props {
 }
 
 const NewBlogs = ({ blogs }: Props) => {
+  const { t } = useTranslation();
+
   return (
     <div className="sm:container mt-8 lg:mt-16 mx-auto px-4 relative">
       <div className="flex items-center justify-between ">
@@ -32,12 +35,15 @@ const NewBlogs = ({ blogs }: Props) => {
             </div>
             <div className="">
               <h2 className="text-xl sm:text-2xl font-s-sbold first-text-color">
-                آخرین های
-                <span className="text-first inline-block mx-2 font-s-bold"> وبلاگ</span>
-                پولک
+                {t('mainpage.blogs.titlePrefix')}
+                <span className="text-first inline-block mx-2 font-s-bold">
+                  {' '}
+                  {t('mainpage.blogs.titleAccent')}
+                </span>
+                {t('mainpage.blogs.titleSuffix')}
               </h2>
               <p className="text-sm sm:text-base first-text-color-for-paragraph mt-2">
-                دسته بندی محصولات جهت دسترسی آسان
+                {t('mainpage.blogs.description')}
               </p>
             </div>
           </div>
@@ -46,7 +52,7 @@ const NewBlogs = ({ blogs }: Props) => {
               to="/blogs"
               className="button-with-icon-on-secound-layout   text-sm flex items-center h-14 px-4 rounded-2xl gap-2"
             >
-              <span className="button-with-icon-on-secound-layout__span">نوشته های بیشتر ...</span>
+              <span className="button-with-icon-on-secound-layout__span">{t('mainpage.blogs.more')}</span>
               <span className="button-with-icon-on-secound-layout__svg h-8 flex justify-center items-center rounded-full w-8">
                 <svg
                   width="24"
@@ -78,7 +84,7 @@ const NewBlogs = ({ blogs }: Props) => {
                 <img
                   className="w-full h-52 sm:h-auto object-cover"
                   src={blogs[blogs.length - 1].image}
-                  alt={blogs[blogs.length - 1].title || 'Blog image'}
+                  alt={blogs[blogs.length - 1].title || t('mainpage.blogs.imageAlt')}
                 />
               </div>
               <div>
@@ -164,7 +170,7 @@ const NewBlogs = ({ blogs }: Props) => {
                   <img
                     className="w-full rounded-xl h-40 sm:h-full object-cover object-right"
                     src={blog?.image}
-                    alt="img"
+                    alt={blog?.title || t('mainpage.blogs.imageAlt')}
                   />
                 </div>
                 <div className="w-full sm:w-32/48">

@@ -2,6 +2,7 @@ import { Showcase } from "@/hooks/useShowcases";
 import { Link } from "react-router-dom";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import { useLangStore } from "@/stores/languageStore";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   showcase?: Showcase
@@ -9,6 +10,7 @@ interface Props {
 
 
 const BestProducts = ({showcase}: Props) => {
+  const { t } = useTranslation();
   const lang = useLangStore((s) => s.lang);
   const currency = lang === "fa" ? "IRT" : "USD";
 
@@ -34,9 +36,13 @@ const BestProducts = ({showcase}: Props) => {
         </div>
         <div>
           <h2 className="text-lg font-s-bold first-text-color flex">
-            <span>لیستی از</span>
-            <span className="px-1 text-first flex">بهترین</span>
-            های پولک
+            {t("mainpage.bestProducts.titlePrefix") && (
+              <span>{t("mainpage.bestProducts.titlePrefix")}</span>
+            )}
+            <span className="px-1 text-first flex">{t("mainpage.bestProducts.titleAccent")}</span>
+            {t("mainpage.bestProducts.titleSuffix") && (
+              <span>{t("mainpage.bestProducts.titleSuffix")}</span>
+            )}
           </h2>
         </div>
       </div>
@@ -140,7 +146,7 @@ const BestProducts = ({showcase}: Props) => {
             to={`/products`}
             className="text-sm flex"
           >
-            محصولات بیشتر
+            {t("mainpage.bestProducts.more")}
           </Link>
           <span className="text-white flex ml-1">
             <svg

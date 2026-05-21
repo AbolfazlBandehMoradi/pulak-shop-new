@@ -1,6 +1,7 @@
 import { useInView } from '@/hooks/useInView';
 import { Category } from '@/types';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { Navigation, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -12,6 +13,7 @@ interface Props {
 
 const CategoriesSlider = ({ categories }: Props) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { ref, isVisible } = useInView<HTMLDivElement>();
 
   return (
@@ -52,11 +54,16 @@ const CategoriesSlider = ({ categories }: Props) => {
             </span>
             <div>
               <h2 className="font-s-sbold first-text-color text-xl sm:text-2xl">
-                <span className="text-first me-3 inline-block">دسته</span>
-                محصولات
+                {t('mainpage.categories.titlePrefix') && (
+                  <span>{t('mainpage.categories.titlePrefix')} </span>
+                )}
+                <span className="text-first me-3 inline-block">
+                  {t('mainpage.categories.titleAccent')}
+                </span>
+                {t('mainpage.categories.titleSuffix')}
               </h2>
               <p className="first-text-color-for-paragraph mt-2 text-sm sm:text-base">
-                دسته بندی محصولات جهت دسترسی آسان
+                {t('mainpage.categories.description')}
               </p>
             </div>
           </div>
@@ -84,7 +91,7 @@ const CategoriesSlider = ({ categories }: Props) => {
                 </svg>
               </span>
               <span className="button-with-icon-on-white-layout__span">
-                دسته بندی های بیشتر ...
+                {t('mainpage.categories.more')}
               </span>
             </Link>
           </div>
@@ -155,7 +162,7 @@ const CategoriesSlider = ({ categories }: Props) => {
                         <p className="first-text-color-for-paragraph mt-1 flex items-center justify-center rounded-sm text-sm">
                           <span className="inline-block text-center text-sm">
                             <span className="me-1 inline-block">{category.productCount}</span>
-                            کالا
+                            {t('mainpage.categories.productCountSuffix')}
                           </span>
                         </p>
                       </div>
@@ -170,7 +177,7 @@ const CategoriesSlider = ({ categories }: Props) => {
               initial={{ opacity: 0 }}
               animate={isVisible ? { opacity: 1 } : { opacity: 0 }}
             >
-              هیچ دسته‌بندی‌ای یافت نشد.
+              {t('mainpage.categories.empty')}
             </motion.p>
           )}
         </div>

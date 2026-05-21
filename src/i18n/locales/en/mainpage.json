@@ -1,0 +1,47 @@
+{
+  "hero": {
+    "slides": [
+      {
+        "title": "Fast delivery from Pulak Beauty Paradise"
+      },
+      {
+        "title": "Beauty and personal care products from Pulak Beauty Paradise"
+      },
+      {
+        "title": "Professional products from Pulak Beauty Paradise"
+      }
+    ]
+  },
+  "categories": {
+    "titlePrefix": "Product",
+    "titleAccent": "Categories",
+    "titleSuffix": "",
+    "description": "Browse product categories for easier access",
+    "more": "More categories...",
+    "productCountSuffix": "items",
+    "empty": "No categories found."
+  },
+  "discount": {
+    "remainingTime": "Time left",
+    "buy": "Buy",
+    "buyThisProduct": "Buy this product"
+  },
+  "bestProducts": {
+    "titlePrefix": "A list of",
+    "titleAccent": "best",
+    "titleSuffix": "Pulak picks",
+    "more": "More products"
+  },
+  "blogs": {
+    "titlePrefix": "Latest",
+    "titleAccent": "Blog",
+    "titleSuffix": "posts",
+    "description": "Read the latest stories and updates from Pulak",
+    "more": "More posts...",
+    "imageAlt": "Blog image"
+  },
+  "banner": {
+    "firstAlt": "Promotional banner 1",
+    "secondAlt": "Promotional banner 2"
+  }
+}

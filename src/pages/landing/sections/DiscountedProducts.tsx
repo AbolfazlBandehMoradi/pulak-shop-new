@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import RemainingTime from "@/components/ui/RemainingTime";
 import { Product } from "@/types";
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Navigation, EffectCreative, Autoplay } from "swiper/modules";
 import { SwiperSlide, Swiper, SwiperRef } from "swiper/react";
@@ -15,6 +16,7 @@ interface Props {
  
 const DiscountedProducts = ({discountedProduct}: Props) => {
 const mainSwiper = useRef<SwiperRef>(null);
+const { t } = useTranslation();
 const lang = useLangStore((s) => s.lang);
 const currency = lang === "fa" ? "IRT" : "USD";
 
@@ -93,7 +95,7 @@ useEffect(() => {
           </p>
           {product.saleEndDate && (
             <div className=" w-full  flex justify-between mt-4 flex-wrap items-center">
-              <h5 className="text-sm first-text-color ">فرصت باقی مانده</h5>
+              <h5 className="text-sm first-text-color ">{t("mainpage.discount.remainingTime")}</h5>
               <RemainingTime expireDate={product.saleEndDate} />
             </div>
           )}
@@ -138,7 +140,7 @@ useEffect(() => {
                 <Button
                   className={"w-full  rounded-md  bg-first  text-white"}
                 >
-                  <span className="text-white">خرید </span>
+                  <span className="text-white">{t("mainpage.discount.buy")}</span>
                 </Button>
               </Link>
             </div>
@@ -183,7 +185,7 @@ useEffect(() => {
               className="text-white text-base w-full"
             >
               <Button className={"w-full bg-first  text-white"}>
-                <span className="text-white">خرید این محصول</span>
+                <span className="text-white">{t("mainpage.discount.buyThisProduct")}</span>
               </Button>
             </Link>
           </div>

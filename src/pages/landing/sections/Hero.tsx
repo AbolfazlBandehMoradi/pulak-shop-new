@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Swiper as SwiperType } from 'swiper';
 import { Autoplay, EffectCreative, Thumbs } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -8,20 +9,24 @@ import slider2 from '@/assets/Images/Hero/slider-2.webp';
 import slider3 from '@/assets/Images/Hero/slider-3.webp';
 
 const Hero = () => {
+  const { t } = useTranslation();
   const [thumbsSwiper, setThumbsSwiper] = React.useState<SwiperType | null>(null);
+  const slideTranslations = t('mainpage.hero.slides', {
+    returnObjects: true,
+  }) as Array<{ title: string }>;
 
   const slides = [
     {
       image: slider1,
-      title: 'تحویل فوری از بهشت زیبایی پولک',
+      title: slideTranslations?.[0]?.title ?? '',
     },
     {
       image: slider2,
-      title: 'محصولات آرایشی و بهداشتی بهشت زیبایی پولک',
+      title: slideTranslations?.[1]?.title ?? '',
     },
     {
       image: slider3,
-      title: 'محصولات تخصصی بهشت زیبایی پولک',
+      title: slideTranslations?.[2]?.title ?? '',
     },
   ];
 
@@ -48,7 +53,7 @@ const Hero = () => {
           autoplay={{ delay: 5000, disableOnInteraction: false }}
         >
           {slides.map((slide, idx) => (
-            <SwiperSlide key={idx} className='rounded-2xl' >
+            <SwiperSlide key={idx} className="rounded-2xl">
               <img className="w-full h-auto object-cover" src={slide.image} alt={slide.title} />
             </SwiperSlide>
           ))}

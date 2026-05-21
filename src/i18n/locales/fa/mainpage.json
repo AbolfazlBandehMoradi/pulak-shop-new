@@ -1,0 +1,47 @@
+{
+  "hero": {
+    "slides": [
+      {
+        "title": "تحویل فوری از بهشت زیبایی پولک"
+      },
+      {
+        "title": "محصولات آرایشی و بهداشتی بهشت زیبایی پولک"
+      },
+      {
+        "title": "محصولات تخصصی بهشت زیبایی پولک"
+      }
+    ]
+  },
+  "categories": {
+    "titlePrefix": "",
+    "titleAccent": "دسته",
+    "titleSuffix": "محصولات",
+    "description": "دسته بندی محصولات جهت دسترسی آسان",
+    "more": "دسته بندی های بیشتر ...",
+    "productCountSuffix": "کالا",
+    "empty": "هیچ دسته‌بندی‌ای یافت نشد."
+  },
+  "discount": {
+    "remainingTime": "فرصت باقی مانده",
+    "buy": "خرید",
+    "buyThisProduct": "خرید این محصول"
+  },
+  "bestProducts": {
+    "titlePrefix": "لیستی از",
+    "titleAccent": "بهترین",
+    "titleSuffix": "های پولک",
+    "more": "محصولات بیشتر"
+  },
+  "blogs": {
+    "titlePrefix": "آخرین های",
+    "titleAccent": "وبلاگ",
+    "titleSuffix": "پولک",
+    "description": "دسته بندی محصولات جهت دسترسی آسان",
+    "more": "نوشته های بیشتر ...",
+    "imageAlt": "تصویر وبلاگ"
+  },
+  "banner": {
+    "firstAlt": "بنر تبلیغاتی اول",
+    "secondAlt": "بنر تبلیغاتی دوم"
+  }
+}
