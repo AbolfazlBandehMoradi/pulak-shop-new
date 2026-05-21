@@ -9,8 +9,9 @@ This project now supports a page-by-page i18n migration with a clear split betwe
 ## Current migration status
 
 - Migrated: `layout/navbar.json`
+- Migrated: `layout/footer.json`
 - Migrated: `shared/common.json`
-- Legacy still active: `about/auth/blog/cart/categories/checkout/comment/contact/faq/footer/payment/privete/product/review/static/shop`
+- Legacy still active: `about/auth/blog/cart/categories/checkout/comment/contact/faq/payment/privete/product/review/static/shop`
 
 ## Key naming rules
 

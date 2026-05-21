@@ -7,7 +7,6 @@ import enCheckout from './en/checkout.json';
 import enComment from './en/comment.json';
 import enContact from './en/contact.json';
 import enFaq from './en/faq.json';
-import enFooter from './en/footer.json';
 import enMainPage from './en/mainpage.json';
 import enPayment from './en/payment.json';
 import enPrivete from './en/privete.json';
@@ -24,7 +23,6 @@ import faCheckout from './fa/checkout.json';
 import faComment from './fa/comment.json';
 import faContact from './fa/contact.json';
 import faFaq from './fa/faq.json';
-import faFooter from './fa/footer.json';
 import faMainPage from './fa/mainpage.json';
 import faPayment from './fa/payment.json';
 import faPrivete from './fa/privete.json';
@@ -43,7 +41,6 @@ export const pageTranslations = {
     comment: enComment,
     contact: enContact,
     faq: enFaq,
-    footer: enFooter,
     mainpage: enMainPage,
     payment: enPayment,
     privete: enPrivete,
@@ -62,7 +59,6 @@ export const pageTranslations = {
     comment: faComment,
     contact: faContact,
     faq: faFaq,
-    footer: faFooter,
     mainpage: faMainPage,
     payment: faPayment,
     privete: faPrivete,

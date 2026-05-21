@@ -1,0 +1,42 @@
+{
+  "footer": {
+    "features": {
+      "freeShipping": {
+        "title": "Free shipping",
+        "description": "Delivered across the country"
+      },
+      "support": {
+        "title": "24/7 support",
+        "description": "Our team is here to help"
+      },
+      "quality": {
+        "title": "Quality guarantee",
+        "description": "Checked and approved products"
+      },
+      "payment": {
+        "title": "Online payment",
+        "description": "Secure internet gateway"
+      }
+    },
+    "about": {
+      "title": "Pulak Beauty Paradise",
+      "description": "Low-quality beauty products can seriously damage your skin and hair. At Pulak Beauty Paradise, we help you shop with more confidence by offering trusted products at fair prices."
+    },
+    "support": {
+      "title": "Support",
+      "about": "About us",
+      "address": "Address",
+      "instagram": "Instagram",
+      "phone": "09392056442"
+    },
+    "links": {
+      "title": "Useful links",
+      "faq": "FAQ",
+      "contact": "Contact us",
+      "tracking": "Order tracking",
+      "terms": "Terms and conditions"
+    },
+    "sealAlt": "E-commerce trust seal",
+    "copyright": "© {{year}} Pulak Beauty Store. All rights reserved."
+  }
+}
