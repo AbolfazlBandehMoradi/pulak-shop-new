@@ -1,41 +1,46 @@
-import { useState, useEffect } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useSearchParams } from "react-router-dom";
+import { ChevronLeft, ChevronRight, Grid, List, RefreshCw, Search } from "lucide-react";
 import { Button } from "@/components/ui/IconButton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/utils/cn";
-import { Grid, List, ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { useTranslation } from "@/i18n/useTranslation";
 import { useLangStore } from "@/stores/languageStore";
 import { getBlogs, type BlogListItem } from "@/utils/blogApi";
 import { BlogGrid } from "./BlogGrid";
 import { BlogList } from "./BlogList";
 
-export default function BlogListPage() {
-  const { langCode: routeLangCode } = useParams<{ langCode: string }>();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const currentLanguage = useLangStore((s) => s.lang);
-  const { t } = useTranslation();
+type ViewMode = "grid" | "list";
 
-  const effectiveLangCode = routeLangCode || currentLanguage || "fa";
+export default function BlogListPage() {
+  const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const lang = useLangStore((state) => state.lang);
+  const isRTL = useLangStore((state) => state.dir) === "rtl";
+
+  const initialSearch = searchParams.get("search") ?? "";
+  const initialPage = Number(searchParams.get("page")) || 1;
 
   const [blogs, setBlogs] = useState<BlogListItem[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const [currentPage, setCurrentPage] = useState(1);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(Math.max(1, initialPage));
   const [totalCount, setTotalCount] = useState(0);
-  const [pageSize] = useState(12);
-  const [searchQuery, setSearchQuery] = useState(() => searchParams.get("search") || "");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [searchInput, setSearchInput] = useState(initialSearch);
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
+  const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const isRTL = useLangStore((s) => s.dir) === "rtl";
+  const pageSize = 9;
 
-  // Load blogs
   useEffect(() => {
     const loadBlogs = async () => {
       try {
         setLoading(true);
+        setError(null);
+
         const response = await getBlogs({
-          langCode: effectiveLangCode,
+          langCode: lang,
           pageNumber: currentPage,
           pageSize,
           search: searchQuery || undefined,
@@ -43,143 +48,183 @@ export default function BlogListPage() {
           sortBy: "publishedat",
           sortDescending: true,
         });
+
         setBlogs(response.blogs);
         setTotalCount(response.totalCount);
-      } catch (err) {
-        console.error("Failed to load blogs:", err);
+      } catch (fetchError) {
+        console.error("Failed to load blogs:", fetchError);
+        setError(fetchError instanceof Error ? fetchError.message : "Failed to load blogs");
       } finally {
         setLoading(false);
       }
     };
 
     loadBlogs();
-  }, [effectiveLangCode, currentPage, pageSize, searchQuery]);
+  }, [lang, currentPage, pageSize, searchQuery, refreshKey]);
 
-  // Update URL search params
   useEffect(() => {
-    if (searchQuery) {
-      setSearchParams({ search: searchQuery });
-    } else {
-      setSearchParams({});
-    }
-  }, [searchQuery, setSearchParams]);
+    const nextParams = new URLSearchParams();
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
+    if (searchQuery) {
+      nextParams.set("search", searchQuery);
+    }
+
+    if (currentPage > 1) {
+      nextParams.set("page", String(currentPage));
+    }
+
+    setSearchParams(nextParams, { replace: true });
+  }, [searchQuery, currentPage, setSearchParams]);
+
+  const totalPages = useMemo(() => Math.max(1, Math.ceil(totalCount / pageSize)), [totalCount, pageSize]);
+
+  const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setCurrentPage(1);
+    setSearchQuery(searchInput.trim());
+  };
+
+  const handleClearSearch = () => {
+    setSearchInput("");
+    setSearchQuery("");
     setCurrentPage(1);
   };
 
-  const totalPages = Math.ceil(totalCount / pageSize);
-
   return (
-    <section className="sm:container mx-auto px-4 lg:px-0 py-24 lg:py-12 relative z-10">
-      <div className=" p-4 rounded-2xl">
-        <div className="flex justify-between items-center flex-wrap mb-4">
-          <h1 className="text-xl first-text-color font-s-medium">{t("blog.title")}</h1>
-          <div className="order-3 w-full mt-4">
-            <form onSubmit={handleSearch}>
-              <div className={`flex w-full ${isRTL ? "flex-row-reverse" : "flex-row"}`}>
-                <button
-                  type="submit"
-                  aria-label={t("nav.search")}
-                  className={`h-12 ${isRTL ? "rounded-l-xl" : "rounded-r-xl"} px-4 bg-first hover:bg-first-700 text-white flex items-center justify-center`}
-                >
-                  <Search className="w-5 h-5" aria-hidden="true" />
-                </button>
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={t("blog.searchPlaceholder")}
-                  className={`h-12 px-4 w-full focus:ring-0 ${isRTL ? "rounded-r-xl text-left" : "rounded-l-xl"} border border-gray-500 text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-400`}
-                />
-              </div>
-            </form>
+    <section className="mx-auto mt-24 px-4 sm:container lg:mt-8">
+      <div className="rounded-3xl bg-color-for-layer-on-body p-4 lg:p-8">
+        <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <div className={cn("space-y-1", isRTL ? "text-right" : "text-left")}>
+            <h1 className="text-2xl font-s-bold first-text-color lg:text-3xl">{t("blog.title")}</h1>
+            <p className="text-sm first-text-color-for-paragraph">
+              {t("blog.blog")}: {totalCount}
+            </p>
           </div>
 
-          {/* View Mode */}
-          <div className="flex border border-gray-400 rounded-lg overflow-hidden">
+          <div className="flex items-center gap-2 rounded-xl border border-gray-500/35 bg-color-for-layer-sec p-1">
             <button
+              type="button"
               onClick={() => setViewMode("grid")}
-              className={cn("p-2", viewMode === "grid" && "bg-first text-white")}
+              className={cn(
+                "rounded-lg p-2 transition-colors",
+                viewMode === "grid" ? "bg-first text-white" : "first-text-color-for-paragraph hover:bg-first/15"
+              )}
+              aria-label="Grid view"
             >
-              <Grid className="w-4 h-4" />
+              <Grid className="h-4 w-4" />
             </button>
             <button
+              type="button"
               onClick={() => setViewMode("list")}
-              className={cn("p-2", viewMode === "list" && "bg-first text-white")}
+              className={cn(
+                "rounded-lg p-2 transition-colors",
+                viewMode === "list" ? "bg-first text-white" : "first-text-color-for-paragraph hover:bg-first/15"
+              )}
+              aria-label="List view"
             >
-              <List className="w-4 h-4" />
+              <List className="h-4 w-4" />
             </button>
           </div>
-        </div>
+        </header>
 
-        {/* Blog List */}
+        <form onSubmit={handleSearchSubmit} className="mb-6">
+          <div className="flex min-h-12 overflow-hidden rounded-2xl border border-gray-500/35 bg-color-for-layer-sec">
+            <button
+              type="submit"
+              className={cn(
+                "inline-flex w-14 shrink-0 items-center justify-center bg-first text-white transition-colors hover:bg-first-600",
+                isRTL ? "order-2" : "order-1"
+              )}
+              aria-label={t("blog.searchPlaceholder")}
+            >
+              <Search className="h-4 w-4" />
+            </button>
+            <input
+              type="search"
+              value={searchInput}
+              onChange={(event) => setSearchInput(event.target.value)}
+              placeholder={t("blog.searchPlaceholder")}
+              className={cn(
+                "w-full border-none bg-transparent px-4 text-sm first-text-color placeholder:first-text-color-for-paragraph-low focus:outline-none focus:ring-0",
+                isRTL ? "order-1 text-right" : "order-2 text-left"
+              )}
+            />
+          </div>
+        </form>
+
         {loading ? (
           <div
             className={cn(
-              "grid gap-6",
-              viewMode === "grid" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
+              "grid gap-4",
+              viewMode === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
             )}
           >
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-card border border-border rounded-lg overflow-hidden">
-                <Skeleton className="aspect-video w-full" />
-                <div className="p-4 space-y-3">
-                  <Skeleton className="h-6 w-3/4" />
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="overflow-hidden rounded-2xl border border-gray-500/25 bg-color-for-layer-sec">
+                <Skeleton className="aspect-[16/10] w-full" />
+                <div className="space-y-3 p-4">
+                  <Skeleton className="h-5 w-3/4" />
                   <Skeleton className="h-4 w-full" />
                   <Skeleton className="h-4 w-2/3" />
-                  <Skeleton className="h-4 w-1/2" />
                 </div>
               </div>
             ))}
           </div>
+        ) : error ? (
+          <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-5">
+            <p className="text-sm first-text-color">{error}</p>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setRefreshKey((value) => value + 1)}
+              className="mt-3 inline-flex items-center gap-2"
+            >
+              <RefreshCw className="h-4 w-4" />
+              {t("common.retry")}
+            </Button>
+          </div>
         ) : blogs.length === 0 ? (
-          <div className="text-center py-16">
-            <p className="text-lg text-muted-foreground mb-4">{t("blog.list.noResults") || "No blogs found"}</p>
+          <div className="rounded-2xl border border-dashed border-gray-500/40 p-8 text-center">
+            <p className="text-sm first-text-color-for-paragraph">{t("blog.noResults")}</p>
             {searchQuery && (
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setSearchQuery("");
-                  setCurrentPage(1);
-                }}
-              >
-                {t("blog.list.clearSearch") || "Clear Search"}
+              <Button type="button" variant="outline" size="sm" onClick={handleClearSearch} className="mt-4">
+                {t("blog.clearSearch")}
               </Button>
             )}
           </div>
         ) : (
           <>
-            {viewMode === "grid" ? (
-              <BlogGrid blogs={blogs} langCode={effectiveLangCode} />
-            ) : (
-              <BlogList blogs={blogs} langCode={effectiveLangCode} />
-            )}
+            {viewMode === "grid" ? <BlogGrid blogs={blogs} langCode={lang} /> : <BlogList blogs={blogs} langCode={lang} />}
 
-            {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-3">
+              <div className={cn("flex items-center justify-center gap-2", isRTL ? "flex-row-reverse" : "flex-row")}>
                 <Button
+                  type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
                   disabled={currentPage === 1}
+                  className={cn("inline-flex items-center gap-1", isRTL ? "flex-row-reverse" : "flex-row")}
                 >
-                  <ChevronLeft className="h-4 w-4 mr-1" />
-                  {t("blog.list.previous") || "Previous"}
+                  {isRTL ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+                  {t("blog.previous")}
                 </Button>
-                <span className="text-sm text-muted-foreground px-4">
-                  {t("blog.list.page") || "Page"} {currentPage} {t("blog.list.of") || "of"} {totalPages}
+
+                <span className="rounded-lg bg-color-for-layer-sec px-3 py-2 text-xs first-text-color-for-paragraph">
+                  {t("blog.page")} {currentPage} {t("blog.of")} {totalPages}
                 </span>
+
                 <Button
+                  type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
                   disabled={currentPage >= totalPages}
+                  className={cn("inline-flex items-center gap-1", isRTL ? "flex-row-reverse" : "flex-row")}
                 >
-                  {t("blog.list.next") || "Next"}
-                  <ChevronRight className="h-4 w-4 ml-1" />
+                  {t("blog.next")}
+                  {isRTL ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                 </Button>
               </div>
             )}

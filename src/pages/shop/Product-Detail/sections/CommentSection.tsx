@@ -315,7 +315,7 @@ export function CommentSection({
             </Button>
           </div>
           <p className="text-xs text-muted-foreground">
-            {t("comment.ctrlEnterHint") || "Press Ctrl + Enter to submit"}
+            {t("comment.hint") || "Press Ctrl + Enter to submit"}
           </p>
         </div>
       ) : (
@@ -344,7 +344,7 @@ export function CommentSection({
               </div>
             ))}
           </div>
-        ) : comments.length > -1 ? (
+        ) : comments.length === 0 ? (
           <div className=" flex gap-2 flex-col  relative p-6 rounded-lg  text-center">
             <div className="absolute inset-0 rounded-lg border border-dashed border-gray-500 pointer-events-none"></div>
             <ChatBubbleLeftRightIcon className="h-8 w-8 first-text-color-svg mx-auto transition" />

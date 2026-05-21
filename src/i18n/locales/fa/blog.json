@@ -10,7 +10,21 @@
   "publishedAt": "تاریخ انتشار",
   "searchPlaceholder": "جستجو در مقاله",
   "shortLink": "لینک کوتاه مقاله",
+  "copyLink": "کپی لینک",
+  "copySuccess": "لینک با موفقیت کپی شد",
+  "share": "اشتراک‌گذاری",
+  "onThisPage": "در این صفحه",
   "featured": "ویژه",
   "blog": "مقالات",
-  "noContent": "محتوای پیدا نشد"
+  "noContent": "محتوایی یافت نشد",
+  "noImage": "بدون تصویر",
+  "noResults": "مقاله‌ای پیدا نشد",
+  "clearSearch": "پاک کردن جستجو",
+  "previous": "قبلی",
+  "next": "بعدی",
+  "page": "صفحه",
+  "of": "از",
+  "relatedProducts": "محصولات مرتبط",
+  "author": "نویسنده",
+  "unknown": "نامشخص"
 }
