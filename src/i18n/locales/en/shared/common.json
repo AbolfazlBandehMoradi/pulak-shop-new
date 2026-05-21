@@ -1,0 +1,13 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "tryAgain": "Try Again",
+    "retry": "Retry",
+    "back": "Back",
+    "backToShop": "Back to Shop",
+    "cancel": "Cancel",
+    "continueShopping": "Continue Shopping",
+    "toggleTheme": "Toggle theme"
+  }
+}

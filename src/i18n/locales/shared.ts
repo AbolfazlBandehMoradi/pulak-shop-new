@@ -1,7 +1,15 @@
-import enShared from './en/shared.json';
-import faShared from './fa/shared.json';
+import enCommon from './en/shared/common.json';
+import enNavbar from './en/layout/navbar.json';
+import faCommon from './fa/shared/common.json';
+import faNavbar from './fa/layout/navbar.json';
 
 export const sharedTranslations = {
-  en: enShared,
-  fa: faShared,
+  en: {
+    ...enCommon,
+    ...enNavbar,
+  },
+  fa: {
+    ...faCommon,
+    ...faNavbar,
+  },
 };

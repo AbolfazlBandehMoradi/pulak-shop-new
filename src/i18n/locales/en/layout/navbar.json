@@ -1,0 +1,22 @@
+{
+  "nav": {
+    "home": "Pulak",
+    "categories": "Categories",
+    "about": "About us",
+    "contact": "Contact us",
+    "blog": "Blog",
+    "search": "Search",
+    "searchPlaceholder": "Search products...",
+    "recentSearches": "Recent Searches",
+    "trendingNow": "Trending Now",
+    "cart": "Cart",
+    "login": "Sign in / Register",
+    "loginShort": "Sign in",
+    "logout": "Logout",
+    "all": "View all",
+    "profile": "Profile",
+    "openMenu": "Open menu",
+    "switchToEnglish": "Switch to English",
+    "switchToPersian": "Switch to Persian"
+  }
+}

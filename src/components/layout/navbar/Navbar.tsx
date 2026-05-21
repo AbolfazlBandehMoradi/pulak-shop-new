@@ -16,7 +16,7 @@ import { ThemeToggleButton } from '@/components/ui/ThemeToggleButton';
 type CategoryId = string | null;
 
 export const Navbar: React.FC = () => {
-  const { i18n, t } = useTranslation();
+  const { t } = useTranslation();
   const { isAuthenticated, user, logout } = useAuth();
   const { data: categories } = useCategories();
   const dir = useLangStore((s) => s.dir);
@@ -41,20 +41,19 @@ export const Navbar: React.FC = () => {
   const setCategoryIds = useShopStore((s) => s.setCategoryIds);
   const cartCount = useCartStore((s) => s.itemCount);
 
-  const isFa = i18n.language === 'fa';
-  const searchPlaceholder = isFa ? 'جستجوی محصولات...' : 'Search products...';
+  const searchPlaceholder = t('nav.searchPlaceholder') || t('nav.search');
 
   const navLabels = {
-    home: isFa ? 'پولک' : 'Pulak',
-    categories: isFa ? 'دسته بندی' : 'Categories',
-    about: isFa ? 'درباره ما' : 'About us',
-    contact: isFa ? 'تماس با ما' : 'Contact us',
-    blog: isFa ? 'بلاگ' : 'Blog',
-    signIn: isFa ? 'ورود و ثبت نام' : 'Sign in / Register',
-    signInShort: isFa ? 'ورود' : 'Sign in',
-    all: isFa ? 'مشاهده همه' : 'View all',
-    profile: isFa ? 'پروفایل' : 'Profile',
-    cart: isFa ? 'سبد خرید' : 'Cart',
+    home: t('nav.home'),
+    categories: t('nav.categories'),
+    about: t('nav.about'),
+    contact: t('nav.contact'),
+    blog: t('nav.blog'),
+    signIn: t('nav.login'),
+    signInShort: t('nav.loginShort'),
+    all: t('nav.all'),
+    profile: t('nav.profile'),
+    cart: t('nav.cart'),
   };
 
   useEffect(() => {
@@ -228,7 +227,7 @@ export const Navbar: React.FC = () => {
                           onClick={handleLogout}
                           className="block w-full rounded-lg px-3 py-2 text-start text-sm text-red-600 hover:bg-red-50"
                         >
-                          {t('shared.nav.logout')}
+                          {t('nav.logout')}
                         </button>
                       </motion.div>
                     )}
@@ -373,7 +372,7 @@ export const Navbar: React.FC = () => {
             <div className="space-y-2">
               <div className="flex items-center justify-between rounded-2xl">
                 <button
-                  aria-label="Open menu"
+                  aria-label={t('nav.openMenu')}
                   className="rounded-xl border border-gray-300/50 p-2 first-text-color-svg"
                   onClick={() => setIsDrawerOpen(true)}
                 >
@@ -629,7 +628,7 @@ export const Navbar: React.FC = () => {
                       className="block w-full rounded-xl px-3 py-2 text-start text-sm text-red-600 hover:bg-red-50"
                       onClick={handleLogout}
                     >
-                      {t('shared.nav.logout')}
+                      {t('nav.logout')}
                     </button>
                   </li>
                 )}
