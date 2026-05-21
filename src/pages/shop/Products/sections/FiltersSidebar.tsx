@@ -36,7 +36,7 @@ export default function FiltersSidebar({
         className="sticky top-4 rounded-lg border border-first-100/70 bg-color-for-layer-on-body p-4 shadow-sm"
       >
         <div className="mb-4 flex items-center justify-between gap-2">
-          <h2 className="font-semibold first-text-color">{t('shop.filters')}</h2>
+          <h2 className="font-semibold first-text-color">{t('productsFilter.filters')}</h2>
 
           {hasActiveFilters && (
             <button
@@ -45,7 +45,7 @@ export default function FiltersSidebar({
               className="text-xs flex items-center gap-1 first-text-color-for-paragraph transition-colors hover:text-first"
             >
               <X className="w-3 h-3" />
-              {t('shop.clear')}
+              {t('productsFilter.clear')}
             </button>
           )}
         </div>
@@ -55,7 +55,7 @@ export default function FiltersSidebar({
           onClick={() => toggleSection('categories')}
           className="flex w-full items-center justify-between rounded-md py-2 text-sm font-medium first-text-color hover:text-first transition-colors"
         >
-          {t('shop.categories')}
+          {t('productsFilter.categories')}
 
           {expanded.categories ? (
             <ChevronUp className="w-4 h-4" />
@@ -80,7 +80,7 @@ export default function FiltersSidebar({
               className="h-4 w-4 rounded border border-first-300 checked:bg-first checked:border-first"
             />
 
-            <span>{t('shop.onlyDiscountedProducts')}</span>
+            <span>{t('productsFilter.onlyDiscountedProducts')}</span>
           </label>
         </div>
       </div>

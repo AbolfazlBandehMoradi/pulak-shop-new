@@ -99,7 +99,7 @@ export default function ProductsFilterPage() {
       }
     } catch (err: any) {
       console.error('Error hydrating URL params:', err);
-      setComponentError(err?.message ?? t('shop.failedToParseUrlParams'));
+      setComponentError(err?.message ?? t('productsFilter.failedToParseUrlParams'));
     }
   }, [isUrlHydrated, location.search, setFilters, t]);
 
@@ -130,7 +130,7 @@ export default function ProductsFilterPage() {
       }
     } catch (err: any) {
       console.error('Error updating URL:', err);
-      setComponentError(err?.message ?? t('shop.failedToUpdateUrl'));
+      setComponentError(err?.message ?? t('productsFilter.failedToUpdateUrl'));
     }
   }, [isUrlHydrated, location.search, setSearchParams, search, categoryIds, hasOffer, t]);
 
@@ -184,7 +184,7 @@ export default function ProductsFilterPage() {
     if (search) {
       tags.push({
         key: 'search',
-        label: `${t('shop.activeSearchLabel')}: ${search}`,
+        label: `${t('productsFilter.activeSearchLabel')}: ${search}`,
         onRemove: () => setSearch(undefined),
       });
     }
@@ -192,7 +192,7 @@ export default function ProductsFilterPage() {
     if (hasOffer) {
       tags.push({
         key: 'has-offer',
-        label: t('shop.onlyDiscountedProducts'),
+        label: t('productsFilter.onlyDiscountedProducts'),
         onRemove: () => setHasOffer(undefined),
       });
     }
@@ -202,7 +202,7 @@ export default function ProductsFilterPage() {
         key: `category-${categoryId}`,
         label:
           categoryNameById.get(categoryId) ??
-          `${t('shop.activeCategoryLabel')}: ${categoryId}`,
+          `${t('productsFilter.activeCategoryLabel')}: ${categoryId}`,
         onRemove: () =>
           setCategoryIds(categoryIds.filter((id) => id !== categoryId)),
       });

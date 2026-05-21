@@ -1,0 +1,10 @@
+{
+  "filters": "Filters",
+  "clear": "Clear Filters",
+  "activeSearchLabel": "Search",
+  "activeCategoryLabel": "Category",
+  "categories": "Categories",
+  "onlyDiscountedProducts": "Only discounted products",
+  "failedToParseUrlParams": "Failed to parse URL parameters.",
+  "failedToUpdateUrl": "Failed to update URL."
+}
