@@ -26,6 +26,7 @@ export const Navbar: React.FC = () => {
   const [isDesktopCategoryOpen, setIsDesktopCategoryOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [drawerSide, setDrawerSide] = useState<'rtl' | 'ltr'>(dir);
   const [openSubMenu, setOpenSubMenu] = useState<CategoryId>(null);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isMobileCategoryOpen, setIsMobileCategoryOpen] = useState(false);
@@ -70,6 +71,12 @@ export const Navbar: React.FC = () => {
       setOpenSubMenu(null);
     }
   }, [isMobile]);
+
+  useEffect(() => {
+    if (!isDrawerOpen) {
+      setDrawerSide(dir);
+    }
+  }, [dir, isDrawerOpen]);
 
   useEffect(() => {
     const handleOutside = (event: MouseEvent) => {
@@ -117,6 +124,11 @@ export const Navbar: React.FC = () => {
     setIsDrawerOpen(false);
     setIsMobileCategoryOpen(false);
     setOpenSubMenu(null);
+  };
+
+  const openDrawer = () => {
+    setDrawerSide(dir);
+    setIsDrawerOpen(true);
   };
 
   const handleLogout = () => {
@@ -361,7 +373,7 @@ export const Navbar: React.FC = () => {
                 <button
                   aria-label={t('nav.openMenu')}
                   className="rounded-xl border border-gray-300/50 p-2 first-text-color-svg"
-                  onClick={() => setIsDrawerOpen(true)}
+                  onClick={openDrawer}
                 >
                   <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
                     <path
@@ -475,9 +487,10 @@ export const Navbar: React.FC = () => {
 
             <div
               ref={drawerRef}
+              dir={dir}
               className={`fixed top-0 z-60 h-full w-10/12 max-w-sm overflow-y-auto bg-color-for-layer-on-body shadow-dark-sm transition-transform duration-300 ${
-                dir === 'rtl' ? 'right-0' : 'left-0'
-              } ${isDrawerOpen ? 'translate-x-0' : dir === 'rtl' ? 'translate-x-full' : '-translate-x-full'}`}
+                drawerSide === 'rtl' ? 'right-0' : 'left-0'
+              } ${isDrawerOpen ? 'translate-x-0' : drawerSide === 'rtl' ? 'translate-x-full' : '-translate-x-full'}`}
             >
               <div className="flex items-center justify-between border-b border-gray-200/50 p-4">
                 <button
