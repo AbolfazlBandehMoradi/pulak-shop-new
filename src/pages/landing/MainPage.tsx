@@ -13,6 +13,7 @@ import WhyUs from './sections/WhyUs';
 import ShowCasesNumberTwo from '@/pages/landing/sections/ShowCasesNumberTwo/ShowCasesNumberTwo';
 import DiscountedProducts from './sections/DiscountedProducts';
 import BestProducts from './sections/BestProducts';
+import Stories from './sections/Stories';
 
 const MainPage = () => {
   const { data: index, isLoading, isError, refetch } = useIndex();
@@ -25,6 +26,7 @@ const MainPage = () => {
 
   return (
     <main className='pb-10 max-w-7xl mx-auto'>
+      <Stories stories={index?.stories ?? []} />
       <Hero />
       <CategoriesSlider categories={index?.categories ?? []} />
       <ProductSlider showCase={showcases && showcases[0]} />

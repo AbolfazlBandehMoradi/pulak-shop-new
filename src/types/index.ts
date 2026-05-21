@@ -31,6 +31,15 @@ export interface Category {
   children?: Category[]
 }
 
+export interface Story {
+  id: number;
+  title: string;
+  caption: string;
+  videoUrl: string;
+  url: string;
+  image: string;
+}
+
 export interface Blog {
   id: string;
   slug?: string;

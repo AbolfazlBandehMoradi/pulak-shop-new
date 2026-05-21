@@ -1,6 +1,6 @@
 import apiClient from "@/services/apiClient"
 import { useLangStore } from "@/stores/languageStore"
-import { Blog, Category, Product, Testimonial } from "@/types";
+import { Blog, Category, Product, Story, Testimonial } from "@/types";
 import { useQuery } from "@tanstack/react-query"
 
 export interface IndexData {
@@ -8,6 +8,7 @@ export interface IndexData {
   newestProducts: Product[];
   discountProducts: Product[];
   blogs: Blog[];
+  stories: Story[];
   testimonials: Testimonial[];
 }
 
