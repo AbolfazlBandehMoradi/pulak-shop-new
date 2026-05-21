@@ -6,5 +6,6 @@
   "categories": "Categories",
   "onlyDiscountedProducts": "Only discounted products",
   "failedToParseUrlParams": "Failed to parse URL parameters.",
-  "failedToUpdateUrl": "Failed to update URL."
+  "failedToUpdateUrl": "Failed to update URL.",
+  "outOfStock": "Out of Stock"
 }

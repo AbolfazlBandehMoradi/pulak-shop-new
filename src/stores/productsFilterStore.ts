@@ -1,5 +1,5 @@
 // stores/productsFilterStore.ts
-import { create } from "zustand";
+import { create } from 'zustand';
 
 const normalizeCategoryIds = (ids: string[]): string[] =>
   Array.from(new Set(ids.map((id) => id.trim()).filter(Boolean))).sort();
@@ -18,7 +18,7 @@ interface ShopStore {
   sortDescending?: boolean;
 
   // UI
-  viewMode: "grid" | "list";
+  viewMode: 'grid' | 'list';
 
   // Actions
   setSearch: (value?: string) => void;
@@ -27,12 +27,8 @@ interface ShopStore {
   setHasOffer: (value?: boolean) => void;
   setSort: (sortBy?: string, descending?: boolean) => void;
   setFeatured: (value?: boolean) => void;
-  setViewMode: (mode: "grid" | "list") => void;
-  setFilters: (filters: {
-    search?: string;
-    categoryIds: string[];
-    hasOffer?: boolean;
-  }) => void;
+  setViewMode: (mode: 'grid' | 'list') => void;
+  setFilters: (filters: { search?: string; categoryIds: string[]; hasOffer?: boolean }) => void;
   clearFilters: () => void;
 }
 
@@ -41,11 +37,11 @@ export const useShopStore = create<ShopStore>((set) => ({
   search: undefined,
   categoryIds: [],
   hasOffer: undefined,
-  status: "Active",
+  status: 'Active',
   isFeatured: undefined,
   sortBy: undefined,
   sortDescending: undefined,
-  viewMode: "grid",
+  viewMode: 'grid',
 
   setSearch: (value) =>
     set((state) => {
@@ -68,13 +64,17 @@ export const useShopStore = create<ShopStore>((set) => ({
     }),
 
   toggleCategoryId: (id) =>
-    set((state) => ({
-      categoryIds: normalizeCategoryIds(
+    set((state) => {
+      const nextCategoryIds = normalizeCategoryIds(
         state.categoryIds.includes(id)
           ? state.categoryIds.filter((c) => c !== id)
-          : [...state.categoryIds, id]
-      ),
-    })),
+          : [...state.categoryIds, id],
+      );
+
+      return areSameCategoryIds(state.categoryIds, nextCategoryIds)
+        ? state
+        : { categoryIds: nextCategoryIds };
+    }),
 
   setFilters: (filters) =>
     set((state) => {
@@ -103,11 +103,9 @@ export const useShopStore = create<ShopStore>((set) => ({
       sortDescending: sortBy ? descending : undefined,
     })),
 
-  setFeatured: (value) =>
-    set(() => ({ isFeatured: value })),
+  setFeatured: (value) => set(() => ({ isFeatured: value })),
 
-  setViewMode: (mode) =>
-    set(() => ({ viewMode: mode })),
+  setViewMode: (mode) => set(() => ({ viewMode: mode })),
 
   clearFilters: () =>
     set(() => ({

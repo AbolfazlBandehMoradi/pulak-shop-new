@@ -49,7 +49,7 @@ export default function ProductCard({ product, lang, getImageUrl }: ProductCardP
           )}
 
           {!inStock && (
-            <Badge className="bg-red-500 px-2 py-1 text-xs text-white">{t('shop.outOfStock')}</Badge>
+            <Badge className="bg-red-500 px-2 py-1 text-xs text-white">{t('productsFilter.outOfStock')}</Badge>
           )}
         </div>
 

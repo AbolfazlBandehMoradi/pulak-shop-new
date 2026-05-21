@@ -6,5 +6,6 @@
   "categories": "دسته‌بندی‌ها",
   "onlyDiscountedProducts": "فقط محصولات تخفیف‌دار",
   "failedToParseUrlParams": "خواندن پارامترهای آدرس با خطا مواجه شد.",
-  "failedToUpdateUrl": "به‌روزرسانی آدرس با خطا مواجه شد."
+  "failedToUpdateUrl": "به‌روزرسانی آدرس با خطا مواجه شد.",
+  "outOfStock": "ناموجود"
 }

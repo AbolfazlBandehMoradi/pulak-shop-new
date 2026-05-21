@@ -146,53 +146,72 @@ export default function ProductsFilterPage() {
     }
   }, [isLoading]);
 
+
+
   const showInitialPageSkeleton = !hasCompletedInitialLoadRef.current && isLoading;
 
   useEffect(() => {
-    try {
-      const stableCurrentQuery = toStableQueryString(new URLSearchParams(location.search));
-      const nextFilters = parseFiltersFromSearch(location.search);
-      const currentFilters = useShopStore.getState();
+  try {
+    const nextFilters = parseFiltersFromSearch(location.search);
 
-      const storeFilters = normalizeFilters({
-        search: currentFilters.search,
-        categoryIds: currentFilters.categoryIds,
-        hasOffer: currentFilters.hasOffer,
-      });
+    const currentFilters = normalizeFilters({
+      search,
+      categoryIds,
+      hasOffer,
+    });
 
-      if (!areSameFilters(nextFilters, storeFilters)) {
-        setFilters(nextFilters);
-      }
-
-      syncedQueryRef.current = stableCurrentQuery;
-
-      if (!isUrlHydrated) {
-        setIsUrlHydrated(true);
-      }
-    } catch (err: unknown) {
-      console.error('Error hydrating URL params:', err);
-      setComponentError(err instanceof Error ? err.message : t('productsFilter.failedToParseUrlParams'));
+    if (!areSameFilters(nextFilters, currentFilters)) {
+      setFilters(nextFilters);
     }
-  }, [isUrlHydrated, location.search, setFilters, t]);
 
-  useEffect(() => {
-    try {
-      if (!isUrlHydrated) {
-        return;
-      }
+    syncedQueryRef.current = toStableQueryString(
+      new URLSearchParams(location.search),
+    );
 
-      const nextParams = buildSearchParams(location.search, normalizedActiveFilters);
-      const nextStableQuery = toStableQueryString(nextParams);
+    setIsUrlHydrated(true);
+  } catch (err: unknown) {
+    console.error('Error hydrating URL params:', err);
 
-      if (nextStableQuery !== syncedQueryRef.current) {
-        syncedQueryRef.current = nextStableQuery;
-        setSearchParams(nextParams, { replace: true });
-      }
-    } catch (err: unknown) {
-      console.error('Error updating URL:', err);
-      setComponentError(err instanceof Error ? err.message : t('productsFilter.failedToUpdateUrl'));
+    setComponentError(
+      err instanceof Error
+        ? err.message
+        : t('productsFilter.failedToParseUrlParams'),
+    );
+  }
+}, [location.search]);
+
+useEffect(() => {
+  try {
+    if (!isUrlHydrated) return;
+
+    // IMPORTANT:
+    // DON'T build from location.search
+    const nextParams = buildSearchParams('', normalizedActiveFilters);
+
+    const nextStableQuery = toStableQueryString(nextParams);
+
+    // Prevent loops
+    if (nextStableQuery === syncedQueryRef.current) {
+      return;
     }
-  }, [isUrlHydrated, location.search, normalizedActiveFilters, setSearchParams, t]);
+
+    syncedQueryRef.current = nextStableQuery;
+
+    setSearchParams(nextParams, {
+      replace: true,
+    });
+  } catch (err: unknown) {
+    console.error('Error updating URL:', err);
+
+    setComponentError(
+      err instanceof Error
+        ? err.message
+        : t('productsFilter.failedToUpdateUrl'),
+    );
+  }
+}, [normalizedActiveFilters, isUrlHydrated]);
+
+
 
   useEffect(() => {
     if (!hasNextPage || !loadMoreRef.current) {
