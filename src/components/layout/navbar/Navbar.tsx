@@ -10,6 +10,8 @@ import { useLangStore } from '@/stores/languageStore';
 import useCategories from '@/hooks/useCategories';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 import { useTranslation } from 'react-i18next';
+import { LanguageToggle } from './LanguageWithClick';
+import { ThemeToggleButton } from '@/components/ui/ThemeToggleButton';
 
 type CategoryId = string | null;
 
@@ -172,6 +174,9 @@ export const Navbar: React.FC = () => {
             </div>
 
             <div className="flex w-full items-center justify-end gap-3 lg:w-auto">
+              <LanguageToggle />
+              <ThemeToggleButton />
+
               {!isAuthenticated ? (
                 <Link
                   to={localizedPath('/auth')}
@@ -388,6 +393,9 @@ export const Navbar: React.FC = () => {
                 </Link>
 
                 <div className="flex items-center gap-2">
+                  <LanguageToggle />
+                  <ThemeToggleButton />
+
                   <Link
                     className="relative rounded-xl border border-gray-300/50 p-2 first-text-color-svg"
                     to={localizedPath('/cart')}
