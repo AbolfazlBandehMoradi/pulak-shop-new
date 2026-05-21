@@ -181,7 +181,7 @@ const AllCategoriesPage = () => {
   };
 
   return (
-    <main dir={dir} className="mx-auto mt-8 px-4 sm:container lg:mt-16">
+    <main dir={dir} className="mx-auto max-w-7xl mt-8 px-4 md:px-6 lg:mt-16">
       <div className="rounded-3xl bg-color-for-layer-on-body p-6">
         <div className="mb-6 flex w-full items-center gap-3 lg:w-6/12">
           <span className="first-text-color-svg inline-block rounded-lg p-3">

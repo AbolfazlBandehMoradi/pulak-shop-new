@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Star } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "@/i18n/useTranslation";
 import { Badge } from "@/components/ui/Badge";
 import cleanText from "@/utils/cleanText";
 import { useLocalizedPath } from "@/hooks/useLocalizedPath";
@@ -20,6 +21,7 @@ interface GridProductItemProps extends Omit<ProductViewProps, "products"> {
 }
 
 function GridProductItem({ product, lang, getImageUrl }: GridProductItemProps) {
+  const { t } = useTranslation();
   const localizedPath = useLocalizedPath();
   const [isHovered, setIsHovered] = useState(false);
   const isRTL = lang === "fa";
@@ -30,8 +32,8 @@ function GridProductItem({ product, lang, getImageUrl }: GridProductItemProps) {
   const inStock = isProductInStock(product);
   const rating = typeof product.rating === "number" ? product.rating : 4.5;
   const imageUrl = getImageUrl(product);
-  const outOfStockLabel = isRTL ? "\u0646\u0627\u0645\u0648\u062C\u0648\u062F" : "Out of stock";
-  const viewProductLabel = isRTL ? "\u0645\u0634\u0627\u0647\u062F\u0647 \u0645\u062D\u0635\u0648\u0644" : "View Product";
+  const outOfStockLabel = t("shop.outOfStock");
+  const viewProductLabel = t("shop.viewProduct");
 
   return (
     <div

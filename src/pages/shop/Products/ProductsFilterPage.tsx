@@ -25,6 +25,7 @@ export default function ProductsFilterPage() {
   const { data: categories, isLoading: isCategoriesLoading, isError: isCategoriesError } = useCategories();
   const { t } = useTranslation();
   const lang = useLangStore((s) => s.lang);
+  const dir = useLangStore((s) => s.dir);
 
   const {
     search,
@@ -98,9 +99,9 @@ export default function ProductsFilterPage() {
       }
     } catch (err: any) {
       console.error('Error hydrating URL params:', err);
-      setComponentError(err?.message ?? 'Failed to parse URL params.');
+      setComponentError(err?.message ?? t('shop.failedToParseUrlParams'));
     }
-  }, [isUrlHydrated, location.search, setFilters]);
+  }, [isUrlHydrated, location.search, setFilters, t]);
 
   // ------------------ Update URL ------------------
   useEffect(() => {
@@ -129,9 +130,9 @@ export default function ProductsFilterPage() {
       }
     } catch (err: any) {
       console.error('Error updating URL:', err);
-      setComponentError(err?.message ?? 'Failed to update URL.');
+      setComponentError(err?.message ?? t('shop.failedToUpdateUrl'));
     }
-  }, [isUrlHydrated, location.search, setSearchParams, search, categoryIds, hasOffer]);
+  }, [isUrlHydrated, location.search, setSearchParams, search, categoryIds, hasOffer, t]);
 
   // ------------------ Infinite scroll ------------------
   useEffect(() => {
@@ -183,7 +184,7 @@ export default function ProductsFilterPage() {
     if (search) {
       tags.push({
         key: 'search',
-        label: `${t('nav.search') || 'Search'}: ${search}`,
+        label: `${t('shop.activeSearchLabel')}: ${search}`,
         onRemove: () => setSearch(undefined),
       });
     }
@@ -191,7 +192,7 @@ export default function ProductsFilterPage() {
     if (hasOffer) {
       tags.push({
         key: 'has-offer',
-        label: t('product.discount') || 'Only discounted products',
+        label: t('shop.onlyDiscountedProducts'),
         onRemove: () => setHasOffer(undefined),
       });
     }
@@ -201,7 +202,7 @@ export default function ProductsFilterPage() {
         key: `category-${categoryId}`,
         label:
           categoryNameById.get(categoryId) ??
-          `${t('product.categories') || 'Categories'}: ${categoryId}`,
+          `${t('shop.activeCategoryLabel')}: ${categoryId}`,
         onRemove: () =>
           setCategoryIds(categoryIds.filter((id) => id !== categoryId)),
       });
@@ -225,18 +226,12 @@ export default function ProductsFilterPage() {
 
   if (showInitialPageSkeleton) {
     return (
-      <main className="relative sm:container mx-auto mt-8 lg:mt-16 px-4">
-        <div className="flex flex-wrap justify-between">
-          <aside className="w-full md:w-32/96 lg:w-20/96">
+      <main dir={dir} className="relative mx-auto mt-8 px-4 sm:container lg:mt-16">
+        <div className="flex flex-wrap justify-between gap-y-6">
+          <aside className="order-2 w-full md:order-1 md:w-32/96 lg:w-20/96">
             <FilterPanelSkeleton />
           </aside>
-          <section className="w-full md:w-32/96 lg:w-75/96">
-            {/* <div className="flex mb-4">
-              <div className="flex overflow-hidden rounded-lg border border-first-100 p-1 gap-1 bg-color-for-layer-on-body">
-                <Skeleton className="w-8 h-8 bg-first-100" />
-                <Skeleton className="w-8 h-8 bg-first-100" />
-              </div>
-            </div> */}
+          <section className="order-1 w-full md:order-2 md:w-32/96 lg:w-75/96">
             <ProductsContentSkeleton count={skeletonCount} />
           </section>
         </div>
@@ -246,8 +241,8 @@ export default function ProductsFilterPage() {
 
   // ------------------ Main Render ------------------
   return (
-    <main className="relative sm:container mx-auto mt-8 lg:mt-16 px-4">
-      <div className="flex flex-wrap justify-between">
+    <main dir={dir} className="relative mx-auto mt-8 px-4 sm:container lg:mt-16">
+      <div className="flex flex-wrap justify-between gap-y-6">
         <FiltersSidebar
           categories={categories}
           isCategoriesLoading={isCategoriesLoading}
@@ -281,7 +276,7 @@ export default function ProductsFilterPage() {
             <GridViewProduct products={products} lang={lang} getImageUrl={getImageUrl} />
           )}
 
-          <div ref={loadMoreRef} className="h-16 mt-4 flex justify-center">
+          <div ref={loadMoreRef} className="mt-4 flex h-16 justify-center">
             {isFetchingNextPage && <Spinner />}
           </div>
         </section>
