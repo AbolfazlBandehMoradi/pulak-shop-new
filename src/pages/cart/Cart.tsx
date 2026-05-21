@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import { ShoppingCart, ArrowLeft, Package, ShoppingBag, ArrowRight } from 'lucide-react';
-import type { Cart } from '@/utils/cartApi';
 import { Button } from '@/components/ui/button';
 import { CartItem } from './sections/CartItem';
 import { CartSummary } from './sections/CartSummary';
@@ -8,11 +7,16 @@ import useCartStore from '@/stores/cartStore';
 import { useTranslation } from '@/i18n/useTranslation';
 import { useLocalizedNavigate } from '@/hooks/useLocalizedNavigate';
 import CheckoutStepper from '@/components/reusable-components/CheckoutStepper/CheckoutStepper';
+import { useLangStore } from '@/stores/languageStore';
 
 const Cart = () => {
   const navigate = useLocalizedNavigate();
   const { cart } = useCartStore();
   const { t } = useTranslation();
+  const currentLanguage = useLangStore((s) => s.lang);
+  const dir = useLangStore((s) => s.dir);
+  const isRTL = dir === 'rtl';
+  const effectiveLangCode = currentLanguage || 'fa';
 
   return (
     <main className="mx-auto mt-20 lg:mt-8 px-4 sm:container">
@@ -22,15 +26,12 @@ const Cart = () => {
           <div className="flex items-center gap-3">
             <div>
               <h1 className=" font-s-bold first-text-color text-xl ">
-                {t('cart.cart.yourShoppingCart') || 'Your Shopping Cart'}
+                {t('cart.yourShoppingCart') || 'Your Shopping Cart'}
               </h1>
               {cart && cart.items.length > 0 && (
                 <p className="  first-text-color   flex items-center gap-1 mt-1">
                   <Package className="h-4 w-4" />
-                  <span>
-                    {cart.items.length} {t('cart.cart.shipment') || 'shipment'}
-                    {cart.items.length > 1 ? '' : ''}
-                  </span>
+                  <span>{cart.items.length} {t('cart.shipment') || 'shipment'}</span>
                 </p>
               )}
             </div>
@@ -40,7 +41,7 @@ const Cart = () => {
             onClick={() => navigate(`/products`)}
             className="bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400"
           >
-            <ArrowLeft className={`h-4 w-4 ${true ? 'ml-2' : 'mr-2'}`} />
+            <ArrowLeft className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
             {t('common.back') || 'Back'}
           </Button>
         </div>
@@ -68,9 +69,9 @@ const Cart = () => {
               className="bg-linear-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-lg"
               size="lg"
             >
-              <ShoppingBag className={`h-5 w-5 ${true ? 'ml-2' : 'mr-2'}`} />
+              <ShoppingBag className={`h-5 w-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
               {t('cart.continueShopping') || 'Continue Shopping'}
-              <ArrowRight className={`h-5 w-5 ${true ? 'mr-2 rotate-180' : 'ml-2'}`} />
+              <ArrowRight className={`h-5 w-5 ${isRTL ? 'mr-2 rotate-180' : 'ml-2'}`} />
             </Button>
           </div>
         </motion.div>
@@ -105,7 +106,7 @@ const Cart = () => {
             >
               <CartSummary
                 cart={cart}
-                languageCode={'fa'}
+                languageCode={effectiveLangCode}
                 onCheckout={() => navigate('/checkout')}
               />
             </motion.div>

@@ -36,10 +36,10 @@ export function AddToCartSuccessModal({ isOpen, onClose, onViewCart }: AddToCart
               </div>
             </div>
             <h3 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
-              {t('cart.cart.addedToCart') || 'Added to Cart!'}
+              {t('cart.addedToCart') || 'Added to Cart!'}
             </h3>
             <p className="mb-6 first-text-color-for-paragraph-low">
-              {t('cart.cart.itemAddedSuccessfully') ||
+              {t('cart.itemAddedSuccessfully') ||
                 'Item has been added to your cart successfully.'}
             </p>
             <div className="flex gap-3">
@@ -54,7 +54,7 @@ export function AddToCartSuccessModal({ isOpen, onClose, onViewCart }: AddToCart
                 onClick={onViewCart}
                 className="flex-1 w-full text-white font-s-bold text-lg gap-2 bg-secound"
               >
-                {t('cart.cart.viewCart') || 'View Cart'}
+                {t('cart.viewCart') || 'View Cart'}
               </Button>
             </div>
           </motion.div>

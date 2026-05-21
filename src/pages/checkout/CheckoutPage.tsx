@@ -37,6 +37,7 @@ import {
   AlertCircle,
   CheckCircle,
   ChevronDown,
+  Loader2,
 } from 'lucide-react';
 import { useTranslation } from '@/i18n/useTranslation';
 import { Button } from '@/components/ui/button';
@@ -80,11 +81,13 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   const localizedPath = useLocalizedPath();
   const currentLanguage = useLangStore((s) => s.lang);
+  const dir = useLangStore((s) => s.dir);
   const { t } = useTranslation();
 
   // Determine language code
   const effectiveLangCode = currentLanguage || 'fa';
-  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const isRTL = dir === 'rtl';
+  const [reloadKey, setReloadKey] = useState(0);
   const [addresses, setAddresses] = useState<UserAddress[]>([]);
   const [provinces, setProvinces] = useState<Province[]>([]);
   const [cities, setCities] = useState<City[]>([]);
@@ -98,11 +101,11 @@ export default function CheckoutPage() {
   const [cart, setCart] = useState<Cart | null>(null);
 
   const addressSchema = useMemo(() => {
-    const requiredMessage = t('cart.checkout.validation.required') || 'This field is required';
+    const requiredMessage = t('checkout.validation.required') || 'This field is required';
     const postalCodeInvalidMessage =
-      t('cart.checkout.validation.postalCodeInvalid') || 'Invalid postal code format';
+      t('checkout.validation.postalCodeInvalid') || 'Invalid postal code format';
     const phoneInvalidMessage =
-      t('cart.checkout.validation.phoneInvalid') || 'Invalid phone number format';
+      t('checkout.validation.phoneInvalid') || 'Invalid phone number format';
 
     return z.object({
       id: z.number().optional(),
@@ -155,6 +158,7 @@ export default function CheckoutPage() {
     const loadData = async () => {
       try {
         setLoading(true);
+        setError(null);
 
         // Load cart and provinces in parallel
         const [cartData, provincesData] = await Promise.all([
@@ -183,7 +187,7 @@ export default function CheckoutPage() {
     };
 
     loadData();
-  }, [effectiveLangCode]);
+  }, [effectiveLangCode, reloadKey]);
 
   // Load cities when province changes
   useEffect(() => {
@@ -245,7 +249,7 @@ export default function CheckoutPage() {
       setError(
         err instanceof Error
           ? err.message
-          : t('cart.checkout.addressSaveError') || 'Failed to save address',
+          : t('checkout.addressSaveError') || 'Failed to save address',
       );
     } finally {
       setSaving(false);
@@ -301,7 +305,7 @@ export default function CheckoutPage() {
       setError(
         err instanceof Error
           ? err.message
-          : t('cart.checkout.addressDeleteError') || 'Failed to delete address',
+          : t('checkout.addressDeleteError') || 'Failed to delete address',
       );
     } finally {
       setDeletingAddressId(null);
@@ -328,7 +332,11 @@ export default function CheckoutPage() {
         );
       } catch (err) {
         console.error('Failed to set default address:', err);
-        setError(err instanceof Error ? err.message : 'Failed to set default address');
+        setError(
+          err instanceof Error
+            ? err.message
+            : t('checkout.defaultAddressError') || 'Failed to set default address',
+        );
       }
     }
   };
@@ -336,7 +344,7 @@ export default function CheckoutPage() {
   const handleContinue = async () => {
     // Check if address is selected
     if (!selectedAddressId) {
-      setError(t('cart.checkout.validation.required') || 'Please select or add an address');
+      setError(t('checkout.validation.required') || 'Please select or add an address');
       return;
     }
 
@@ -344,7 +352,7 @@ export default function CheckoutPage() {
     const selectedAddress = addresses.find((a) => a.id === selectedAddressId);
 
     if (!selectedAddress) {
-      setError(t('cart.checkout.validation.required') || 'Please select or add an address');
+      setError(t('checkout.validation.required') || 'Please select or add an address');
       return;
     }
 
@@ -362,7 +370,11 @@ export default function CheckoutPage() {
         );
       } catch (err) {
         console.error('Failed to set default address:', err);
-        setError(err instanceof Error ? err.message : 'Failed to set default address');
+        setError(
+          err instanceof Error
+            ? err.message
+            : t('checkout.defaultAddressError') || 'Failed to set default address',
+        );
         return;
       }
     }
@@ -371,7 +383,6 @@ export default function CheckoutPage() {
     navigate(localizedPath(`/payment`));
   };
 
-  const isRTL = true;
   const [showOptionalFields, setShowOptionalFields] = useState(false);
   return (
     <main className="mx-auto mt-20 lg:mt-8 px-4 sm:container">
@@ -380,7 +391,7 @@ export default function CheckoutPage() {
         <div className="flex items-center justify-between  gap-3 mb-2">
           <div className="flex items-center gap-3">
             <h1 className="font-s-bold first-text-color text-xl">
-              {t('cart.checkout.title') || 'Checkout'}
+              {t('checkout.title') || 'Checkout'}
             </h1>
           </div>
           <Button
@@ -388,7 +399,7 @@ export default function CheckoutPage() {
             onClick={() => navigate(localizedPath(`/cart`))}
             className="bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400"
           >
-            {t('cart.checkout.backToCart') || 'Back to Cart'}
+            {t('checkout.backToCart') || 'Back to Cart'}
             <ArrowLeft className={`h-4 w-4 ${isRTL ? 'mr-2' : 'ml-2'}`} />
           </Button>
         </div>
@@ -406,7 +417,7 @@ export default function CheckoutPage() {
             </div>
             <p className="text-red-600 dark:text-red-400 text-lg font-medium">{error}</p>
             <Button
-              onClick={() => window.location.reload()}
+              onClick={() => setReloadKey((value) => value + 1)}
               className="bg-red-600 hover:bg-red-700"
             >
               {t('common.retry') || 'Retry'}
@@ -424,7 +435,7 @@ export default function CheckoutPage() {
               >
                 <div className="flex items-center justify-between">
                   <h2 className="font-s-bold first-text-color text-xl flex items-center gap-2">
-                    {t('cart.checkout.selectAddress') || 'Select Address'}
+                    {t('checkout.selectAddress') || 'Select Address'}
                   </h2>
                   <Button
                     variant="primary"
@@ -436,7 +447,7 @@ export default function CheckoutPage() {
                     }}
                     className="bg-first p-0 rounded-full flex items-center justify-center h-10 w-10 "
                   >
-                    <MapPinPlus className={`h-5 w-5  }`} />
+                    <MapPinPlus className="h-5 w-5" />
                   </Button>
                 </div>
                 <div className="space-y-4">
@@ -473,12 +484,12 @@ export default function CheckoutPage() {
                                 <MapPinHouseIcon className="h-4 w-4" />
                               </motion.div>
                               <h3 className="text-base font-s-bold first-text-color">
-                                {address.title || t('cart.checkout.addressTitle') || 'Address'}
+                                {address.title || t('checkout.addressTitle') || 'Address'}
                               </h3>
                               {address.isDefault && (
                                 <div className="inline-flex items-center gap-1 rounded-full border border-blue-200/70 dark:border-blue-800/50 bg-blue-100/80 dark:bg-blue-900/40 px-2.5 py-1 text-[11px] font-semibold text-blue-700 dark:text-blue-200 backdrop-blur-sm">
                                   <Sparkles className="h-3 w-3" />
-                                  {t('cart.checkout.setAsDefault') || 'Default'}
+                                  {t('checkout.setAsDefault') || 'Default'}
                                 </div>
                               )}
                             </div>
@@ -486,9 +497,6 @@ export default function CheckoutPage() {
                               <DropdownMenu>
                                 <DropdownMenuTrigger>
                                   <button
-                                    onClick={() =>
-                                      setOpenMenuId(openMenuId === address.id ? null : address.id)
-                                    }
                                     className="p-2 rounded-xl border border-gray-300 dark:border-gray-500 bg-color-for-layer-on-body hover:bg-gray-100 dark:hover:bg-gray-700 transition"
                                   >
                                     <MoreVertical className="h-4 w-4 first-text-color-svg" />
@@ -501,7 +509,7 @@ export default function CheckoutPage() {
                                     className="text-blue-600"
                                   >
                                     <Edit2 className="h-4 w-4" />
-                                    Edit
+                                    {t('checkout.edit') || 'Edit'}
                                   </DropdownMenuItem>
 
                                   <DropdownMenuItem
@@ -509,7 +517,7 @@ export default function CheckoutPage() {
                                     className="text-red-600"
                                   >
                                     <Trash2 className="h-4 w-4" />
-                                    Delete
+                                    {t('checkout.delete') || 'Delete'}
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
@@ -541,7 +549,7 @@ export default function CheckoutPage() {
                           <div className="flex w-full flex-wrap gap-3 ">
                             <span className="flex flex-wrap gap-1 text-sm w-full  ">
                               <span className="font-f-bold text-nowrap first-text-color">
-                                {t('cart.checkout.deliveryAddress')}
+                                {t('checkout.deliveryAddress')}
                               </span>
                               :
                               <span className="first-text-color-for-paragraph">
@@ -552,7 +560,7 @@ export default function CheckoutPage() {
                             {address.streetAddress2 && (
                               <span className="flex flex-wrap gap-1 text-sm w-full">
                                 <span className="font-f-bold">
-                                  {t('cart.checkout.streetAddress2')}
+                                  {t('checkout.streetAddress2')}
                                 </span>
 
                                 <span className="first-text-color-for-paragraph">
@@ -565,7 +573,7 @@ export default function CheckoutPage() {
                                 {(address.firstName || address.lastName) && (
                                   <div className="flex w-full text-sm gap-1">
                                     <span className="font-f-bold first-text-color">
-                                      {t('cart.checkout.receiver')}
+                                      {t('checkout.receiver')}
                                     </span>
                                     :
                                     <span className="first-text-color-for-paragraph">
@@ -581,7 +589,7 @@ export default function CheckoutPage() {
                                   <div className="flex w-full text-sm gap-1">
                                     <span className="flex gap-1">
                                       <span className="font-f-bold first-text-color">
-                                        {t('cart.checkout.phoneNumber')}
+                                        {t('checkout.phoneNumber')}
                                       </span>
                                     </span>
                                     :
@@ -596,7 +604,7 @@ export default function CheckoutPage() {
                                   <div className="flex w-full text-sm gap-1">
                                     <span className="flex gap-1">
                                       <span className="font-f-bold first-text-color">
-                                        {t('cart.checkout.postalCode')}
+                                        {t('checkout.postalCode')}
                                       </span>
                                     </span>
                                     :
@@ -628,17 +636,17 @@ export default function CheckoutPage() {
                   </div>
                   <h2 className="text-lg font-s-bold first-text-color">
                     {editingAddress
-                      ? t('cart.checkout.editAddress') || 'Edit Address'
-                      : t('cart.checkout.addNewAddress') || 'Add New Address'}
+                      ? t('checkout.editAddress') || 'Edit Address'
+                      : t('checkout.addNewAddress') || 'Add New Address'}
                   </h2>
                 </div>
                 <div className="space-y-2">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
                       <label className="text-xs  mb-2 flex items-center first-text-color-for-paragraph">
-                        <span className="me-1">{t('cart.checkout.province') || 'Province'}</span>(
+                        <span className="me-1">{t('checkout.province') || 'Province'}</span>(
                         <span className="first-text-color-red">
-                          {t('cart.checkout.required') || 'required'})
+                          {t('checkout.required') || 'required'})
                         </span>
                       </label>
                       <Controller
@@ -655,12 +663,12 @@ export default function CheckoutPage() {
                               field.onChange(Number(value));
                               setValue('cityId', 0);
                             }}
-                            placeholder={t('cart.checkout.selectProvince') || 'Select Province'}
+                            placeholder={t('checkout.selectProvince') || 'Select Province'}
                             searchPlaceholder={
-                              t('cart.checkout.searchProvince') || 'Search provinces...'
+                              t('checkout.searchProvince') || 'Search provinces...'
                             }
                             emptyMessage={
-                              t('cart.checkout.noProvincesFound') || 'No provinces found'
+                              t('checkout.noProvincesFound') || 'No provinces found'
                             }
                             error={!!formErrors.provinceId}
                             className={formErrors.provinceId ? 'border-red-500' : ''}
@@ -676,9 +684,9 @@ export default function CheckoutPage() {
 
                     <div>
                       <label className="text-xs mb-2 flex items-center first-text-color">
-                        <span className="me-1">{t('cart.checkout.city') || 'city'}</span>(
+                        <span className="me-1">{t('checkout.city') || 'city'}</span>(
                         <span className="first-text-color-red">
-                          {t('cart.checkout.required') || 'required'})
+                          {t('checkout.required') || 'required'})
                         </span>
                       </label>
                       <Controller
@@ -692,9 +700,9 @@ export default function CheckoutPage() {
                             }))}
                             value={field.value ?? 0}
                             onChange={(value) => field.onChange(Number(value))}
-                            placeholder={t('cart.checkout.selectCity') || 'Select City'}
-                            searchPlaceholder={t('cart.checkout.searchCity') || 'Search cities...'}
-                            emptyMessage={t('cart.checkout.noCitiesFound') || 'No cities found'}
+                            placeholder={t('checkout.selectCity') || 'Select City'}
+                            searchPlaceholder={t('checkout.searchCity') || 'Search cities...'}
+                            emptyMessage={t('checkout.noCitiesFound') || 'No cities found'}
                             disabled={provinceId <= 0}
                             error={!!formErrors.cityId}
                             className={formErrors.cityId ? 'border-red-500' : ''}
@@ -711,11 +719,11 @@ export default function CheckoutPage() {
                     <div className="md:col-span-2">
                       <label className="text-xs mt-4 mb-2 flex items-center first-text-color-for-paragraph">
                         <span className="me-1">
-                          {t('cart.checkout.streetAddress') || 'Address Description'}
+                          {t('checkout.streetAddress') || 'Address Description'}
                         </span>
                         (
                         <span className="first-text-color-red">
-                          {t('cart.checkout.required') || 'required'}
+                          {t('checkout.required') || 'required'}
                         </span>
                         )
                       </label>
@@ -724,7 +732,7 @@ export default function CheckoutPage() {
                         {...register('streetAddress1')}
                         rows={3}
                         placeholder={
-                          t('cart.checkout.streetAddressPlaceholder') || 'Enter address description'
+                          t('checkout.streetAddressPlaceholder') || 'Enter address description'
                         }
                         className={`w-full rounded-md border border-gray-300 dark:border-gray-500 bg-color-for-layer-sec px-3 py-2 text-sm resize-none first-text-color-for-paragraph transition-colors focus:outline-none focus:ring-2 focus:ring-primary ${
                           formErrors.streetAddress1 ? 'border-red-500' : 'border-input'
@@ -741,11 +749,11 @@ export default function CheckoutPage() {
                     <div className="md:col-span-2">
                       <label className="text-xs  mb-2 flex items-center first-text-color-for-paragraph">
                         <span className="me-1">
-                          {t('cart.checkout.postalCode') || 'Postal Code'}
+                          {t('checkout.postalCode') || 'Postal Code'}
                         </span>
                         (
                         <span className="first-text-color-red">
-                          {t('cart.checkout.required') || 'required'})
+                          {t('checkout.required') || 'required'})
                         </span>
                       </label>
                       <Controller
@@ -767,7 +775,7 @@ export default function CheckoutPage() {
                               field.onChange(onlyNumbers);
                             }}
                             placeholder={
-                              t('cart.checkout.postalCodePlaceholder') || 'Enter postal code'
+                              t('checkout.postalCodePlaceholder') || 'Enter postal code'
                             }
                             className={formErrors.postalCode ? 'border-red-500' : 'text-right'}
                           />
@@ -792,7 +800,7 @@ export default function CheckoutPage() {
                     <div className="flex items-center gap-2">
                       <Sparkles className="h-4 w-4 text-blue-500" />
                       <span className="text-sm font-semibold first-text-color-for-paragraph">
-                        {t('cart.checkout.optionalInformation') || 'Optional Information'}
+                        {t('checkout.optionalInformation') || 'Optional Information'}
                       </span>
                     </div>
 
@@ -817,13 +825,13 @@ export default function CheckoutPage() {
                           {/* Address Title */}
                           <div>
                             <label className="text-xs mt-4 mb-2 flex items-center first-text-color-for-paragraph">
-                              {t('cart.checkout.addressTitle') || 'Address Title'}
+                              {t('checkout.addressTitle') || 'Address Title'}
                             </label>
 
                             <Input
                               {...register('title')}
                               placeholder={
-                                t('cart.checkout.addressTitlePlaceholder') ||
+                                t('checkout.addressTitlePlaceholder') ||
                                 'e.g., Home, Work, Office'
                               }
                             />
@@ -832,13 +840,13 @@ export default function CheckoutPage() {
                           {/* First Name */}
                           <div>
                             <label className="text-xs mt-4 mb-2 flex items-center first-text-color-for-paragraph">
-                              {t('cart.checkout.firstName') || 'First Name'}
+                              {t('checkout.firstName') || 'First Name'}
                             </label>
 
                             <Input
                               {...register('firstName')}
                               placeholder={
-                                t('cart.checkout.firstNamePlaceholder') || 'Enter first name'
+                                t('checkout.firstNamePlaceholder') || 'Enter first name'
                               }
                             />
                           </div>
@@ -846,13 +854,13 @@ export default function CheckoutPage() {
                           {/* Last Name */}
                           <div>
                             <label className="text-xs mt-4 mb-2 flex items-center first-text-color-for-paragraph">
-                              {t('cart.checkout.lastName') || 'Last Name'}
+                              {t('checkout.lastName') || 'Last Name'}
                             </label>
 
                             <Input
                               {...register('lastName')}
                               placeholder={
-                                t('cart.checkout.lastNamePlaceholder') || 'Enter last name'
+                                t('checkout.lastNamePlaceholder') || 'Enter last name'
                               }
                             />
                           </div>
@@ -860,7 +868,7 @@ export default function CheckoutPage() {
                           {/* Phone */}
                           <div>
                             <label className="text-xs mt-4 mb-2 flex items-center first-text-color-for-paragraph">
-                              {t('cart.checkout.phoneNumber') || 'Phone Number'}
+                              {t('checkout.phoneNumber') || 'Phone Number'}
                             </label>
 
                             <Controller
@@ -873,7 +881,7 @@ export default function CheckoutPage() {
                                   value={field.value ?? ''}
                                   onChange={(e) => field.onChange(toEnglishNumbers(e.target.value))}
                                   placeholder={
-                                    t('cart.checkout.phoneNumberPlaceholder') ||
+                                    t('checkout.phoneNumberPlaceholder') ||
                                     'Enter phone number'
                                   }
                                   className={formErrors.phoneNumber ? 'border-red-500' : ''}
@@ -885,7 +893,7 @@ export default function CheckoutPage() {
                           {/* Alternative Phone */}
                           <div>
                             <label className="text-xs mt-4 mb-2 flex items-center first-text-color-for-paragraph">
-                              {t('cart.checkout.alternativePhoneNumber') ||
+                              {t('checkout.alternativePhoneNumber') ||
                                 'Alternative Phone Number'}
                             </label>
 
@@ -899,7 +907,7 @@ export default function CheckoutPage() {
                                   value={field.value ?? ''}
                                   onChange={(e) => field.onChange(toEnglishNumbers(e.target.value))}
                                   placeholder={
-                                    t('cart.checkout.alternativePhoneNumberPlaceholder') ||
+                                    t('checkout.alternativePhoneNumberPlaceholder') ||
                                     'Optional'
                                   }
                                 />
@@ -910,12 +918,12 @@ export default function CheckoutPage() {
                           {/* Address 2 */}
                           <div className="md:col-span-2">
                             <label className="text-xs  mt-4 mb-2 flex items-center first-text-color-for-paragraph">
-                              {t('cart.checkout.streetAddress2') || 'Street Address 2'}
+                              {t('checkout.streetAddress2') || 'Street Address 2'}
                             </label>
                             <Input
                               {...register('streetAddress2')}
                               placeholder={
-                                t('cart.checkout.streetAddress2Placeholder') ||
+                                t('checkout.streetAddress2Placeholder') ||
                                 'Apartment, suite, etc.'
                               }
                             />
@@ -935,13 +943,13 @@ export default function CheckoutPage() {
                   >
                     {saving ? (
                       <>
-                        <span className="animate-spin mr-2">⏳</span>
+                        <Loader2 className="animate-spin mr-2 h-4 w-4" />
                         {t('common.loading') || 'Loading...'}
                       </>
                     ) : (
                       <>
                         <Save className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                        {t('cart.checkout.saveAddress') || 'Save Address'}
+                        {t('checkout.saveAddress') || 'Save Address'}
                       </>
                     )}
                   </Button>
@@ -956,7 +964,7 @@ export default function CheckoutPage() {
                       setCities([]);
                     }}
                   >
-                    {t('cart.checkout.cancel') || 'Cancel'}
+                    {t('checkout.cancel') || 'Cancel'}
                   </Button>
                 </div>
               </motion.div>
@@ -985,10 +993,10 @@ export default function CheckoutPage() {
                   <MapPin className="h-9 w-9 text-red-500 dark:text-red-400" />
                 </div>
                 <h3 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                  {t('cart.checkout.noAddresses') || 'No addresses found'}
+                  {t('checkout.noAddresses') || 'No addresses found'}
                 </h3>
                 <p className="mt-2 text-sm first-text-color-for-paragraph max-w-md mx-auto leading-relaxed">
-                  {t('cart.checkout.noAddressesMessage') ||
+                  {t('checkout.noAddressesMessage') ||
                     'Add a new address to continue your checkout'}
                 </p>
                 <motion.div
@@ -1005,7 +1013,7 @@ export default function CheckoutPage() {
                     }}
                     className="group relative inline-flex items-center  rounded-lg bg-secound px-4 py-2 text-white  "
                   >
-                    {t('cart.checkout.addNewAddress') || 'Add New Address'}
+                    {t('checkout.addNewAddress') || 'Add New Address'}
                   </Button>
                 </motion.div>
               </motion.div>
@@ -1023,7 +1031,7 @@ export default function CheckoutPage() {
                         <ReceiptText strokeWidth={1} className="w-6 h-6" />
                       </span>
                       <h2 className="text-xl font-s-sbold first-text-color ">
-                        {t('cart.cart.orderSummary')}
+                        {t('cart.orderSummary')}
                       </h2>
                     </span>
                     <hr className="first-text-color-hr my-2" />
@@ -1031,7 +1039,7 @@ export default function CheckoutPage() {
                       {effectiveLangCode === 'fa' ? (
                         <>
                           <span className="font-f-sbold te first-text-color-for-paragraph">
-                            {t('cart.cart.priceOfItems') || 'Price of items'} ({cart.itemCount})
+                            {t('cart.priceOfItems') || 'Price of items'} ({cart.itemCount})
                           </span>
                           <span className="font-f-normal first-text-color">
                             <PriceDisplay amount={cart.subtotal} languageCode={effectiveLangCode} />
@@ -1041,7 +1049,7 @@ export default function CheckoutPage() {
                         <>
                           <span className="text-muted-foreground flex items-center gap-2">
                             <ShoppingCart className="h-4 w-4" />
-                            {t('cart.cart.priceOfItems') || 'Price of items'} ({cart.itemCount})
+                            {t('cart.priceOfItems') || 'Price of items'} ({cart.itemCount})
                           </span>
                           <span className="font-semibold">
                             <PriceDisplay amount={cart.subtotal} languageCode={effectiveLangCode} />
@@ -1067,7 +1075,7 @@ export default function CheckoutPage() {
                             </span>
                             <span className="text-green-700 dark:text-green-300 flex items-center gap-2">
                               <Tag className="h-4 w-4" />
-                              {t('cart.cart.yourProfit') || 'Your profit from purchase'} (
+                              {t('cart.yourProfit') || 'Your profit from purchase'} (
                               {effectiveLangCode === 'fa'
                                 ? toPersianNumbers(
                                     Math.round((cart.totalDiscount / cart.subtotal) * 100),
@@ -1080,7 +1088,7 @@ export default function CheckoutPage() {
                           <>
                             <span className="text-green-700 dark:text-green-300 flex items-center gap-2">
                               <Tag className="h-4 w-4" />
-                              {t('cart.cart.yourProfit') || 'Your profit from purchase'} (
+                              {t('cart.yourProfit') || 'Your profit from purchase'} (
                               {currentLanguage == 'fa'
                                 ? toPersianNumbers(
                                     Math.round((cart.totalDiscount / cart.subtotal) * 100),
@@ -1109,7 +1117,7 @@ export default function CheckoutPage() {
                       {effectiveLangCode === 'fa' ? (
                         <>
                           <span className="first-text-color font-f-bold">
-                            {t('cart.cart.cartTotal') || 'Cart Total'}
+                            {t('cart.cartTotal') || 'Cart Total'}
                           </span>
                           <span className="font-bold text-lg text-red-600 dark:text-red-400">
                             <PriceDisplay amount={cart.total} languageCode={effectiveLangCode} />
@@ -1119,7 +1127,7 @@ export default function CheckoutPage() {
                         <>
                           <span className="text-foreground font-bold flex items-center gap-2">
                             <CheckCircle className="h-5 w-5 text-red-500" />
-                            {t('cart.cart.cartTotal') || 'Cart Total'}
+                            {t('cart.cartTotal') || 'Cart Total'}
                           </span>
                           <span className="font-bold text-lg text-red-600 dark:text-red-400">
                             <PriceDisplay amount={cart.total} languageCode={effectiveLangCode} />
@@ -1137,7 +1145,7 @@ export default function CheckoutPage() {
                     size="lg"
                   >
                     <span className="flex items-center justify-center gap-2">
-                      {t('cart.checkout.continue') || 'Continue'}
+                      {t('checkout.continue') || 'Continue'}
                       <ArrowRight className={`h-5 w-5 ${isRTL ? 'rotate-180' : ''}`} />
                     </span>
                   </Button>
@@ -1146,7 +1154,7 @@ export default function CheckoutPage() {
                 {/* Info Note */}
                 {cart && cart.items.length > 0 && (
                   <p className="text-xs first-text-color-for-paragraph-low">
-                    {t('cart.cart.paymentNote')}
+                    {t('cart.paymentNote')}
                   </p>
                 )}
               </div>

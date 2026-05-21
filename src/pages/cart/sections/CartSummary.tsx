@@ -16,7 +16,7 @@ interface CartSummaryProps {
 export function CartSummary({ cart, languageCode, onCheckout }: CartSummaryProps) {
   const dir = useLangStore((s) => s.dir);
   const { t } = useTranslation();
-  const isRTL = dir == 'rtl';
+  const isRTL = dir === 'rtl';
   const isPersian = languageCode === 'fa';
 
   const discountPercent =
@@ -34,7 +34,7 @@ export function CartSummary({ cart, languageCode, onCheckout }: CartSummaryProps
           <span className="first-text-color-svg">
             <ReceiptText strokeWidth={1} className="w-6 h-6" />
           </span>
-          <h2 className="text-xl font-s-sbold first-text-color ">{t('cart.cart.orderSummary')}</h2>
+          <h2 className="text-xl font-s-sbold first-text-color ">{t('cart.orderSummary')}</h2>
         </span>
         <hr className="first-text-color-hr" />
         <div className={`flex justify-between items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
@@ -44,13 +44,13 @@ export function CartSummary({ cart, languageCode, onCheckout }: CartSummaryProps
                 <PriceDisplay amount={cart.subtotal} languageCode={languageCode} />
               </span>
               <span className=" font-f-normal first-text-color">
-                {t('cart.cart.priceOfItems') || 'Price of items'} ({cart.itemCount})
+                {t('cart.priceOfItems') || 'Price of items'} ({cart.itemCount})
               </span>
             </>
           ) : (
             <>
               <span className="font-f-sbold first-text-color-for-paragraph">
-                {t('cart.cart.priceOfItems') || 'Price of items'} ({cart.itemCount})
+                {t('cart.priceOfItems') || 'Price of items'} ({cart.itemCount})
               </span>
               <span className="font-f-normal first-text-color">
                 <PriceDisplay amount={cart.subtotal} languageCode={languageCode} />
@@ -65,13 +65,13 @@ export function CartSummary({ cart, languageCode, onCheckout }: CartSummaryProps
                 <PriceDisplay amount={cart.total} languageCode={languageCode} />
               </span>
               <span className="font-f-sbold first-text-color-for-paragraph">
-                {t('cart.cart.cartTotal') || 'Cart Total'}
+                {t('cart.cartTotal') || 'Cart Total'}
               </span>
             </>
           ) : (
             <>
               <span className="text-muted-foreground ">
-                {t('cart.cart.cartTotal') || 'Cart Total'}
+                {t('cart.cartTotal') || 'Cart Total'}
               </span>
               <span className="font-bold text-lg">
                 <PriceDisplay amount={cart.total} languageCode={languageCode} />
@@ -88,14 +88,14 @@ export function CartSummary({ cart, languageCode, onCheckout }: CartSummaryProps
                 </span>
 
                 <span className="text-sm text-gray-600 dark:text-gray-300">
-                  {t('cart.cart.yourProfit') || 'Your profit from purchase'} (
+                  {t('cart.yourProfit') || 'Your profit from purchase'} (
                   {isPersian ? toPersianNumbers(discountPercent) : discountPercent}%)
                 </span>
               </>
             ) : (
               <>
                 <span className="text-gray-500 text-sm">
-                  {t('cart.cart.yourProfit') || 'Your profit from purchase'} ({discountPercent}%)
+                  {t('cart.yourProfit') || 'Your profit from purchase'} ({discountPercent}%)
                 </span>
 
                 <span className="font-semibold text-green-600 dark:text-green-400 text-sm">
@@ -111,13 +111,13 @@ export function CartSummary({ cart, languageCode, onCheckout }: CartSummaryProps
             className="w-full font-s-sbold bg-first text-white"
             size="lg"
           >
-            {t('cart.cart.confirmAndCompleteOrder') || 'Confirm and Complete Order'}
+            {t('cart.confirmAndCompleteOrder') || 'Confirm and Complete Order'}
             <ShoppingBag className={`h-5 w-5 ${isRTL ? 'mr-2' : 'ml-2'}`} />
           </Button>
         </div>
 
         {/* Info Note */}
-        <p className="text-xs first-text-color-for-paragraph-low">{t('cart.cart.paymentNote')}</p>
+        <p className="text-xs first-text-color-for-paragraph-low">{t('cart.paymentNote')}</p>
       </div>
     </motion.div>
   );

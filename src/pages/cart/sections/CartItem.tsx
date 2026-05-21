@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Trash2, Plus, Backpack, Minus, Shield, Store, Activity } from 'lucide-react';
+import { Trash2, Plus, Minus, Shield, Store } from 'lucide-react';
 import { Button } from '@/components/ui/IconButton';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { toPersianNumbers } from '@/utils/numberFormat';
@@ -22,15 +22,18 @@ export function CartItem({ item }: CartItemProps) {
   const updateCartItem = useUpdateCartItem();
   const removeCartItem = useRemoveCartItem();
   const isMutating = updateCartItem.isPending || removeCartItem.isPending;
+  const currentLanguage = useLangStore((s) => s.lang);
   const dir = useLangStore((s) => s.dir);
   const localizedPath = useLocalizedPath();
   const { t } = useTranslation();
-  const isRTL = dir == 'rtl';
+  const isRTL = dir === 'rtl';
+  const languageCode = currentLanguage || 'fa';
+  const isPersian = languageCode === 'fa';
   const imageUrl = getImageUrl(item.productImage?.thumbnailPath || item.productImage?.filePath);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [pendingTo, setPendingTo] = useState<string | null>(null);
   const navigate = useNavigate();
-  console.log(item);
+
   return (
     <>
       <motion.div
@@ -41,8 +44,9 @@ export function CartItem({ item }: CartItemProps) {
       >
         <Link
           className=" w-24/96 md:w-16/96 lg:w-16/96 xl:w-12/96 h-24  flex items-center border  p-2 md:p-4 rounded-xl border-gray-300 dark:border-gray-500 justify-center "
-          to={''}
-          onClick={() => {
+          to="#"
+          onClick={(event) => {
+            event.preventDefault();
             setPendingTo(localizedPath(`/products/${item.productSlug}`));
             setOpenConfirm(true);
           }}
@@ -80,7 +84,7 @@ export function CartItem({ item }: CartItemProps) {
                         currencyMode="symbol"
                         currencyClassName="w-6 h-6 text-secound dark:text-secound-400"
                         amount={item.lineFinalPrice}
-                        languageCode="fa"
+                        languageCode={languageCode}
                         variant="primary"
                         className="font-s-sbold first-text-color "
                       />
@@ -89,14 +93,14 @@ export function CartItem({ item }: CartItemProps) {
                           <PriceDisplay
                             currencyMode="none"
                             amount={item.lineTotal}
-                            languageCode="fa"
+                            languageCode={languageCode}
                             variant="secondary"
                           />
                           <span className="bg-color-for-red absolute h-0.5 opacity-30 rotate-15 top-2 left-0 right-0" />
                         </span>
                         <div className="bg-yellow-50 flex items-center gap-1 px-1.5 py-1 rounded">
                           <span className="text-yellow-600 text-[10px]">
-                            {t('cart.cart.specialSale') || 'Special Sale'}
+                            {t('cart.specialSale') || 'Special Sale'}
                           </span>
                         </div>
                       </div>
@@ -105,7 +109,7 @@ export function CartItem({ item }: CartItemProps) {
                       <span className="text-xs first-text-color-for-paragraph">
                         <PriceDisplay
                           amount={item.unitSalePrice} // ✅ فقط قیمت تخفیف‌خورده
-                          languageCode="fa"
+                          languageCode={languageCode}
                           currencyMode="none"
                         />{' '}
                         × {toPersianNumbers(item.quantity)}
@@ -119,7 +123,7 @@ export function CartItem({ item }: CartItemProps) {
                       currencyMode="symbol"
                       currencyClassName="w-6 h-6 text-secound dark:text-secound-400"
                       amount={item.lineFinalPrice}
-                      languageCode="fa"
+                      languageCode={languageCode}
                       variant="primary"
                       className="font-s-sbold first-text-color"
                     />
@@ -129,7 +133,7 @@ export function CartItem({ item }: CartItemProps) {
                       <span className="text-xs first-text-color-for-paragraph">
                         <PriceDisplay
                           amount={item.unitPrice}
-                          languageCode="fa"
+                          languageCode={languageCode}
                           currencyMode="none"
                         />{' '}
                         × {toPersianNumbers(item.quantity)}
@@ -149,8 +153,8 @@ export function CartItem({ item }: CartItemProps) {
                       <span className="text-xs text-gray-400 line-through">
                         <PriceDisplay
                           amount={item.lineTotal}
-                          languageCode="en"
-                          currency="USD"
+                          languageCode={languageCode}
+                          currency={item.currencyCode}
                           currencyMode="symbol"
                           variant="secondary"
                         />
@@ -158,7 +162,7 @@ export function CartItem({ item }: CartItemProps) {
 
                       <div className="bg-yellow-50 flex items-center gap-1 px-1.5 py-1 rounded">
                         <span className="text-yellow-600 text-[10px]">
-                          {t('cart.cart.specialSale') || 'Special Sale'}
+                          {t('cart.specialSale') || 'Special Sale'}
                         </span>
                       </div>
                     </div>
@@ -166,8 +170,8 @@ export function CartItem({ item }: CartItemProps) {
                     {/* Final price */}
                     <PriceDisplay
                       amount={item.lineFinalPrice}
-                      languageCode="en"
-                      currency="USD"
+                      languageCode={languageCode}
+                      currency={item.currencyCode}
                       currencyMode="symbol"
                       variant="primary"
                       className="text-lg font-bold"
@@ -178,8 +182,8 @@ export function CartItem({ item }: CartItemProps) {
                       <span className="text-xs text-gray-400">
                         <PriceDisplay
                           amount={item.unitSalePrice} // ✅ درست
-                          languageCode="en"
-                          currency="USD"
+                          languageCode={languageCode}
+                          currency={item.currencyCode}
                           currencyMode="none"
                         />{' '}
                         × {item.quantity}
@@ -191,8 +195,8 @@ export function CartItem({ item }: CartItemProps) {
                     {/* normal price */}
                     <PriceDisplay
                       amount={item.lineFinalPrice}
-                      languageCode="en"
-                      currency="USD"
+                      languageCode={languageCode}
+                      currency={item.currencyCode}
                       currencyMode="symbol"
                       variant="primary"
                       className="text-lg font-bold"
@@ -203,8 +207,8 @@ export function CartItem({ item }: CartItemProps) {
                       <span className="text-xs text-gray-400">
                         <PriceDisplay
                           amount={item.unitPrice}
-                          languageCode="en"
-                          currency="USD"
+                          languageCode={languageCode}
+                          currency={item.currencyCode}
                           currencyMode="none"
                         />{' '}
                         × {item.quantity}
@@ -254,7 +258,7 @@ export function CartItem({ item }: CartItemProps) {
             )}
             <div className="w-36/96 flex items-center justify-center">
               <span className="font-f-bold text-white">
-                {true ? toPersianNumbers(item.quantity) : item.quantity}{' '}
+                {isPersian ? toPersianNumbers(item.quantity) : item.quantity}{' '}
               </span>
             </div>
             <div className="w-36/96">
@@ -265,7 +269,7 @@ export function CartItem({ item }: CartItemProps) {
                 onClick={() =>
                   updateCartItem.mutate({ itemId: item.id, quantity: item.quantity + 1 })
                 }
-                disabled={isMutating}
+                disabled={isMutating || item.quantity >= item.stock}
               >
                 <Plus className="h-4 w-4" />
               </Button>
@@ -274,8 +278,7 @@ export function CartItem({ item }: CartItemProps) {
         </div>
         {item.quantity === item.stock && (
           <span className="text-xs w-full flex justify-center mt-2 first-text-color-red">
-            {t('cart.cart.maximum') || 'Maximum'}
-            {item.quantity}
+            {t('cart.maximum') || 'Maximum'} {isPersian ? toPersianNumbers(item.quantity) : item.quantity}
           </span>
         )}
       </motion.div>
@@ -283,16 +286,18 @@ export function CartItem({ item }: CartItemProps) {
         isOpen={openConfirm}
         onClose={() => setOpenConfirm(false)}
         icon={<Shield className="w-12 h-12 text-yellow-500" />}
-        title="Are you sure?"
-        description="Do you want to go back to product details?"
+        title={t('cart.confirmNavigationTitle') || 'Are you sure?'}
+        description={
+          t('cart.confirmNavigationDescription') || 'Do you want to go back to product details?'
+        }
         buttons={[
           {
-            label: 'No',
+            label: t('cart.no') || 'No',
             variant: 'outline',
             onClick: () => setOpenConfirm(false),
           },
           {
-            label: 'Yes',
+            label: t('cart.yes') || 'Yes',
             variant: 'primary',
             onClick: () => {
               if (pendingTo) {

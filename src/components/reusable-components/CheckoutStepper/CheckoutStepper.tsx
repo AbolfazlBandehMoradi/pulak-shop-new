@@ -1,7 +1,5 @@
 import { ShoppingBag, ShoppingCart, Package } from 'lucide-react';
 import { useTranslation } from '@/i18n/useTranslation';
-import { useLangStore } from '@/stores/languageStore';
-import { useParams } from 'react-router-dom';
 
 interface CheckoutStepperProps {
   currentStep: 1 | 2 | 3;
@@ -29,10 +27,7 @@ const steps = [
 ];
 
 export default function CheckoutStepper({ currentStep }: CheckoutStepperProps) {
-  const { langCode: routeLangCode } = useParams<{ langCode: string }>();
-  const currentLanguage = useLangStore((s) => s.lang);
   const { t } = useTranslation();
-  const effectiveLangCode = routeLangCode || currentLanguage || 'fa';
 
   return (
     <div className="mt-8 mb-8">
@@ -96,12 +91,10 @@ export default function CheckoutStepper({ currentStep }: CheckoutStepperProps) {
                     `}
                 >
                   {step.key === 'cart'
-                    ? t('cart.cart.yourShoppingCart') || step.fallback
+                    ? t('cart.yourShoppingCart') || step.fallback
                     : step.key === 'checkout'
-                      ? t('cart.checkout.address') || step.fallback
-                      : step.key === 'payment'
-                        ? t('cart.payment.title') || step.fallback
-                        : effectiveLangCode === 'fa'}
+                      ? t('checkout.address') || step.fallback
+                      : t('payment.title') || step.fallback}
                 </span>
               </div>
 

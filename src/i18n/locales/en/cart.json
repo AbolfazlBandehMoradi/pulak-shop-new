@@ -1,7 +1,25 @@
 {
+  "yourShoppingCart": "Your Shopping Cart",
+  "shipment": "item",
+  "backToProduct": "Back to Product",
+  "emptyCart": "Your cart is empty",
+  "emptyCartMessage": "Add some products to your cart to get started.",
+  "continueShopping": "Continue Shopping",
+  "priceOfItems": "Price of items",
   "orderSummary": "Order Summary",
+  "yourProfit": "Your profit from purchase",
+  "cartTotal": "Cart Total",
+  "paymentNote": "This order has not been paid yet. If inventory runs out, items may be removed from your cart.",
+  "confirmAndCompleteOrder": "Confirm and Complete Order",
   "specialSale": "Special Sale",
+  "discount": "Discount",
+  "maximum": "Maximum",
   "addedToCart": "Added to Cart!",
   "itemAddedSuccessfully": "Item has been added to your cart successfully",
-  "viewCart": "View Cart"
+  "viewCart": "View Cart",
+  "adding": "Adding...",
+  "confirmNavigationTitle": "Are you sure?",
+  "confirmNavigationDescription": "Do you want to go back to product details?",
+  "yes": "Yes",
+  "no": "No"
 }
