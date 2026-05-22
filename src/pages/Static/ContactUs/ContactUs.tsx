@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { AiOutlineMail, AiOutlinePhone } from 'react-icons/ai';
-import { GoLocation } from 'react-icons/go';
+import { Mail, MapPin, Phone } from 'lucide-react';
 
 interface ContactTranslation {
   phone: string;
@@ -23,11 +22,11 @@ const ContactUs = () => {
   const contactData = (t('contact', { returnObjects: true }) as ContactTranslation) || defaultContact;
 
   const contactItems = [
-    { icon: AiOutlinePhone, text: contactData.phone, href: 'tel:+982166419417' },
-    { icon: AiOutlinePhone, text: contactData.phoneFactory, href: 'tel:+982636670300' },
-    { icon: AiOutlinePhone, text: contactData.phoneSound, href: 'tel:+989307587686' },
-    { icon: AiOutlineMail, text: contactData.email, href: 'mailto:info@gammatebasia.com' },
-    { icon: GoLocation, text: contactData.location },
+    { icon: Phone, text: contactData.phone, href: 'tel:+982166419417' },
+    { icon: Phone, text: contactData.phoneFactory, href: 'tel:+982636670300' },
+    { icon: Phone, text: contactData.phoneSound, href: 'tel:+989307587686' },
+    { icon: Mail, text: contactData.email, href: 'mailto:info@gammatebasia.com' },
+    { icon: MapPin, text: contactData.location },
   ];
 
   return (
