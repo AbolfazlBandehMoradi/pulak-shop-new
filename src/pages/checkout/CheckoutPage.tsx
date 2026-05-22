@@ -1,11 +1,15 @@
 import { ArrowLeft, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from '@/i18n/useTranslation';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/skeleton';
 import useCartStore from '@/stores/cartStore';
 import { useLangStore } from '@/stores/languageStore';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
+import { getCart } from '@/utils/cartApi';
 import CheckoutStepper from '@/components/reusable-components/CheckoutStepper/CheckoutStepper';
 import { useCheckoutData } from './hooks/useCheckoutData';
 import { CheckoutAddressList } from './sections/CheckoutAddressList';
@@ -17,11 +21,15 @@ export default function CheckoutPage() {
   const localizedPath = useLocalizedPath();
   const currentLanguage = useLangStore((state) => state.lang);
   const dir = useLangStore((state) => state.dir);
-  const { cart } = useCartStore();
+  const { cart, setCart } = useCartStore();
+  const queryClient = useQueryClient();
+  const { isAuthenticated, user } = useAuth();
+  const { error: showErrorToast, warning: showWarningToast } = useToast();
   const { t } = useTranslation();
 
   const effectiveLangCode = currentLanguage || 'fa';
   const isRTL = dir === 'rtl';
+  const cartScope = isAuthenticated ? `user:${user?.id ?? 'authenticated'}` : 'guest';
 
   const {
     addresses,
@@ -52,8 +60,27 @@ export default function CheckoutPage() {
 
   const handleContinue = async () => {
     const canContinue = await continueToPayment();
-    if (canContinue) {
+    if (!canContinue) {
+      return;
+    }
+
+    try {
+      const latestCart = await queryClient.fetchQuery({
+        queryKey: ['cart', effectiveLangCode, cartScope],
+        queryFn: () => getCart(effectiveLangCode),
+      });
+      setCart(latestCart);
+
+      if (!latestCart.items.length) {
+        showWarningToast(t('cart.emptyCart') || 'Your cart is empty');
+        navigate(localizedPath('/cart'));
+        return;
+      }
+
       navigate(localizedPath('/payment'));
+    } catch (error) {
+      console.error('Failed to refresh cart before continuing to payment:', error);
+      showErrorToast(t('common.retry') || 'Failed to refresh cart. Please try again.');
     }
   };
 

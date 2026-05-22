@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft,
@@ -28,6 +29,8 @@ import { requestZibalPayment } from '@/utils/zibalApi';
 import { requestZarinPalPayment } from '@/utils/zarinpalApi';
 import { useLangStore } from '@/stores/languageStore';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import useCartStore from '@/stores/cartStore';
+import { useToast } from '@/context/ToastContext';
 import CheckoutStepper from '@/components/reusable-components/CheckoutStepper/CheckoutStepper';
 
 type PaymentMethod = 'online' | 'wallet';
@@ -40,11 +43,15 @@ export default function PaymentPage() {
   const dir = useLangStore((s) => s.dir);
   const { t } = useTranslation();
   const { isAuthenticated, user, isLoading: authLoading } = useAuth();
+  const queryClient = useQueryClient();
+  const setGlobalCart = useCartStore((state) => state.setCart);
+  const { error: showErrorToast, warning: showWarningToast } = useToast();
 
   // Determine language code from global language store
   const effectiveLangCode = currentLanguage || 'fa';
   const isRTL = dir === 'rtl';
   const isPersian = effectiveLangCode === 'fa';
+  const cartScope = isAuthenticated ? `user:${user?.id ?? 'authenticated'}` : 'guest';
 
   // Keep redirect behavior aligned with protected route pattern
   useEffect(() => {
@@ -56,7 +63,7 @@ export default function PaymentPage() {
     }
   }, [authLoading, isAuthenticated, location.pathname, location.search, localizedPath, navigate]);
 
-  const [cart, setCart] = useState<Cart | null>(null);
+  const [cart, setCartData] = useState<Cart | null>(null);
   const [wallet, setWallet] = useState<WalletType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -79,8 +86,12 @@ export default function PaymentPage() {
         setLoading(true);
 
         // Load cart
-        const cartData = await getCart(effectiveLangCode);
-        setCart(cartData);
+        const cartData = await queryClient.fetchQuery({
+          queryKey: ['cart', effectiveLangCode, cartScope],
+          queryFn: () => getCart(effectiveLangCode),
+        });
+        setCartData(cartData);
+        setGlobalCart(cartData);
 
         // Load wallet if user is authenticated
         if (isAuthenticated && user?.id) {
@@ -103,7 +114,7 @@ export default function PaymentPage() {
     if (!authLoading) {
       loadData();
     }
-  }, [effectiveLangCode, isAuthenticated, user, authLoading]);
+  }, [effectiveLangCode, isAuthenticated, user, authLoading, queryClient, cartScope, setGlobalCart]);
 
   useEffect(() => {
     if (paymentMethod !== 'online') return;
@@ -135,6 +146,26 @@ export default function PaymentPage() {
       return;
     }
     if (paymentMethod === 'online') {
+      let latestCart: Cart;
+      try {
+        latestCart = await queryClient.fetchQuery({
+          queryKey: ['cart', effectiveLangCode, cartScope],
+          queryFn: () => getCart(effectiveLangCode),
+        });
+        setCartData(latestCart);
+        setGlobalCart(latestCart);
+      } catch (err) {
+        console.error('Failed to refresh cart before payment:', err);
+        showErrorToast(t('common.retry') || 'Failed to refresh cart. Please try again.');
+        return;
+      }
+
+      if (!latestCart.items.length) {
+        showWarningToast(t('cart.emptyCart') || 'Your cart is empty');
+        navigate(localizedPath('/cart'));
+        return;
+      }
+
       const gatewayId = gateways.length > 0 ? selectedGatewayId : undefined;
       if (gateways.length > 0 && !selectedGatewayId) return;
       const selectedGateway = gateways.find((g) => g.id === (selectedGatewayId ?? gatewayId));
