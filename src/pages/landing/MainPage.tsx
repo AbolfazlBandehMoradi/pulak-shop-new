@@ -1,7 +1,6 @@
 import useIndex from '@/hooks/useIndex';
 import useShowcases from '@/hooks/useShowcases';
 import useGalleries, { type GalleryItem } from '@/hooks/useGalleries';
-import useImagePreloader from '@/hooks/useImagePreloader';
 import IndexLoading from '@/components/ui/IndexLoading';
 import ApiError from '@/pages/error/ApiError';
 import Hero from './sections/Hero';
