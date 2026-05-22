@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import {
-  ArrowLeft,
   CreditCard,
   Wallet,
   Tag,
@@ -250,7 +249,7 @@ export default function PaymentPage() {
       <main dir={dir} className="flex-1 container mx-auto px-4 py-6">
         <CheckoutStepper currentStep={3} />
         <div className="mb-6">
-          <div className="flex items-center justify-between gap-3 mb-2">
+          <div className="flex items-center gap-3 mb-2">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg">
                 <CreditCard className="h-6 w-6 text-white" />
@@ -263,14 +262,6 @@ export default function PaymentPage() {
                 </p>
               </div>
             </div>
-            <Button
-              variant="ghost"
-              onClick={() => navigate(localizedPath('/checkout'))}
-              className="bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400"
-            >
-              <ArrowLeft className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-              {t('payment.backToCheckout') || 'Back to Checkout'}
-            </Button>
           </div>
         </div>
 

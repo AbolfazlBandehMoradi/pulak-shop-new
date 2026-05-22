@@ -12,11 +12,13 @@
     "cart": "Cart",
     "login": "Sign in / Register",
     "loginShort": "Sign in",
+    "user": "User",
     "logout": "Logout",
     "all": "View all",
     "profile": "Profile",
     "openMenu": "Open menu",
     "switchToEnglish": "Switch to English",
-    "switchToPersian": "Switch to Persian"
+    "switchToPersian": "Switch to Persian",
+    "mobileBarLabel": "Mobile quick navigation"
   }
 }

@@ -44,18 +44,13 @@ const MainPage = () => {
       .sort(sortByDisplayOrder);
   }, [galleries?.items]);
 
-  const galleryImageSources = useMemo(() => {
-    return [...sliderGalleries, ...bannerGalleries].map((item) => item.image);
-  }, [sliderGalleries, bannerGalleries]);
-
-  const galleryImagesLoaded = useImagePreloader(galleryImageSources, Boolean(galleries));
 
   const handleRetry = () => {
     void refetch();
     void refetchGalleries();
   };
 
-  if ((isLoading && !index) || (isGalleriesLoading && !galleries) || !galleryImagesLoaded) {
+  if ((isLoading && !index) || (isGalleriesLoading && !galleries)) {
     return <IndexLoading />;
   }
 

@@ -26,6 +26,7 @@ import { useEffect, useRef, useState } from 'react';
 import useCartStore from '@/stores/cartStore';
 import { useLangStore } from '@/stores/languageStore';
 import { Link } from 'react-router-dom';
+import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 
 interface ProductBuyBoxProps {
   product?: ProductDetail | null;
@@ -67,6 +68,7 @@ export function ProductBuyBox({
   const dir = useLangStore((s) => s.dir);
   const isRTL = dir == 'rtl';
   const isPersian = languageCode === 'fa';
+  const localizedPath = useLocalizedPath();
 
   const [localQuantity, setLocalQuantity] = useState(cartItem?.quantity || 1);
   const serverQuantityRef = useRef<number | null>(null);
@@ -134,7 +136,7 @@ export function ProductBuyBox({
       </div>
     );
   }
-  console.log(product);
+
   return (
     <div className={cn('lg:sticky lg:top-24 lg:self-start')}>
       <motion.div
@@ -427,7 +429,7 @@ export function ProductBuyBox({
                   </div>
                 </div>
                 <Link
-                  to={'/cart'}
+                  to={localizedPath('/cart')}
                   className={cn(
                     'flex items-end flex-col justify-center gap-1 w-48/96',
                     isRTL && ' ',

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { ShoppingCart, ArrowLeft, Package, ShoppingBag, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { CartItem } from './sections/CartItem';
 import { CartSummary } from './sections/CartSummary';
 import useCartStore from '@/stores/cartStore';
@@ -46,6 +47,35 @@ const Cart = () => {
           </Button>
         </div>
       </div>
+
+      {cart && cart.items.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6 rounded-2xl border border-first/15 bg-color-for-layer-on-body p-4 shadow-dark-sm"
+        >
+          <div
+            className={`flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between ${isRTL ? 'sm:flex-row-reverse' : ''}`}
+          >
+            <div className={isRTL ? 'sm:text-right' : ''}>
+              <p className="text-sm first-text-color-for-paragraph">
+                {t('cart.cartTotal') || 'Cart Total'}
+              </p>
+              <p className="text-2xl font-s-bold text-first">
+                <PriceDisplay amount={cart.total} languageCode={effectiveLangCode} />
+              </p>
+            </div>
+            <Button
+              onClick={() => navigate('/checkout')}
+              className="bg-first text-white hover:bg-first-600"
+              size="lg"
+            >
+              {t('checkout.continue') || 'Continue'}
+              <ArrowRight className={`h-5 w-5 ${isRTL ? 'mr-2 rotate-180' : 'ml-2'}`} />
+            </Button>
+          </div>
+        </motion.div>
+      )}
 
       {!cart || cart.items.length === 0 ? (
         // Empty cart

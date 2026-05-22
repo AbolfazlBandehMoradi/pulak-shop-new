@@ -72,7 +72,7 @@ export default function ProductDetail() {
     if (!product) return null;
     return product.translation ?? product.translations?.[0];
   }, [product]);
-  console.log(product);
+
   return (
     <section className="mx-auto mt-24 px-4 sm:container lg:mt-8">
       <div className="rounded-3xl bg-color-for-layer-on-body p-4 lg:p-12">

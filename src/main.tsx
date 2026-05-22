@@ -22,7 +22,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           <LanguageProvider>
             <ThemeProvider>
               <RouterProvider router={router} />
-              <ReactQueryDevtools />
+              {/* <ReactQueryDevtools /> */}
             </ThemeProvider>
           </LanguageProvider>
         </ToastProvider>
