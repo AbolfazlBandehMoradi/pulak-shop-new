@@ -67,7 +67,6 @@ const CategoriesSlider = ({ categories }: Props) => {
               </p>
             </div>
           </div>
-
           <div className="mt-3 flex w-full lg:mt-0 lg:w-6/12 lg:flex-row-reverse">
             <Link
               className="button-with-icon-on-white-layout text-sm flex items-center h-12 sm:h-14 px-4 rounded-2xl gap-2 w-fit"
@@ -96,7 +95,6 @@ const CategoriesSlider = ({ categories }: Props) => {
             </Link>
           </div>
         </motion.div>
-
         <div className="relative mt-4">
           {categories?.length > 0 ? (
             <Swiper

@@ -139,17 +139,16 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="navbar-shell">
+    <nav className="navbar-shell my-4">
       {!isMobile && (
-        <div dir={dir} className="container mx-auto my-4 px-4 max-w-7xl">
+        <div dir={dir} className="sm:container mx-auto  px-4 ">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex w-full items-center gap-3 lg:w-8/12">
               <Link className="hidden w-16 md:block" to={localizedPath('/')}>
                 <img className="w-full h-auto" src={MainLogo} alt="logo" />
               </Link>
-
               <form
-                className="flex w-full nav-search-form"
+                className="flex w-full h-14 overflow-hidden rounded-2xl bg-color-for-layer-on-body  "
                 name="search"
                 onSubmit={handleSearchSubmit}
               >
@@ -158,7 +157,7 @@ export const Navbar: React.FC = () => {
                   ref={searchRef}
                   name="search"
                   type="search"
-                  className="nav-search-input no-clear-button"
+                  className="w-full border-0   first-text-color-for-paragraph px-4 no-clear-button"
                   placeholder={searchPlaceholder}
                   onChange={() => {
                     if (searchRef.current?.value) {
@@ -170,14 +169,20 @@ export const Navbar: React.FC = () => {
                 />
                 <button
                   type="submit"
-                  className="nav-search-submit group"
+                  className="w-8/96 hover:bg-first hover:text-white flex items-center border-r border-gray-300 dark:border-gray-500  justify-center group"
                   aria-label={searchPlaceholder}
                 >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <svg
+                    className="group-hover:text-white first-text-color-svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                  >
                     <path
                       d="M20 20L15.8033 15.8033M18 10.5C18 6.35786 14.6421 3 10.5 3C6.35786 3 3 6.35786 3 10.5C3 14.6421 6.35786 18 10.5 18C14.6421 18 18 14.6421 18 10.5Z"
                       stroke="currentColor"
-                      strokeWidth="1.5"
+                      strokeWidth="1"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                     />
@@ -257,10 +262,13 @@ export const Navbar: React.FC = () => {
         </div>
       )}
 
-      <div className="mx-auto bg-color-for-layer-on-body p-4">
+      <div className="mx-auto bg-color-for-layer-on-body mt-4 p-4">
         {!isMobile ? (
-          <div dir={dir}  className="container mx-auto max-w-7xl flex items-center justify-between px-4">
-            <ul className="flex items-center gap-8">
+          <div
+            dir={dir}
+            className="container mx-auto max-w-7xl flex items-center justify-between px-4"
+          >
+            <ul className="flex items-center gap-4">
               <li className="text-base font-f-normal first-text-color">
                 <Link to={localizedPath('/')} className="first-header__ul-link">
                   {navLabels.home}
@@ -292,7 +300,9 @@ export const Navbar: React.FC = () => {
                 </button>
 
                 {isDesktopCategoryOpen && (
-                  <div className={`absolute ${dir == 'rtl' ? " -right-15" : "left-15" } border border-gray-300/60 top-full z-40 mt-3 w-212.5 overflow-hidden rounded-2xl bg-color-for-layer-on-body shadow-dark-sm`}>
+                  <div
+                    className={`absolute ${dir == 'rtl' ? ' -right-15' : 'left-15'} border border-gray-300/60 top-full z-40 mt-3 w-212.5 overflow-hidden rounded-2xl bg-color-for-layer-on-body shadow-dark-sm`}
+                  >
                     <div className="flex">
                       <ul className="w-64 border-e border-gray-300/60 bg-color-for-layer-sec p-4">
                         {categories?.map((category, index) => (

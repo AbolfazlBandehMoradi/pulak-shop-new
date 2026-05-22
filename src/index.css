@@ -3,11 +3,13 @@
 :root {
   --color-1f2633-const: #1f2633;
 }
+
 a,
 Link,
 button {
   cursor: pointer;
 }
+
 @theme {
   --breakpoint-xs: 360px;
   --breakpoint-3xl: 1792px;
@@ -34,12 +36,12 @@ button {
   --color-secound-800: #9e440e;
   --color-secound-900: #7f3a0f;
   --color-secound-950: #451b05;
-  --color-third-50:  #ecfdf8;
+  --color-third-50: #ecfdf8;
   --color-third-100: #fbf2f2;
   --color-third-200: #f6e6e4;
   --color-third-300: #f2d9d7;
   --color-third-400: #edcdc9;
-  --color-third:     #e52874;
+  --color-third: #e52874;
   --color-third-600: #e9c0bc;
   --color-third-700: #ba9a96;
   --color-third-800: #8c7371;
@@ -47,15 +49,15 @@ button {
   --color-third-950: #2f2626;
 }
 
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
+
+
+
 
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -149,98 +151,99 @@ button {
 }
 
 body.light {
-    --color-secound-theme-950: rgb(255, 97, 6);
-    --color-secound-theme-50: rgba(255, 97, 6, 0.1);
-    /* BoxShadow */
-    --box-shadow-dark-sm:
-        -2px 2px 8px -8px rgba(4, 4, 5, 0.04),
-        2px 2px 8px -6px rgba(0, 0, 0, 0.04),
-        inset 1px 1px 3px rgba(255, 255, 255, 0.1);
-    --box-shadow-dark-md:
-        0px 2px 15px rgba(4, 4, 5, 0.05);
-    --shadow-first-sm: 0px 7px 15px #1b7efb3B;
-    --shadow-first-md:
-        0px 5px 16px 0px #1b7efb14,
-        inset 2px 2px 5px rgba(255, 255, 255, 0.08);
-    /* Start  Color For Theme Raect Tooltip */
-    --rt-color-white: #fff;
-    --rt-color-dark: #222;
-    --rt-color-success: #8dc572;
-    --rt-color-error: #ED1D24;
-    --rt-color-warning: #f0ad4e;
-    --rt-color-info: #1b7efb;
-    --rt-opacity: 0.9;
-    --rt-transition-show-delay: 0.3s;
-    --rt-transition-closing-delay: 0.3s;
-    /* End  Color For Theme Raect Tooltip */
-    /* Start Bg Color For Theme */
-    --bg-color-for-body: #ebf2fa;
-    --bg-color-for-layer-on-body: #ffffff;
-    --bg-color-for-layer-sec: #ebf2fa;
-    --bg-color-for-layer-three:#f0f0f1;
-    --bg-color-for-layer-on-body-rotate: #ebf2fa;
-    --bg-color-for-layer-sec-return: #ffffff;
-    --bg-color-for-layer-sec-prev: #ebf2fa;
-    --bg-color-for-red: #ED1D24;
-    /* End Bg Color For Theme */
-    --first-text-color: #141d26;
-    --first-text-color-const: #141d26;
-    --first-text-color-svg: #606060;
-    --first-text-color-hr: #ebf2fa;
-    --first-text-color-hr-on-secound-layer: #60606040;
-    --first-text-color-red: #ED1D24;
-    --text-color-svg-white: #ffffff;
-    --first-text-color-svg-const: #252525;
-    --first-text-color-svg-first: #1b7efb;
-    --first-text-color-for-paragraph: #141d26cc;
-    --first-text-color-for-paragraph-low: #606060;
-    --first-text-color-for-paragraph-const: #141d26cc;
-    /* Start Section Button */
-    --first-style-button-bg: #1b7efb;
-    --first-style-button-bg-hover: #0e63e7;
-    --button-style-icon-first-bg: #ebf2fa;
-    --first-bg-gradiant-for-section-one: linear-gradient(180deg, #FFFFFF 0%, rgba(16, 185, 129, 0.05) 100%);
+  --color-secound-theme-950: rgb(255, 97, 6);
+  --color-secound-theme-50: rgba(255, 97, 6, 0.1);
+  /* BoxShadow */
+  --box-shadow-dark-sm:
+    -2px 2px 8px -8px rgba(4, 4, 5, 0.04),
+    2px 2px 8px -6px rgba(0, 0, 0, 0.04),
+    inset 1px 1px 3px rgba(255, 255, 255, 0.1);
+  --box-shadow-dark-md:
+    0px 2px 15px rgba(4, 4, 5, 0.05);
+  --shadow-first-sm: 0px 7px 15px #1b7efb3B;
+  --shadow-first-md:
+    0px 5px 16px 0px #1b7efb14,
+    inset 2px 2px 5px rgba(255, 255, 255, 0.08);
+  /* Start  Color For Theme Raect Tooltip */
+  --rt-color-white: #fff;
+  --rt-color-dark: #222;
+  --rt-color-success: #8dc572;
+  --rt-color-error: #ED1D24;
+  --rt-color-warning: #f0ad4e;
+  --rt-color-info: #1b7efb;
+  --rt-opacity: 0.9;
+  --rt-transition-show-delay: 0.3s;
+  --rt-transition-closing-delay: 0.3s;
+  /* End  Color For Theme Raect Tooltip */
+  /* Start Bg Color For Theme */
+  --bg-color-for-body: #ebf2fa;
+  --bg-color-for-layer-on-body: #ffffff;
+  --bg-color-for-layer-sec: #ebf2fa;
+  --bg-color-for-layer-three: #f0f0f1;
+  --bg-color-for-layer-on-body-rotate: #ebf2fa;
+  --bg-color-for-layer-sec-return: #ffffff;
+  --bg-color-for-layer-sec-prev: #ebf2fa;
+  --bg-color-for-red: #ED1D24;
+  /* End Bg Color For Theme */
+  --first-text-color: #141d26;
+  --first-text-color-const: #141d26;
+  --first-text-color-svg: #606060;
+  --first-text-color-hr: #ebf2fa;
+  --first-text-color-hr-on-secound-layer: #60606040;
+  --first-text-color-red: #ED1D24;
+  --text-color-svg-white: #ffffff;
+  --first-text-color-svg-const: #252525;
+  --first-text-color-svg-first: #1b7efb;
+  --first-text-color-for-paragraph: #141d26cc;
+  --first-text-color-for-paragraph-low: #606060;
+  --first-text-color-for-paragraph-const: #141d26cc;
+  /* Start Section Button */
+  --first-style-button-bg: #1b7efb;
+  --first-style-button-bg-hover: #0e63e7;
+  --button-style-icon-first-bg: #ebf2fa;
+  --first-bg-gradiant-for-section-one: linear-gradient(180deg, #FFFFFF 0%, rgba(16, 185, 129, 0.05) 100%);
 }
+
 body.dark {
-    /* BoxShadow */
-    --color-secound-theme-950: rgb(255, 97, 6);
-    --color-secound-theme-50: rgba(255, 97, 6, 0.1);
-    --box-shadow-dark-sm:
-        -2px 2px 8px -8px rgba(255, 255, 255, 0.04),
-        2px 2px 8px -6px rgba(0, 0, 0, 0.04),
-        inset 1px 1px 3px rgba(255, 255, 255, 0.1);
-    --box-shadow-dark-md:
-        0px 2px 15px rgba(4, 4, 5, 0.05);
-    --shadow-first-sm: 0px 7px 15px #1b7efb3B;
-    --shadow-first-md:
-        0px 5px 16px 0px #1b7efb14,
-        inset 2px 2px 5px rgba(255, 255, 255, 0.08);
-    /* Start Bg Color For Theme */
-    --bg-color-for-body: #101010;
-    --bg-color-for-layer-on-body: #1f2633;
-    --bg-color-for-layer-sec: #101010;
-    --bg-color-for-layer-three:#101010;
-    --bg-color-for-layer-on-body-rotate: #101010;
-    --bg-color-for-layer-sec-return: #050505;
-    --bg-color-for-layer-sec-prev: #1f2633;
-    --bg-color-for-red: #ED1D24;
-    /* End Bg Color For Theme */
-    --first-text-color: #f7f7f7;
-    --first-text-color-red: #ED1D24;
-    --first-text-color-const: #141d26;
-    --first-text-color-svg: #8c8c8c;
-    --first-text-color-svg-first: #1b7efb;
-    --first-text-color-hr: #606060;
-    --first-text-color-hr-on-secound-layer: #f0f0f1;
-    --first-text-color-svg-const: #1d1d35;
-    --first-text-color-for-paragraph: #e5e5e5;
-    --first-text-color-for-paragraph-low: #808080;
-    --first-text-color-for-paragraph-const: #141d26cc;
-    /* Start Section Button */
-    --first-style-button-bg: #1b7efb;
-    --first-style-button-bg-hover: #1b80fbb7;
-    --button-style-icon-first-bg: #070707;
-    --first-bg-gradiant-for-section-one: linear-gradient(180deg, #1f2633 0%, #1f263350 100%);
+  /* BoxShadow */
+  --color-secound-theme-950: rgb(255, 97, 6);
+  --color-secound-theme-50: rgba(255, 97, 6, 0.1);
+  --box-shadow-dark-sm:
+    -2px 2px 8px -8px rgba(255, 255, 255, 0.04),
+    2px 2px 8px -6px rgba(0, 0, 0, 0.04),
+    inset 1px 1px 3px rgba(255, 255, 255, 0.1);
+  --box-shadow-dark-md:
+    0px 2px 15px rgba(4, 4, 5, 0.05);
+  --shadow-first-sm: 0px 7px 15px #1b7efb3B;
+  --shadow-first-md:
+    0px 5px 16px 0px #1b7efb14,
+    inset 2px 2px 5px rgba(255, 255, 255, 0.08);
+  /* Start Bg Color For Theme */
+  --bg-color-for-body: #101010;
+  --bg-color-for-layer-on-body: #1f2633;
+  --bg-color-for-layer-sec: #101010;
+  --bg-color-for-layer-three: #101010;
+  --bg-color-for-layer-on-body-rotate: #101010;
+  --bg-color-for-layer-sec-return: #050505;
+  --bg-color-for-layer-sec-prev: #1f2633;
+  --bg-color-for-red: #ED1D24;
+  /* End Bg Color For Theme */
+  --first-text-color: #f7f7f7;
+  --first-text-color-red: #ED1D24;
+  --first-text-color-const: #141d26;
+  --first-text-color-svg: #8c8c8c;
+  --first-text-color-svg-first: #1b7efb;
+  --first-text-color-hr: #606060;
+  --first-text-color-hr-on-secound-layer: #f0f0f1;
+  --first-text-color-svg-const: #1d1d35;
+  --first-text-color-for-paragraph: #e5e5e5;
+  --first-text-color-for-paragraph-low: #808080;
+  --first-text-color-for-paragraph-const: #141d26cc;
+  /* Start Section Button */
+  --first-style-button-bg: #1b7efb;
+  --first-style-button-bg-hover: #1b80fbb7;
+  --button-style-icon-first-bg: #070707;
+  --first-bg-gradiant-for-section-one: linear-gradient(180deg, #1f2633 0%, #1f263350 100%);
 }
 
 @utility bg-color-for-red {
@@ -448,57 +451,6 @@ html {
     outline: none;
   }
 
-  .nav-search-form {
-    display: flex;
-    min-height: 56px;
-    border-radius: 16px;
-    overflow: hidden;
-    background-color: color-mix(in srgb, var(--bg-color-for-layer-on-body) 72%, transparent);
-    border: 1px solid color-mix(in srgb, var(--first-text-color-svg) 25%, transparent);
-    box-shadow:
-      0 10px 24px -18px rgba(0, 0, 0, 0.5),
-      inset 0 1px 0 rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    transition:
-      border-color 0.2s ease,
-      box-shadow 0.2s ease,
-      background-color 0.2s ease;
-  }
-
-  .nav-search-form:focus-within {
-    border-color: color-mix(in srgb, var(--color-first) 55%, transparent);
-    box-shadow:
-      0 14px 30px -18px color-mix(in srgb, var(--color-first) 35%, transparent),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  }
-
-  .nav-search-input {
-    width: 100%;
-    height: 56px;
-    padding: 0 16px;
-    background: transparent;
-    color: var(--first-text-color-for-paragraph);
-    border: none;
-  }
-
-  .nav-search-input::placeholder {
-    color: color-mix(in srgb, var(--first-text-color-svg) 65%, transparent);
-  }
-
-  .nav-search-submit {
-    width: 64px;
-    min-width: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--first-text-color-svg);
-    border-right: 1px solid color-mix(in srgb, var(--first-text-color-svg) 22%, transparent);
-    transition:
-      color 0.2s ease,
-      background-color 0.2s ease;
-  }
-
   .nav-search-submit:hover {
     color: var(--color-first);
     background-color: color-mix(in srgb, var(--color-first) 12%, transparent);
@@ -596,7 +548,7 @@ html {
     gap: 8px;
   }
 
-  .footer-link-row + .footer-link-row {
+  .footer-link-row+.footer-link-row {
     margin-top: 8px;
   }
 
@@ -702,7 +654,7 @@ html {
 
 /* Button Style */
 .button-with-icon-on-white-layout {
-  background-color: var(--bg-color-for-layer-on-body);
+  background-color: var(--bg-color-for-layer-sec);
   color: var(--first-text-color-for-paragraph);
   transition:
     background-color 0.5s ease-in-out,

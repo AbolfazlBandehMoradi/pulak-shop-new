@@ -1,3 +1,4 @@
+
 .first-slider__thumb-slider {
   position: absolute !important;
   bottom: -0px !important;
@@ -6,6 +7,7 @@
   padding: 16px !important;
   background-color: var(--bg-color-for-layer-sec) !important;
 }
+
 .first-slider__thumb-slider-slider {
   background-color: var(--bg-color-for-layer-on-body) !important;
   padding: 2px !important;
@@ -16,6 +18,7 @@
   opacity: 0.8 !important;
   cursor: pointer !important;
 }
+
 .first-slider__thumb-slider-slider.swiper-slide-thumb-active {
   background-color: var(--bg-color-for-layer-on-body) !important;
   border-radius: 50% !important;
@@ -34,9 +37,11 @@
     background-color 0.3s ease,
     color 0.3s ease;
 }
+
 .all-categories .swiper-button-next {
   border-left: 0;
 }
+
 .all-categories .swiper-button-prev {
   top: -40px;
   left: 0;
@@ -85,6 +90,7 @@
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
   }
+
   .all-categories .swiper-button-next {
     top: -70px;
     left: 40px;
@@ -95,9 +101,11 @@
     border-bottom-left-radius: 0;
   }
 }
+
 .all-categories .swiper-pagination {
   display: flex;
-  justify-content: center; /* مرکز کردن نقطه‌ها */
+  justify-content: center;
+  /* مرکز کردن نقطه‌ها */
   bottom: 0 !important;
 }
 
@@ -117,28 +125,30 @@
 
 /* The horizontal line on the top of the device */
 .smartphone:before {
-    content: '';
-    display: block;
-    width: 60px;
-    height: 5px;
-    position: absolute;
-    top: -30px;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #333;
-    border-radius: 10px;
+  content: '';
+  display: block;
+  width: 60px;
+  height: 5px;
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #333;
+  border-radius: 10px;
 }
+
 /* The circle on the bottom of the device */
 .smartphone:after {
-    content: '';
-    display: block;
-    width: 35px;
-    height: 35px;
-    position: absolute;
-    left: 50%;
-    bottom: -65px;
-    transform: translate(-50%, -50%);
-    background: #333;
-    border-radius: 50%;
+  content: '';
+  display: block;
+  width: 35px;
+  height: 35px;
+  position: absolute;
+  left: 50%;
+  bottom: -65px;
+  transform: translate(-50%, -50%);
+  background: #333;
+  border-radius: 50%;
 }
+
 /* The screen (or content) of the device */
