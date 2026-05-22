@@ -1,75 +1,51 @@
-import discountOfferTime from "@/utils/discountOffterTime";
+import { useLangStore } from "@/stores/languageStore";
+import useDiscountOfferTime from "@/utils/discountOffterTime";
 
 const RemainingTime = ({ expireDate }: { expireDate: string }) => {
-  const timeLeft = discountOfferTime(expireDate);
-  const formatTimeUnit = (unit: number) => {
-    const str = String(unit).padStart(2, "0");
-    return [str[0], str[1]];
-  };
+  const lang = useLangStore((s) => s.lang);
+  const timeLeft = useDiscountOfferTime(expireDate);
+
+  if (!timeLeft.isValid) {
+    return null;
+  }
+
+  const locale = lang === "fa" ? "fa-IR" : "en-US";
+  const numberFormatter = new Intl.NumberFormat(locale, {
+    minimumIntegerDigits: 2,
+    useGrouping: false,
+  });
+
+  const units = [
+    { key: lang === "fa" ? "\u0631\u0648\u0632" : "Day", value: timeLeft.days },
+    { key: lang === "fa" ? "\u0633\u0627\u0639\u062a" : "Hour", value: timeLeft.hours },
+    { key: lang === "fa" ? "\u062f\u0642\u06cc\u0642\u0647" : "Min", value: timeLeft.minutes },
+    { key: lang === "fa" ? "\u062b\u0627\u0646\u06cc\u0647" : "Sec", value: timeLeft.seconds },
+  ];
+
+  const flexDirectionClass = lang === "fa" ? "flex-row-reverse" : "flex-row";
+
   return (
-    <div>
-      <div className="flex flex-row-reverse  gap-1">
-        <div className="flex items-center flex-col">
-          <div className="flex flex-row-reverse gap-1">
-            {formatTimeUnit(timeLeft?.days!).map((digit, i) => (
-              <span
-                key={`days-${i}`}
-                className="bg-first text-white text-sm leading-1.5 rounded-sm h-6 flex justify-center items-center w-6"
-              >
-                {digit}
-              </span>
-            ))}
+    <div className={`flex ${flexDirectionClass} gap-1`}>
+      {units.map((unit) => (
+        <div key={unit.key} className="flex items-center flex-col">
+          <div className={`flex ${flexDirectionClass} gap-1`}>
+            {numberFormatter
+              .format(unit.value)
+              .split("")
+              .map((digit, i) => (
+                <span
+                  key={`${unit.key}-${i}`}
+                  className="bg-first text-white text-sm leading-1.5 rounded-sm h-6 w-6 flex items-center justify-center"
+                >
+                  {digit}
+                </span>
+              ))}
           </div>
-          <span className="flex font-f-light first-text-color-for-paragraph text-xs mt-1 ">
-            روز
+          <span className="mt-1 flex text-xs font-f-light first-text-color-for-paragraph">
+            {unit.key}
           </span>
         </div>
-        <div className="flex items-center flex-col">
-          <div className="flex flex-row-reverse gap-1">
-            {formatTimeUnit(timeLeft?.hours!).map((digit, i) => (
-              <span
-                key={`hours-${i}`}
-                className="bg-first text-white text-sm leading-1.5 rounded-sm h-6 flex justify-center items-center w-6"
-              >
-                {digit}
-              </span>
-            ))}
-          </div>
-          <span className="flex font-f-light first-text-color-for-paragraph text-xs mt-1 ">
-            ساعت
-          </span>
-        </div>
-        <div className="flex items-center flex-col">
-          <div className="flex flex-row-reverse gap-1">
-            {formatTimeUnit(timeLeft?.minutes!).map((digit, i) => (
-              <span
-                key={`minutes-${i}`}
-                className="bg-first text-white text-sm leading-1.5 rounded-sm h-6 flex justify-center items-center w-6"
-              >
-                {digit}
-              </span>
-            ))}
-          </div>
-          <span className="flex font-f-light first-text-color-for-paragraph text-xs mt-1 ">
-            دقیقه
-          </span>
-        </div>
-        <div className="flex items-center flex-col">
-          <div className="flex flex-row-reverse gap-1">
-            {formatTimeUnit(timeLeft?.seconds!).map((digit, i) => (
-              <span
-                key={`seconds-${i}`}
-                className="bg-first text-white text-sm leading-1.5 rounded-sm h-6 flex justify-center items-center w-6"
-              >
-                {digit}
-              </span>
-            ))}
-          </div>
-          <span className="flex font-f-light first-text-color-for-paragraph text-xs mt-1 ">
-            ثانیه
-          </span>
-        </div>
-      </div>
+      ))}
     </div>
   );
 };
