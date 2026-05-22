@@ -1,7 +1,6 @@
 import useIndex from '@/hooks/useIndex';
 import useShowcases from '@/hooks/useShowcases';
 import useGalleries, { type GalleryItem } from '@/hooks/useGalleries';
-import useImagePreloader from '@/hooks/useImagePreloader';
 import IndexLoading from '@/components/ui/IndexLoading';
 import ApiError from '@/pages/error/ApiError';
 import Hero from './sections/Hero';
@@ -44,18 +43,13 @@ const MainPage = () => {
       .sort(sortByDisplayOrder);
   }, [galleries?.items]);
 
-  const galleryImageSources = useMemo(() => {
-    return [...sliderGalleries, ...bannerGalleries].map((item) => item.image);
-  }, [sliderGalleries, bannerGalleries]);
-
-  const galleryImagesLoaded = useImagePreloader(galleryImageSources, Boolean(galleries));
 
   const handleRetry = () => {
     void refetch();
     void refetchGalleries();
   };
 
-  if ((isLoading && !index) || (isGalleriesLoading && !galleries) || !galleryImagesLoaded) {
+  if ((isLoading && !index) || (isGalleriesLoading && !galleries)) {
     return <IndexLoading />;
   }
 

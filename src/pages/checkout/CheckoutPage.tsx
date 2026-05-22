@@ -1,4 +1,4 @@
-import { ArrowLeft, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from '@/i18n/useTranslation';
@@ -85,21 +85,11 @@ export default function CheckoutPage() {
   };
 
   return (
-    <main className="mx-auto mt-20 lg:mt-8 px-4 sm:container">
+    <main className="mx-auto mt-8 px-4 sm:container">
       <CheckoutStepper currentStep={2} />
       <div className="mb-6">
-        <div className="flex items-center justify-between gap-3 mb-2">
-          <div className="flex items-center gap-3">
-            <h1 className="font-s-bold first-text-color text-xl">{t('checkout.title') || 'Checkout'}</h1>
-          </div>
-          <Button
-            variant="ghost"
-            onClick={() => navigate(localizedPath('/cart'))}
-            className="bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400"
-          >
-            {t('checkout.backToCart') || 'Back to Cart'}
-            <ArrowLeft className={`h-4 w-4 ${isRTL ? 'mr-2' : 'ml-2'}`} />
-          </Button>
+        <div className="flex items-center gap-3 mb-2">
+          <h1 className="font-s-bold first-text-color text-xl">{t('checkout.title') || 'Checkout'}</h1>
         </div>
       </div>
 

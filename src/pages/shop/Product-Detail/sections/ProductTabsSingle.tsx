@@ -195,7 +195,7 @@ export function ProductTabsSingle({
         </div>
       </div>
       {isInStock && (
-        <div className="w-full border border-gray-300 rounded-xl lg:w-26/96 p-4 lg:sticky lg:top-28 lg:self-start">
+        <div className="hidden w-full rounded-xl border border-gray-300 p-4 lg:sticky lg:top-28 lg:block lg:w-26/96 lg:self-start">
           <h2 className="text  first-text-color">{product?.translation?.name}</h2>
           <ProductBuyBox
             product={product}
