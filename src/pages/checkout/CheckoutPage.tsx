@@ -11,7 +11,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { getCart } from '@/utils/cartApi';
 import CheckoutStepper from '@/components/reusable-components/CheckoutStepper/CheckoutStepper';
-import { useCheckoutData } from './hooks/useCheckoutData';
+import { useCheckoutData } from '@/hooks/useCheckoutData';
 import { CheckoutAddressList } from './sections/CheckoutAddressList';
 import { CheckoutAddressForm } from './sections/CheckoutAddressForm';
 import { CheckoutSummary } from './sections/CheckoutSummary';
