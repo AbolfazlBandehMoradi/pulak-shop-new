@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Trash2, Plus, Minus, Shield, Store } from 'lucide-react';
 import { Button } from '@/components/ui/IconButton';
@@ -31,9 +31,18 @@ export function CartItem({ item }: CartItemProps) {
   const isPersian = languageCode === 'fa';
   const imageUrl = getImageUrl(item.productImage?.thumbnailPath || item.productImage?.filePath);
   const [openConfirm, setOpenConfirm] = useState(false);
-  const [pendingTo, setPendingTo] = useState<string | null>(null);
   const navigate = useNavigate();
   const hasReachedStockLimit = item.stockQuantity != null && item.quantity >= item.stockQuantity;
+  const productDetailsPath = localizedPath(`/products/${item.productSlug}`);
+
+  const openProductDetailsConfirm = () => {
+    setOpenConfirm(true);
+  };
+
+  const handleConfirmNavigation = () => {
+    setOpenConfirm(false);
+    navigate(productDetailsPath);
+  };
 
   return (
     <>
@@ -43,14 +52,12 @@ export function CartItem({ item }: CartItemProps) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <Link
+        <button
+          type="button"
           className=" w-24/96 md:w-16/96 lg:w-16/96 xl:w-12/96 h-24  flex items-center border  p-2 md:p-4 rounded-xl border-gray-300 dark:border-gray-500 justify-center "
-          to="#"
-          onClick={(event) => {
-            event.preventDefault();
-            setPendingTo(localizedPath(`/products/${item.productSlug}`));
-            setOpenConfirm(true);
-          }}
+          onClick={openProductDetailsConfirm}
+          aria-haspopup="dialog"
+          aria-label={`${t('cart.productDetails') || 'View product details'}: ${item.productName}`}
         >
           {imageUrl ? (
             <div className="w-full h-full overflow-hidden">
@@ -61,15 +68,13 @@ export function CartItem({ item }: CartItemProps) {
               <Store className="h-8 w-8" />
             </div>
           )}
-        </Link>
+        </button>
         <div className="w-68/96 md:w-54/96 lg:w-54/96 xl:w-62/96  ">
           <button
             type="button"
-            onClick={() => {
-              setPendingTo(localizedPath(`/products/${item.productSlug}`));
-              setOpenConfirm(true);
-            }}
+            onClick={openProductDetailsConfirm}
             className=" font-s-medium   first-text-color text-start"
+            aria-haspopup="dialog"
           >
             {item.productName} {item.variantName && ` - ${item.variantName}`}
           </button>
@@ -300,11 +305,7 @@ export function CartItem({ item }: CartItemProps) {
           {
             label: t('cart.yes') || 'Yes',
             variant: 'primary',
-            onClick: () => {
-              if (pendingTo) {
-                navigate(pendingTo);
-              }
-            },
+            onClick: handleConfirmNavigation,
           },
         ]}
       />
