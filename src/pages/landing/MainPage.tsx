@@ -1,5 +1,7 @@
 import useIndex from '@/hooks/useIndex';
 import useShowcases from '@/hooks/useShowcases';
+import useGalleries, { type GalleryItem } from '@/hooks/useGalleries';
+import useImagePreloader from '@/hooks/useImagePreloader';
 import IndexLoading from '@/components/ui/IndexLoading';
 import ApiError from '@/pages/error/ApiError';
 import Hero from './sections/Hero';
@@ -14,20 +16,57 @@ import ShowCasesNumberTwo from '@/pages/landing/sections/ShowCasesNumberTwo/Show
 import DiscountedProducts from './sections/DiscountedProducts';
 import BestProducts from './sections/BestProducts';
 import Stories from './sections/Stories';
+import { useMemo } from 'react';
+
+const sortByDisplayOrder = (a: GalleryItem, b: GalleryItem) => {
+  return a.displayOrder - b.displayOrder || a.id - b.id;
+};
 
 const MainPage = () => {
   const { data: index, isLoading, isError, refetch } = useIndex();
   const { data: showcases } = useShowcases();
+  const {
+    data: galleries,
+    isLoading: isGalleriesLoading,
+    isError: isGalleriesError,
+    refetch: refetchGalleries,
+  } = useGalleries();
 
-  if (isLoading && !index) return <IndexLoading />;
-  if (isError) {
-    return <ApiError onRetry={refetch} />;
+  const sliderGalleries = useMemo(() => {
+    return (galleries?.items ?? [])
+      .filter((item) => item.category.slug.toLowerCase() === 'slider')
+      .sort(sortByDisplayOrder);
+  }, [galleries?.items]);
+
+  const bannerGalleries = useMemo(() => {
+    return (galleries?.items ?? [])
+      .filter((item) => item.category.slug.toLowerCase() === 'banner')
+      .sort(sortByDisplayOrder);
+  }, [galleries?.items]);
+
+  const galleryImageSources = useMemo(() => {
+    return [...sliderGalleries, ...bannerGalleries].map((item) => item.image);
+  }, [sliderGalleries, bannerGalleries]);
+
+  const galleryImagesLoaded = useImagePreloader(galleryImageSources, Boolean(galleries));
+
+  const handleRetry = () => {
+    void refetch();
+    void refetchGalleries();
+  };
+
+  if ((isLoading && !index) || (isGalleriesLoading && !galleries) || !galleryImagesLoaded) {
+    return <IndexLoading />;
+  }
+
+  if (isError || isGalleriesError) {
+    return <ApiError onRetry={handleRetry} />;
   }
 
   return (
     <main className='pb-10 max-w-7xl mx-auto'>
       <Stories stories={index?.stories ?? []} />
-      <Hero />
+      <Hero slides={sliderGalleries} />
       <CategoriesSlider categories={index?.categories ?? []} />
       <ProductSlider showCase={showcases && showcases[0]} />
       <section className="sm:container mx-auto mt-8 lg:mt-16 px-4 ">
@@ -47,7 +86,7 @@ const MainPage = () => {
       </section>
       <NewBlogs blogs={index?.blogs ?? []} />
       <ProductsSliderTwo showcase={showcases && showcases[1]} />
-      <Banner />
+      <Banner banners={bannerGalleries} />
       <WhyUs />
       <ShowCasesNumberTwo showCase={showcases && showcases[2]} />
     </main>
