@@ -43,7 +43,6 @@ const MainPage = () => {
       .sort(sortByDisplayOrder);
   }, [galleries?.items]);
 
-
   const handleRetry = () => {
     void refetch();
     void refetchGalleries();
