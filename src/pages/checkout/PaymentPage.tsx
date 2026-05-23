@@ -31,6 +31,7 @@ import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 import useCartStore from '@/stores/cartStore';
 import { useToast } from '@/context/ToastContext';
 import CheckoutStepper from '@/components/reusable-components/CheckoutStepper/CheckoutStepper';
+import { CheckoutTopLogo } from './sections/CheckoutTopLogo';
 
 type PaymentMethod = 'online' | 'wallet';
 
@@ -92,6 +93,12 @@ export default function PaymentPage() {
         setCartData(cartData);
         setGlobalCart(cartData);
 
+        if (!cartData.items.length) {
+          showWarningToast(t('cart.emptyCart') || 'Your cart is empty');
+          navigate(localizedPath('/cart'), { replace: true });
+          return;
+        }
+
         // Load wallet if user is authenticated
         if (isAuthenticated && user?.id) {
           try {
@@ -113,7 +120,18 @@ export default function PaymentPage() {
     if (!authLoading) {
       loadData();
     }
-  }, [effectiveLangCode, isAuthenticated, user, authLoading, queryClient, cartScope, setGlobalCart]);
+  }, [
+    effectiveLangCode,
+    isAuthenticated,
+    user,
+    authLoading,
+    queryClient,
+    cartScope,
+    setGlobalCart,
+    showWarningToast,
+    navigate,
+    localizedPath,
+  ]);
 
   useEffect(() => {
     if (paymentMethod !== 'online') return;
@@ -250,6 +268,7 @@ export default function PaymentPage() {
     <div className="min-h-screen flex flex-col">
       {/* Main Content */}
       <main dir={dir} className="flex-1 container mx-auto px-4 pt-6 pb-28 lg:pb-6">
+        <CheckoutTopLogo />
         <CheckoutStepper currentStep={3} />
         <div className="mb-6">
           <div className="flex items-center gap-3 mb-2">

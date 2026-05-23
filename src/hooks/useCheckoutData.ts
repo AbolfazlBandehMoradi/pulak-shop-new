@@ -8,7 +8,6 @@ import {
   getProvinces,
   getUserAddresses,
   saveAddress,
-  setDefaultAddress,
   type City,
   type Province,
   type SaveAddressRequest,
@@ -290,29 +289,8 @@ export function useCheckoutData({ languageCode, t }: UseCheckoutDataParams) {
     }
   };
 
-  const selectAddress = async (addressId: number) => {
+  const selectAddress = (addressId: number) => {
     setSelectedAddressId(addressId);
-
-    const selectedAddress = addresses.find((address) => address.id === addressId);
-
-    if (selectedAddress && !selectedAddress.isDefault) {
-      try {
-        await setDefaultAddress(addressId, languageCode);
-        setAddresses((previousAddresses) =>
-          previousAddresses.map((address) => ({
-            ...address,
-            isDefault: address.id === addressId,
-          })),
-        );
-      } catch (err) {
-        console.error('Failed to set default address:', err);
-        setError(
-          err instanceof Error
-            ? err.message
-            : t('checkout.defaultAddressError') || 'Failed to set default address',
-        );
-      }
-    }
   };
 
   const continueToPayment = async (): Promise<boolean> => {
@@ -326,26 +304,6 @@ export function useCheckoutData({ languageCode, t }: UseCheckoutDataParams) {
     if (!selectedAddress) {
       setError(t('checkout.validation.required') || 'Please select or add an address');
       return false;
-    }
-
-    if (!selectedAddress.isDefault) {
-      try {
-        await setDefaultAddress(selectedAddressId, languageCode);
-        setAddresses((previousAddresses) =>
-          previousAddresses.map((address) => ({
-            ...address,
-            isDefault: address.id === selectedAddressId,
-          })),
-        );
-      } catch (err) {
-        console.error('Failed to set default address:', err);
-        setError(
-          err instanceof Error
-            ? err.message
-            : t('checkout.defaultAddressError') || 'Failed to set default address',
-        );
-        return false;
-      }
     }
 
     return true;

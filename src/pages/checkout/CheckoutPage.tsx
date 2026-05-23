@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { AlertCircle, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
@@ -15,6 +16,7 @@ import { useCheckoutData } from '@/hooks/useCheckoutData';
 import { CheckoutAddressList } from './sections/CheckoutAddressList';
 import { CheckoutAddressForm } from './sections/CheckoutAddressForm';
 import { CheckoutSummary } from './sections/CheckoutSummary';
+import { CheckoutTopLogo } from './sections/CheckoutTopLogo';
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
@@ -23,13 +25,62 @@ export default function CheckoutPage() {
   const dir = useLangStore((state) => state.dir);
   const { cart, setCart } = useCartStore();
   const queryClient = useQueryClient();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, isLoading: authLoading } = useAuth();
   const { error: showErrorToast, warning: showWarningToast } = useToast();
   const { t } = useTranslation();
+  const [isValidatingCart, setIsValidatingCart] = useState(true);
 
   const effectiveLangCode = currentLanguage || 'fa';
   const isRTL = dir === 'rtl';
   const cartScope = isAuthenticated ? `user:${user?.id ?? 'authenticated'}` : 'guest';
+
+  useEffect(() => {
+    if (authLoading) return;
+
+    let isMounted = true;
+
+    const validateCartEntry = async () => {
+      try {
+        const latestCart = await queryClient.fetchQuery({
+          queryKey: ['cart', effectiveLangCode, cartScope],
+          queryFn: () => getCart(effectiveLangCode),
+        });
+
+        if (!isMounted) return;
+        setCart(latestCart);
+
+        if (!latestCart.items.length) {
+          showWarningToast(t('cart.emptyCart') || 'Your cart is empty');
+          navigate(localizedPath('/cart'), { replace: true });
+        }
+      } catch (entryError) {
+        if (!isMounted) return;
+        console.error('Failed to validate cart on checkout entry:', entryError);
+        showErrorToast(t('common.retry') || 'Failed to load your cart. Please try again.');
+        navigate(localizedPath('/cart'), { replace: true });
+      } finally {
+        if (isMounted) {
+          setIsValidatingCart(false);
+        }
+      }
+    };
+
+    validateCartEntry();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [
+    authLoading,
+    cartScope,
+    effectiveLangCode,
+    localizedPath,
+    navigate,
+    queryClient,
+    setCart,
+    showErrorToast,
+    showWarningToast,
+  ]);
 
   const {
     addresses,
@@ -84,10 +135,12 @@ export default function CheckoutPage() {
     }
   };
 
-  const showMobileContinueBar = !loading && !error && Boolean(cart && cart.items.length > 0);
+  const showMobileContinueBar =
+    !loading && !error && !isValidatingCart && Boolean(cart && cart.items.length > 0);
 
   return (
     <main className="mx-auto mt-8 px-4 pb-28 lg:pb-8 sm:container">
+      <CheckoutTopLogo />
       <CheckoutStepper currentStep={2} />
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
@@ -95,7 +148,7 @@ export default function CheckoutPage() {
         </div>
       </div>
 
-      {loading ? (
+      {loading || isValidatingCart ? (
         <div className="space-y-4">
           <Skeleton className="h-64 w-full" />
           <Skeleton className="h-96 w-full" />
