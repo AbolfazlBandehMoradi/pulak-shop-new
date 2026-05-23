@@ -242,11 +242,14 @@ export default function PaymentPage() {
 
   const walletBalance = wallet?.balance || 0;
   const canUseWallet = walletBalance > 0 && walletBalance >= total;
+  const isPayDisabled =
+    total <= 0 || (paymentMethod === 'online' && gateways.length > 0 && !selectedGatewayId) || paying;
+  const showMobilePayBar = !loading && !error && Boolean(cart && cart.items.length > 0);
 
   return (
     <div className="min-h-screen flex flex-col">
       {/* Main Content */}
-      <main dir={dir} className="flex-1 container mx-auto px-4 py-6">
+      <main dir={dir} className="flex-1 container mx-auto px-4 pt-6 pb-28 lg:pb-6">
         <CheckoutStepper currentStep={3} />
         <div className="mb-6">
           <div className="flex items-center gap-3 mb-2">
@@ -586,7 +589,7 @@ export default function PaymentPage() {
             </div>
 
             {/* Right Column - Order Summary */}
-            <div className="lg:col-span-1">
+            <div className="hidden lg:col-span-1 lg:block">
               <div className="lg:sticky lg:top-4">
                 <div className="border rounded-lg shadow-lg bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 p-6 space-y-4">
                   {cart && cart.items.length > 0 && (
@@ -717,11 +720,7 @@ export default function PaymentPage() {
                   <div className="pt-4 border-t dark:border-gray-700">
                     <Button
                       onClick={handlePay}
-                      disabled={
-                        total <= 0 ||
-                        (paymentMethod === 'online' && gateways.length > 0 && !selectedGatewayId) ||
-                        paying
-                      }
+                      disabled={isPayDisabled}
                       className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg transition-all duration-200"
                       size="lg"
                     >
@@ -730,6 +729,32 @@ export default function PaymentPage() {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {showMobilePayBar && (
+          <div className="fixed inset-x-0 bottom-0 z-[80] border-t border-gray-300/50 bg-color-for-layer-on-body shadow-dark-sm lg:hidden">
+            <div
+              className="mx-auto w-full max-w-3xl px-4 pt-3"
+              style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.75rem)' }}
+            >
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-sm first-text-color-for-paragraph">
+                  {t('payment.amountPayable') || 'Amount payable'}
+                </span>
+                <span className="text-base font-s-sbold text-red-600 dark:text-red-400">
+                  <PriceDisplay amount={total} languageCode={effectiveLangCode} />
+                </span>
+              </div>
+              <Button
+                onClick={handlePay}
+                disabled={isPayDisabled}
+                className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800"
+                size="lg"
+              >
+                {paying ? t('common.loading') || 'Loading...' : t('payment.pay') || 'Pay'}
+              </Button>
             </div>
           </div>
         )}

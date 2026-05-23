@@ -1,4 +1,4 @@
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from '@/i18n/useTranslation';
@@ -84,8 +84,10 @@ export default function CheckoutPage() {
     }
   };
 
+  const showMobileContinueBar = !loading && !error && Boolean(cart && cart.items.length > 0);
+
   return (
-    <main className="mx-auto mt-8 px-4 sm:container">
+    <main className="mx-auto mt-8 px-4 pb-28 lg:pb-8 sm:container">
       <CheckoutStepper currentStep={2} />
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
@@ -141,7 +143,7 @@ export default function CheckoutPage() {
             )}
           </div>
 
-          <div className="lg:col-span-1">
+          <div className="hidden lg:col-span-1 lg:block">
             <div className="lg:sticky lg:top-25">
               <CheckoutSummary
                 cart={cart}
@@ -151,6 +153,26 @@ export default function CheckoutPage() {
                 onContinue={handleContinue}
               />
             </div>
+          </div>
+        </div>
+      )}
+
+      {showMobileContinueBar && (
+        <div className="fixed inset-x-0 bottom-0 z-[80] border-t border-gray-300/50 bg-color-for-layer-on-body shadow-dark-sm lg:hidden">
+          <div
+            className="mx-auto w-full max-w-3xl px-4 pt-3"
+            style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.75rem)' }}
+          >
+            <Button
+              onClick={handleContinue}
+              className="w-full font-s-sbold bg-first text-white hover:bg-first-600"
+              size="lg"
+            >
+              <span className="flex items-center justify-center gap-2">
+                {t('checkout.continue') || 'Continue'}
+                <ArrowRight className={`h-5 w-5 ${isRTL ? 'rotate-180' : ''}`} />
+              </span>
+            </Button>
           </div>
         </div>
       )}
