@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Masonry from 'react-masonry-css';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -7,23 +7,30 @@ import useCategories from '@/hooks/useCategories';
 import { useLangStore } from '@/stores/languageStore';
 import PageLoader from '@/components/ui/PageLoader';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import { getCategoryChildren } from '@/utils/categoryHelpers';
+
+const CATEGORY_FALLBACK_IMAGE = 'https://panell.pulakshop.ir/site-assets/gallery/no-image.png';
+
+const hasProducts = (category: Category) => (category.productCount ?? 0) > 0;
+const sortByAvailability = (a: Category, b: Category) => Number(hasProducts(b)) - Number(hasProducts(a));
 
 const ChildCategoryCard: React.FC<{ category: Category }> = ({ category }) => {
   const { t } = useTranslation();
   const dir = useLangStore((s) => s.dir);
   const localizedPath = useLocalizedPath();
+  const isClickable = hasProducts(category);
 
   return (
     <Link
-      to={category.productCount! > 0 ? localizedPath(`/products?categoryIds=${category.id}`) : '#'}
+      to={isClickable ? localizedPath(`/products?categoryIds=${category.id}`) : '#'}
       className={`mt-2 block w-full break-inside-avoid rounded-lg bg-color-for-layer-on-body ${
-        category.productCount! > 0 ? 'cursor-pointer hover:shadow-md' : 'pointer-events-none opacity-50'
+        isClickable ? 'cursor-pointer hover:shadow-md' : 'pointer-events-none opacity-50'
       }`}
     >
       <div className="flex h-full w-full items-center px-3 py-2">
         <div className="h-full w-8/48">
           <img
-            src={category.image || 'https://panell.pulakshop.ir/site-assets/gallery/no-image.png'}
+            src={category.image || CATEGORY_FALLBACK_IMAGE}
             alt={category.name}
             className="h-full w-full rounded-lg object-cover"
           />
@@ -42,7 +49,7 @@ const ChildCategoryCard: React.FC<{ category: Category }> = ({ category }) => {
               : `${category.productCount} ${t('categories.productLabel')}`}
           </p>
         </div>
-        {category.productCount! > 0 && (
+        {isClickable && (
           <span
             className={`flex h-6 w-6 items-center justify-center rounded-full bg-first ${
               dir === 'ltr' ? 'rotate-180' : 'rotate-0'
@@ -74,7 +81,8 @@ const ParentCategoryCard: React.FC<{ category: Category }> = ({ category }) => {
   const { t } = useTranslation();
   const localizedPath = useLocalizedPath();
   const [isOpen, setIsOpen] = useState(false);
-  const hasChildren = (category.children || []).length > 0;
+  const children = getCategoryChildren(category);
+  const hasChildren = children.length > 0;
 
   return (
     <div className="parent-card w-full break-inside-avoid rounded-xl bg-color-for-layer-sec p-4">
@@ -85,7 +93,7 @@ const ParentCategoryCard: React.FC<{ category: Category }> = ({ category }) => {
       >
         <div className="w-4/48 rounded-lg bg-color-for-layer-on-body">
           <img
-            src={category.image || 'https://panell.pulakshop.ir/site-assets/gallery/no-image.png'}
+            src={category.image || CATEGORY_FALLBACK_IMAGE}
             alt={category.name}
             className="h-full w-full object-cover"
           />
@@ -120,7 +128,7 @@ const ParentCategoryCard: React.FC<{ category: Category }> = ({ category }) => {
             </svg>
           )}
         </div>
-        {!hasChildren && category.productCount! > 0 && (
+        {!hasChildren && hasProducts(category) && (
           <Link
             to={localizedPath(`/products?categoryIds=${category.id}`)}
             className="flex h-6 w-6 items-center justify-center rounded-full bg-first"
@@ -146,13 +154,13 @@ const ParentCategoryCard: React.FC<{ category: Category }> = ({ category }) => {
 
       {hasChildren && isOpen && (
         <div className="mt-4 grid grid-cols-1 gap-x-4 gap-y-2 md:grid-cols-2">
-          {category.children
+          {children
             ?.slice()
-            .sort((a, b) => (b.productCount! > 0 ? 1 : 0) - (a.productCount! > 0 ? 1 : 0))
+            .sort(sortByAvailability)
             .map((child) => (
               <ChildCategoryCard key={child.id} category={child} />
             ))}
-          {category.productCount! > 0 && (
+          {hasProducts(category) && (
             <Link
               to={localizedPath(`/products?categoryIds=${category.id}`)}
               className="col-span-full mt-2 rounded-lg bg-first py-3 text-center text-white"
@@ -162,6 +170,111 @@ const ParentCategoryCard: React.FC<{ category: Category }> = ({ category }) => {
           )}
         </div>
       )}
+    </div>
+  );
+};
+
+const MobileCategoriesSplitView: React.FC<{ categories: Category[] }> = ({ categories }) => {
+  const { t } = useTranslation();
+  const dir = useLangStore((s) => s.dir);
+  const localizedPath = useLocalizedPath();
+  const sortedParents = useMemo(() => categories.slice().sort(sortByAvailability), [categories]);
+  const [activeParentId, setActiveParentId] = useState<string | null>(sortedParents[0]?.id ?? null);
+
+  useEffect(() => {
+    if (sortedParents.length === 0) {
+      setActiveParentId(null);
+      return;
+    }
+
+    if (!activeParentId || !sortedParents.some((category) => category.id === activeParentId)) {
+      setActiveParentId(sortedParents[0].id);
+    }
+  }, [activeParentId, sortedParents]);
+
+  const activeParent = sortedParents.find((category) => category.id === activeParentId) ?? sortedParents[0];
+  const activeChildren = activeParent ? getCategoryChildren(activeParent).slice().sort(sortByAvailability) : [];
+
+  return (
+    <div className="grid grid-cols-2 gap-3 md:hidden">
+      <div className={dir === 'rtl' ? 'order-2' : 'order-1'}>
+        <div className="space-y-2 rounded-xl bg-color-for-layer-sec p-2">
+          {sortedParents.map((parent) => {
+            const isActive = parent.id === activeParent?.id;
+
+            return (
+              <button
+                key={parent.id}
+                type="button"
+                onClick={() => setActiveParentId(parent.id)}
+                className={`flex w-full items-center gap-2 rounded-xl border p-2 text-start transition-colors ${
+                  isActive
+                    ? 'border-first bg-color-for-layer-on-body shadow-dark-sm'
+                    : 'border-transparent bg-color-for-layer-sec'
+                }`}
+              >
+                <img
+                  src={parent.image || CATEGORY_FALLBACK_IMAGE}
+                  alt={parent.name}
+                  className="h-12 w-12 rounded-lg object-cover"
+                />
+                <div className="min-w-0 flex-1">
+                  <h3 className="truncate text-sm font-f-sbold first-text-color">{parent.name}</h3>
+                  <p
+                    className={`truncate text-xs font-f-light ${
+                      parent.productCount === 0
+                        ? 'first-text-color-red'
+                        : 'first-text-color-for-paragraph'
+                    }`}
+                  >
+                    {parent.productCount === 0
+                      ? t('categories.noProductsInCategory')
+                      : `${parent.productCount} ${t('categories.productLabel')}`}
+                  </p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className={dir === 'rtl' ? 'order-1' : 'order-2'}>
+        <div className="space-y-2 rounded-xl bg-color-for-layer-sec p-2">
+          {activeChildren.length > 0 ? (
+            activeChildren.map((child) =>
+              hasProducts(child) ? (
+                <Link
+                  key={child.id}
+                  to={localizedPath(`/products?categoryIds=${child.id}`)}
+                  className="block rounded-lg bg-color-for-layer-on-body px-3 py-2 text-sm first-text-color-for-paragraph transition-colors hover:first-text-color"
+                >
+                  {child.name}
+                </Link>
+              ) : (
+                <span
+                  key={child.id}
+                  className="block rounded-lg bg-color-for-layer-on-body px-3 py-2 text-sm first-text-color-for-paragraph-low opacity-60"
+                >
+                  {child.name}
+                </span>
+              ),
+            )
+          ) : (
+            <p className="rounded-lg bg-color-for-layer-on-body px-3 py-2 text-sm first-text-color-for-paragraph">
+              {t('categories.noProductsInCategory')}
+            </p>
+          )}
+
+          {activeParent && hasProducts(activeParent) && (
+            <Link
+              to={localizedPath(`/products?categoryIds=${activeParent.id}`)}
+              className="block rounded-lg bg-first px-3 py-2 text-center text-sm text-white"
+            >
+              {t('categories.viewAllProducts')}
+            </Link>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
@@ -205,18 +318,24 @@ const AllCategoriesPage = () => {
             {t('categories.loadError')}
           </p>
         ) : categories && categories.length > 0 ? (
-          <Masonry
-            breakpointCols={breakpointColumnsObj}
-            className="flex gap-4"
-            columnClassName="flex flex-col gap-4"
-          >
-            {categories
-              .slice()
-              .sort((a, b) => (b.productCount! > 0 ? 1 : 0) - (a.productCount! > 0 ? 1 : 0))
-              .map((category) => (
-                <ParentCategoryCard key={category.id} category={category} />
-              ))}
-          </Masonry>
+          <>
+            <MobileCategoriesSplitView categories={categories} />
+
+            <div className="hidden md:block">
+              <Masonry
+                breakpointCols={breakpointColumnsObj}
+                className="flex gap-4"
+                columnClassName="flex flex-col gap-4"
+              >
+                {categories
+                  .slice()
+                  .sort(sortByAvailability)
+                  .map((category) => (
+                    <ParentCategoryCard key={category.id} category={category} />
+                  ))}
+              </Masonry>
+            </div>
+          </>
         ) : (
           <p className="text-center text-gray-500">{t('categories.empty')}</p>
         )}

@@ -12,9 +12,7 @@ import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 import { useTranslation } from 'react-i18next';
 import { LanguageToggle } from './LanguageWithClick';
 import { ThemeToggleButton } from '@/components/ui/ThemeToggleButton';
-import { User2 } from 'lucide-react';
-
-type CategoryId = string | null;
+import { EllipsisVertical, User2 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
   const { t } = useTranslation();
@@ -25,14 +23,11 @@ export const Navbar: React.FC = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   const [isDesktopCategoryOpen, setIsDesktopCategoryOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [drawerSide, setDrawerSide] = useState<'rtl' | 'ltr'>(dir);
-  const [openSubMenu, setOpenSubMenu] = useState<CategoryId>(null);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  const [isMobileCategoryOpen, setIsMobileCategoryOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const desktopCategoryRef = useRef<HTMLLIElement>(null);
-  const drawerRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
@@ -66,17 +61,9 @@ export const Navbar: React.FC = () => {
 
   useEffect(() => {
     if (!isMobile) {
-      setIsDrawerOpen(false);
-      setIsMobileCategoryOpen(false);
-      setOpenSubMenu(null);
+      setIsMobileMenuOpen(false);
     }
   }, [isMobile]);
-
-  useEffect(() => {
-    if (!isDrawerOpen) {
-      setDrawerSide(dir);
-    }
-  }, [dir, isDrawerOpen]);
 
   useEffect(() => {
     const handleOutside = (event: MouseEvent) => {
@@ -90,8 +77,8 @@ export const Navbar: React.FC = () => {
         setIsDesktopCategoryOpen(false);
       }
 
-      if (isDrawerOpen && drawerRef.current && !drawerRef.current.contains(target)) {
-        setIsDrawerOpen(false);
+      if (isMobileMenuOpen && mobileMenuRef.current && !mobileMenuRef.current.contains(target)) {
+        setIsMobileMenuOpen(false);
       }
 
       if (isProfileMenuOpen && profileRef.current && !profileRef.current.contains(target)) {
@@ -101,10 +88,11 @@ export const Navbar: React.FC = () => {
 
     document.addEventListener('mousedown', handleOutside);
     return () => document.removeEventListener('mousedown', handleOutside);
-  }, [isDesktopCategoryOpen, isDrawerOpen, isProfileMenuOpen]);
+  }, [isDesktopCategoryOpen, isMobileMenuOpen, isProfileMenuOpen]);
 
   const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setIsMobileMenuOpen(false);
     const normalizedSearch = searchRef.current?.value?.trim() || undefined;
     setSearchText(normalizedSearch);
 
@@ -120,20 +108,9 @@ export const Navbar: React.FC = () => {
 
   const categoryHref = (id: string) => localizedPath(`/products?categoryIds=${id}`);
 
-  const closeDrawer = () => {
-    setIsDrawerOpen(false);
-    setIsMobileCategoryOpen(false);
-    setOpenSubMenu(null);
-  };
-
-  const openDrawer = () => {
-    setDrawerSide(dir);
-    setIsDrawerOpen(true);
-  };
-
   const handleLogout = () => {
     setIsProfileMenuOpen(false);
-    closeDrawer();
+    setIsMobileMenuOpen(false);
     logout();
     navigate(localizedPath('/'));
   };
@@ -259,7 +236,7 @@ export const Navbar: React.FC = () => {
 
       <div className="mx-auto bg-color-for-layer-on-body p-4">
         {!isMobile ? (
-          <div dir={dir}  className="container mx-auto max-w-7xl flex items-center justify-between px-4">
+          <div dir={dir} className="container mx-auto max-w-7xl flex items-center justify-between px-4">
             <ul className="flex items-center gap-8">
               <li className="text-base font-f-normal first-text-color">
                 <Link to={localizedPath('/')} className="first-header__ul-link">
@@ -292,7 +269,9 @@ export const Navbar: React.FC = () => {
                 </button>
 
                 {isDesktopCategoryOpen && (
-                  <div className={`absolute ${dir == 'rtl' ? " -right-15" : "left-15" } border border-gray-300/60 top-full z-40 mt-3 w-212.5 overflow-hidden rounded-2xl bg-color-for-layer-on-body shadow-dark-sm`}>
+                  <div
+                    className={`absolute ${dir === 'rtl' ? '-right-15' : 'left-15'} border border-gray-300/60 top-full z-40 mt-3 w-212.5 overflow-hidden rounded-2xl bg-color-for-layer-on-body shadow-dark-sm`}
+                  >
                     <div className="flex">
                       <ul className="w-64 border-e border-gray-300/60 bg-color-for-layer-sec p-4">
                         {categories?.map((category, index) => (
@@ -367,24 +346,64 @@ export const Navbar: React.FC = () => {
             </ul>
           </div>
         ) : (
-          <div className="mx-auto px-1 pb-2">
+          <div dir={dir} className="mx-auto px-1 pb-2">
             <div className="space-y-2">
               <div className="flex items-center justify-between rounded-2xl">
-                <button
-                  aria-label={t('nav.openMenu')}
-                  className="rounded-xl border border-gray-300/50 p-2 first-text-color-svg"
-                  onClick={openDrawer}
-                >
-                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M4 17H20M4 12H20M4 7H20"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </button>
+                <div ref={mobileMenuRef} className="relative">
+                  <button
+                    type="button"
+                    aria-label={t('nav.openMenu')}
+                    className="rounded-xl border border-gray-300/50 p-2 first-text-color-svg"
+                    onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+                  >
+                    <EllipsisVertical className="h-8 w-8" strokeWidth={1.8} />
+                  </button>
+
+                  <AnimatePresence>
+                    {isMobileMenuOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        className={`absolute top-full z-50 mt-2 min-w-48 rounded-xl border border-gray-300/60 bg-color-for-layer-on-body p-2 shadow-dark-sm ${
+                          dir === 'rtl' ? 'right-0' : 'left-0'
+                        }`}
+                      >
+                      
+                        <Link
+                          to={localizedPath('/about-us')}
+                          className="block rounded-lg px-3 py-2 text-sm first-text-color-for-paragraph hover:bg-color-for-layer-sec"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                          {navLabels.about}
+                        </Link>
+                        <Link
+                          to={localizedPath('/contact-us')}
+                          className="block rounded-lg px-3 py-2 text-sm first-text-color-for-paragraph hover:bg-color-for-layer-sec"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                          {navLabels.contact}
+                        </Link>
+                        <Link
+                          to={localizedPath(isAuthenticated ? '/profile' : '/auth')}
+                          className="block rounded-lg px-3 py-2 text-sm first-text-color-for-paragraph hover:bg-color-for-layer-sec"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                          {isAuthenticated ? navLabels.profile : navLabels.signInShort}
+                        </Link>
+                        {isAuthenticated && (
+                          <button
+                            type="button"
+                            className="block w-full rounded-lg px-3 py-2 text-start text-sm text-red-600 hover:bg-red-50"
+                            onClick={handleLogout}
+                          >
+                            {t('nav.logout')}
+                          </button>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
 
                 <Link to={localizedPath('/')} className="block w-20">
                   <img className="h-24" src={logoNav} alt="logo" />
@@ -432,182 +451,6 @@ export const Navbar: React.FC = () => {
                   </svg>
                 </button>
               </form>
-            </div>
-
-            {isDrawerOpen && (
-              <div
-                className="fixed inset-0 z-50 bg-black/45 backdrop-blur-[1px]"
-                onClick={closeDrawer}
-              />
-            )}
-
-            <div
-              ref={drawerRef}
-              dir={dir}
-              className={`fixed top-0 z-60 h-full w-10/12 max-w-sm overflow-y-auto bg-color-for-layer-on-body shadow-dark-sm transition-transform duration-300 ${
-                drawerSide === 'rtl' ? 'right-0' : 'left-0'
-              } ${isDrawerOpen ? 'translate-x-0' : drawerSide === 'rtl' ? 'translate-x-full' : '-translate-x-full'}`}
-            >
-              <div className="flex items-center justify-between border-b border-gray-200/50 p-4">
-                <button
-                  onClick={closeDrawer}
-                  className="rounded-xl border border-gray-300/60 p-2 first-text-color-svg"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M19 5L5 19M5.00003 5L19 19"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </button>
-                <Link to={localizedPath('/')} className="w-22" onClick={closeDrawer}>
-                  <img className="w-5/6" src={MainLogo} alt="logo" />
-                </Link>
-              </div>
-
-              <ul className="space-y-2 p-4">
-                <li className="rounded-xl bg-color-for-layer-sec p-3">
-                  <button
-                    onClick={() => setIsMobileCategoryOpen((prev) => !prev)}
-                    className="flex w-full items-center justify-between text-sm font-f-sbold first-text-color"
-                  >
-                    <span>{navLabels.categories}</span>
-                    <svg
-                      className={`h-4 w-4 transition-transform ${isMobileCategoryOpen ? 'rotate-180' : ''}`}
-                      viewBox="0 0 24 24"
-                      fill="none"
-                    >
-                      <path
-                        d="M19 9l-7 7-7-7"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </button>
-
-                  {isMobileCategoryOpen && (
-                    <ul className="mt-3 space-y-2">
-                      {categories?.map((menu) => (
-                        <li key={menu.id} className="rounded-lg bg-color-for-layer-on-body p-2">
-                          <button
-                            onClick={() =>
-                              setOpenSubMenu((prev) => (prev === menu.id ? null : menu.id))
-                            }
-                            className={`flex w-full items-center justify-between text-sm first-text-color ${
-                              dir === 'rtl' ? 'text-right' : 'text-left'
-                            }`}
-                          >
-                            <span>{menu.name}</span>
-                            <svg
-                              className={`h-4 w-4 transition-transform ${openSubMenu === menu.id ? 'rotate-180' : ''}`}
-                              viewBox="0 0 24 24"
-                              fill="none"
-                            >
-                              <path
-                                d="M19 9l-7 7-7-7"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </button>
-
-                          {openSubMenu === menu.id && (
-                            <ul className="mt-2 space-y-1 px-2">
-                              {menu.children?.map((sub) => (
-                                <li key={sub.id}>
-                                  <Link
-                                    className="block py-1 text-sm first-text-color-for-paragraph hover:first-text-color"
-                                    onClick={() => {
-                                      setCategoryIds([sub.id]);
-                                      closeDrawer();
-                                    }}
-                                    to={categoryHref(sub.id)}
-                                  >
-                                    {sub.name}
-                                  </Link>
-                                </li>
-                              ))}
-                              <li>
-                                <Link
-                                  className="my-2 inline-flex rounded-lg bg-secound px-3 py-2 text-xs text-white"
-                                  onClick={closeDrawer}
-                                  to={categoryHref(menu.id)}
-                                >
-                                  {navLabels.all}
-                                </Link>
-                              </li>
-                            </ul>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </li>
-
-                <li>
-                  <Link
-                    className="block rounded-xl px-3 py-2 text-sm first-text-color-for-paragraph hover:bg-color-for-layer-sec"
-                    onClick={closeDrawer}
-                    to={localizedPath('/cart')}
-                  >
-                    {navLabels.cart}
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="block rounded-xl px-3 py-2 text-sm first-text-color-for-paragraph hover:bg-color-for-layer-sec"
-                    onClick={closeDrawer}
-                    to={localizedPath(isAuthenticated ? '/profile' : '/auth')}
-                  >
-                    {isAuthenticated ? navLabels.profile : navLabels.signInShort}
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="block rounded-xl px-3 py-2 text-sm first-text-color-for-paragraph hover:bg-color-for-layer-sec"
-                    onClick={closeDrawer}
-                    to={localizedPath('/about-us')}
-                  >
-                    {navLabels.about}
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="block rounded-xl px-3 py-2 text-sm first-text-color-for-paragraph hover:bg-color-for-layer-sec"
-                    onClick={closeDrawer}
-                    to={localizedPath('/contact-us')}
-                  >
-                    {navLabels.contact}
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="block rounded-xl px-3 py-2 text-sm first-text-color-for-paragraph hover:bg-color-for-layer-sec"
-                    onClick={closeDrawer}
-                    to={localizedPath('/blogs')}
-                  >
-                    {navLabels.blog}
-                  </Link>
-                </li>
-                {isAuthenticated && (
-                  <li>
-                    <button
-                      type="button"
-                      className="block w-full rounded-xl px-3 py-2 text-start text-sm text-red-600 hover:bg-red-50"
-                      onClick={handleLogout}
-                    >
-                      {t('nav.logout')}
-                    </button>
-                  </li>
-                )}
-              </ul>
             </div>
           </div>
         )}
