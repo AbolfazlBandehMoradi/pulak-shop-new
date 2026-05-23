@@ -18,9 +18,10 @@ const Cart = () => {
   const dir = useLangStore((s) => s.dir);
   const isRTL = dir === 'rtl';
   const effectiveLangCode = currentLanguage || 'fa';
+  const showMobileContinueBar = Boolean(cart && cart.items.length > 0);
 
   return (
-    <main className="mx-auto mt-20 lg:mt-8 px-4 sm:container">
+    <main className="mx-auto mt-20 px-4 pb-[11.5rem] lg:mt-8 lg:pb-0 sm:container">
       <CheckoutStepper currentStep={1} />
       <div className="mb-6">
         <div className="flex items-center justify-between  gap-3 mb-2">
@@ -47,35 +48,6 @@ const Cart = () => {
           </Button>
         </div>
       </div>
-
-      {cart && cart.items.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-6 rounded-2xl border border-first/15 bg-color-for-layer-on-body p-4 shadow-dark-sm"
-        >
-          <div
-            className={`flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between ${isRTL ? 'sm:flex-row-reverse' : ''}`}
-          >
-            <div className={isRTL ? 'sm:text-right' : ''}>
-              <p className="text-sm first-text-color-for-paragraph">
-                {t('cart.cartTotal') || 'Cart Total'}
-              </p>
-              <p className="text-2xl font-s-bold text-first">
-                <PriceDisplay amount={cart.total} languageCode={effectiveLangCode} />
-              </p>
-            </div>
-            <Button
-              onClick={() => navigate('/checkout')}
-              className="bg-first text-white hover:bg-first-600"
-              size="lg"
-            >
-              {t('checkout.continue') || 'Continue'}
-              <ArrowRight className={`h-5 w-5 ${isRTL ? 'mr-2 rotate-180' : 'ml-2'}`} />
-            </Button>
-          </div>
-        </motion.div>
-      )}
 
       {!cart || cart.items.length === 0 ? (
         // Empty cart
@@ -140,6 +112,34 @@ const Cart = () => {
                 onCheckout={() => navigate('/checkout')}
               />
             </motion.div>
+          </div>
+        </motion.div>
+      )}
+
+      {showMobileContinueBar && (
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="fixed inset-x-3 z-[40] lg:hidden"
+          style={{ bottom: 'calc(env(safe-area-inset-bottom) + 5.8rem)' }}
+        >
+          <div className="rounded-2xl border border-first/15 bg-color-for-layer-on-body p-3 shadow-dark-sm backdrop-blur-xl">
+            <div className={`mb-3 flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <span className="text-xs first-text-color-for-paragraph">
+                {t('cart.cartTotal') || 'Cart Total'}
+              </span>
+              <span className="text-lg font-s-bold text-first">
+                <PriceDisplay amount={cart.total} languageCode={effectiveLangCode} />
+              </span>
+            </div>
+            <Button
+              onClick={() => navigate('/checkout')}
+              className="w-full bg-first text-white hover:bg-first-600"
+              size="lg"
+            >
+              {t('checkout.continue') || 'Continue'}
+              <ArrowRight className={`h-5 w-5 ${isRTL ? 'mr-2 rotate-180' : 'ml-2'}`} />
+            </Button>
           </div>
         </motion.div>
       )}

@@ -108,7 +108,7 @@ export function MobileStickyBar({
 
   return (
     <motion.div
-      className="fixed inset-x-0 bottom-0 z-[65] border-t border-gray-200/70 bg-color-for-layer-on-body px-4 pt-3 shadow-dark-sm lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-[30] border-t border-gray-200/70 bg-color-for-layer-on-body px-4 pt-3 shadow-dark-sm lg:hidden"
       style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.75rem)' }}
       initial={{ y: 100 }}
       animate={{ y: 0 }}

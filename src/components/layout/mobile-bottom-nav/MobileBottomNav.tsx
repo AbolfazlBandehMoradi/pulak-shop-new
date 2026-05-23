@@ -64,7 +64,7 @@ export function MobileBottomNav() {
   };
 
   return (
-    <div className="lg:hidden fixed inset-x-3 bottom-2 z-[70]">
+    <div className="lg:hidden fixed inset-x-3 bottom-2 z-[30]">
       <nav
         aria-label={t('nav.mobileBarLabel') || 'Main mobile navigation'}
         className="rounded-3xl border border-gray-300/40 bg-color-for-layer-on-body px-2 pt-2 shadow-dark-sm backdrop-blur-xl"

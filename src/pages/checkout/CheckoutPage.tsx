@@ -158,7 +158,7 @@ export default function CheckoutPage() {
       )}
 
       {showMobileContinueBar && (
-        <div className="fixed inset-x-0 bottom-0 z-[80] border-t border-gray-300/50 bg-color-for-layer-on-body shadow-dark-sm lg:hidden">
+        <div className="fixed inset-x-0 bottom-0 z-[40] border-t border-gray-300/50 bg-color-for-layer-on-body shadow-dark-sm lg:hidden">
           <div
             className="mx-auto w-full max-w-3xl px-4 pt-3"
             style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.75rem)' }}
