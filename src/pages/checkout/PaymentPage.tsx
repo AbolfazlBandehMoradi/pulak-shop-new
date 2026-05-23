@@ -78,6 +78,10 @@ export default function PaymentPage() {
   const [gatewaysLoading, setGatewaysLoading] = useState(false);
   const [selectedGatewayId, setSelectedGatewayId] = useState<number | null>(null);
   const [paying, setPaying] = useState(false);
+  const redirectToCartBecauseEmpty = (replace = true) => {
+    showWarningToast(t('cart.emptyCart') || 'Your cart is empty');
+    navigate(localizedPath('/cart'), { replace });
+  };
 
   // Load cart and wallet
   useEffect(() => {
@@ -93,9 +97,8 @@ export default function PaymentPage() {
         setCartData(cartData);
         setGlobalCart(cartData);
 
-        if (!cartData.items.length) {
-          showWarningToast(t('cart.emptyCart') || 'Your cart is empty');
-          navigate(localizedPath('/cart'), { replace: true });
+        if (!cartData?.items?.length) {
+          redirectToCartBecauseEmpty(true);
           return;
         }
 
@@ -177,9 +180,8 @@ export default function PaymentPage() {
         return;
       }
 
-      if (!latestCart.items.length) {
-        showWarningToast(t('cart.emptyCart') || 'Your cart is empty');
-        navigate(localizedPath('/cart'));
+      if (!latestCart?.items?.length) {
+        redirectToCartBecauseEmpty(true);
         return;
       }
 

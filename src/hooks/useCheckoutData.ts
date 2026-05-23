@@ -62,6 +62,22 @@ const hasAnyOptionalAddressField = (address: UserAddress): boolean =>
       address.streetAddress2,
   );
 
+const getPreferredAddressId = (
+  addresses: UserAddress[],
+  currentSelection: number | null = null,
+): number | null => {
+  if (!addresses.length) {
+    return null;
+  }
+
+  if (currentSelection !== null && addresses.some((address) => address.id === currentSelection)) {
+    return currentSelection;
+  }
+
+  const defaultAddress = addresses.find((address) => address.isDefault);
+  return defaultAddress ? defaultAddress.id : addresses[0].id;
+};
+
 export function useCheckoutData({ languageCode, t }: UseCheckoutDataParams) {
   const [reloadKey, setReloadKey] = useState(0);
   const [addresses, setAddresses] = useState<UserAddress[]>([]);
@@ -150,9 +166,9 @@ export function useCheckoutData({ languageCode, t }: UseCheckoutDataParams) {
 
         setProvinces(provincesData);
         setAddresses(addressesData);
-
-        const defaultAddress = addressesData.find((address) => address.isDefault);
-        setSelectedAddressId(defaultAddress ? defaultAddress.id : null);
+        setSelectedAddressId((currentSelection) =>
+          getPreferredAddressId(addressesData, currentSelection),
+        );
       } catch (err) {
         if (!isMounted) return;
         console.error('Failed to load data:', err);
@@ -264,15 +280,9 @@ export function useCheckoutData({ languageCode, t }: UseCheckoutDataParams) {
     try {
       await deleteAddress(addressId, languageCode);
       const addressesData = await loadAddresses();
-
-      const defaultAddress = addressesData.find((address) => address.isDefault);
-      if (defaultAddress) {
-        setSelectedAddressId(defaultAddress.id);
-      } else if (addressesData.length > 0) {
-        setSelectedAddressId(addressesData[0].id);
-      } else {
-        setSelectedAddressId(null);
-      }
+      setSelectedAddressId((currentSelection) =>
+        getPreferredAddressId(addressesData, currentSelection),
+      );
 
       if (editingAddress?.id === addressId) {
         setEditingAddress(null);
