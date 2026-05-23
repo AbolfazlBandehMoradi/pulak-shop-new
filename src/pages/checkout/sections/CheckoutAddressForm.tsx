@@ -81,7 +81,7 @@ export function CheckoutAddressForm({
                   value={field.value ?? 0}
                   onChange={(value) => {
                     field.onChange(Number(value));
-                    setValue('cityId', 0, { shouldDirty: true, shouldValidate: true });
+                    setValue('cityId', 0, { shouldDirty: true });
                   }}
                   placeholder={t('checkout.selectProvince') || 'Select Province'}
                   searchPlaceholder={t('checkout.searchProvince') || 'Search provinces...'}

@@ -199,7 +199,7 @@ export function useCheckoutData({ languageCode, t }: UseCheckoutDataParams) {
           setCities(citiesData);
 
           if (cityId > 0 && !citiesData.find((city) => city.id === cityId)) {
-            setValue('cityId', 0, { shouldDirty: true, shouldValidate: true });
+            setValue('cityId', 0, { shouldDirty: true });
           }
         } catch (err) {
           if (isMounted) {
@@ -212,7 +212,7 @@ export function useCheckoutData({ languageCode, t }: UseCheckoutDataParams) {
     } else {
       setCities([]);
       if (cityId > 0) {
-        setValue('cityId', 0, { shouldDirty: true, shouldValidate: true });
+        setValue('cityId', 0, { shouldDirty: true });
       }
     }
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
@@ -34,6 +34,8 @@ import CheckoutStepper from '@/components/reusable-components/CheckoutStepper/Ch
 import { CheckoutTopLogo } from './sections/CheckoutTopLogo';
 
 type PaymentMethod = 'online' | 'wallet';
+const EMPTY_CART_TOAST_DEDUP_MS = 1500;
+let lastEmptyCartToastAt = 0;
 
 export default function PaymentPage() {
   const location = useLocation();
@@ -52,6 +54,24 @@ export default function PaymentPage() {
   const isRTL = dir === 'rtl';
   const isPersian = effectiveLangCode === 'fa';
   const cartScope = isAuthenticated ? `user:${user?.id ?? 'authenticated'}` : 'guest';
+  const emptyCartMessage = t('cart.emptyCart') || 'Your cart is empty';
+  const sessionExpiredMessage =
+    t('payment.sessionExpired') || 'Your session has expired. Please sign in again.';
+  const networkErrorMessage =
+    t('payment.networkError') || 'Network error. Please check your connection and retry.';
+  const loadPaymentErrorMessage =
+    t('payment.loadError') || 'Failed to load payment data. Please try again.';
+  const gatewayLoadErrorMessage =
+    t('payment.gatewayLoadError') || 'Failed to load payment gateways. Please try again.';
+  const cartRefreshErrorMessage =
+    t('payment.cartRefreshError') || 'Failed to refresh cart. Please try again.';
+  const selectGatewayValidationMessage =
+    t('payment.selectGatewayValidation') || 'Please select a payment gateway to continue.';
+  const invalidGatewayResponseMessage =
+    t('payment.invalidGatewayResponse') ||
+    'Payment gateway returned an invalid response. Please try again.';
+  const paymentRequestErrorMessage =
+    t('payment.requestError') || 'Payment request failed. Please try again.';
 
   // Keep redirect behavior aligned with protected route pattern
   useEffect(() => {
@@ -78,16 +98,51 @@ export default function PaymentPage() {
   const [gatewaysLoading, setGatewaysLoading] = useState(false);
   const [selectedGatewayId, setSelectedGatewayId] = useState<number | null>(null);
   const [paying, setPaying] = useState(false);
-  const redirectToCartBecauseEmpty = (replace = true) => {
-    showWarningToast(t('cart.emptyCart') || 'Your cart is empty');
-    navigate(localizedPath('/cart'), { replace });
-  };
+  const hasRedirectedToCartRef = useRef(false);
+
+  const getApiErrorMessage = useCallback(
+    (err: unknown, fallback: string) => {
+      if (!(err instanceof Error) || !err.message.trim()) {
+        return fallback;
+      }
+
+      if (err.message === 'AUTH_EXPIRED') {
+        return sessionExpiredMessage;
+      }
+
+      const normalized = err.message.toLowerCase();
+      if (normalized.includes('network') || normalized.includes('failed to fetch')) {
+        return networkErrorMessage;
+      }
+
+      return err.message;
+    },
+    [networkErrorMessage, sessionExpiredMessage],
+  );
+
+  const redirectToCartBecauseEmpty = useCallback(
+    (replace = true) => {
+      if (hasRedirectedToCartRef.current) {
+        return;
+      }
+
+      hasRedirectedToCartRef.current = true;
+      const now = Date.now();
+      if (now - lastEmptyCartToastAt > EMPTY_CART_TOAST_DEDUP_MS) {
+        showWarningToast(emptyCartMessage);
+        lastEmptyCartToastAt = now;
+      }
+      navigate(localizedPath('/cart'), { replace });
+    },
+    [emptyCartMessage, localizedPath, navigate, showWarningToast],
+  );
 
   // Load cart and wallet
   useEffect(() => {
     const loadData = async () => {
       try {
         setLoading(true);
+        setError(null);
 
         // Load cart
         const cartData = await queryClient.fetchQuery({
@@ -114,7 +169,12 @@ export default function PaymentPage() {
         }
       } catch (err) {
         console.error('Failed to load data:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load data');
+        const message = getApiErrorMessage(
+          err,
+          loadPaymentErrorMessage,
+        );
+        setError(message);
+        showErrorToast(message);
       } finally {
         setLoading(false);
       }
@@ -131,9 +191,10 @@ export default function PaymentPage() {
     queryClient,
     cartScope,
     setGlobalCart,
-    showWarningToast,
-    navigate,
-    localizedPath,
+    getApiErrorMessage,
+    redirectToCartBecauseEmpty,
+    loadPaymentErrorMessage,
+    showErrorToast,
   ]);
 
   useEffect(() => {
@@ -145,12 +206,18 @@ export default function PaymentPage() {
         setGateways(list);
       } catch (err) {
         console.error('Failed to load gateways:', err);
+        showErrorToast(
+          getApiErrorMessage(
+            err,
+            gatewayLoadErrorMessage,
+          ),
+        );
       } finally {
         setGatewaysLoading(false);
       }
     };
     loadGateways();
-  }, [paymentMethod]);
+  }, [paymentMethod, getApiErrorMessage, gatewayLoadErrorMessage, showErrorToast]);
 
   useEffect(() => {
     if (paymentMethod !== 'online' || gateways.length === 0) {
@@ -161,6 +228,8 @@ export default function PaymentPage() {
   }, [paymentMethod, gateways, selectedGatewayId]);
 
   const handlePay = async () => {
+    if (paying) return;
+
     if (paymentMethod === 'wallet') {
       // TODO: Wallet payment flow
       return;
@@ -176,7 +245,12 @@ export default function PaymentPage() {
         setGlobalCart(latestCart);
       } catch (err) {
         console.error('Failed to refresh cart before payment:', err);
-        showErrorToast(t('common.retry') || 'Failed to refresh cart. Please try again.');
+        showErrorToast(
+          getApiErrorMessage(
+            err,
+            cartRefreshErrorMessage,
+          ),
+        );
         return;
       }
 
@@ -186,7 +260,10 @@ export default function PaymentPage() {
       }
 
       const gatewayId = gateways.length > 0 ? selectedGatewayId : undefined;
-      if (gateways.length > 0 && !selectedGatewayId) return;
+      if (gateways.length > 0 && !selectedGatewayId) {
+        showWarningToast(selectGatewayValidationMessage);
+        return;
+      }
       const selectedGateway = gateways.find((g) => g.id === (selectedGatewayId ?? gatewayId));
       const isZarinPal = selectedGateway?.providerName?.toLowerCase() === 'zarinpal';
       setPaying(true);
@@ -194,12 +271,19 @@ export default function PaymentPage() {
         const res = isZarinPal
           ? await requestZarinPalPayment(effectiveLangCode, gatewayId ?? undefined)
           : await requestZibalPayment(effectiveLangCode, gatewayId ?? undefined);
-        if (res?.redirectUrl) {
-          window.location.href = res.redirectUrl;
+        if (!res?.redirectUrl) {
+          showErrorToast(invalidGatewayResponseMessage);
+          return;
         }
+        window.location.assign(res.redirectUrl);
       } catch (err) {
         console.error('Payment request failed:', err);
-        setError(err instanceof Error ? err.message : 'Payment request failed');
+        showErrorToast(
+          getApiErrorMessage(
+            err,
+            paymentRequestErrorMessage,
+          ),
+        );
       } finally {
         setPaying(false);
       }
