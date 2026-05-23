@@ -6,7 +6,7 @@ import ApiError from '@/pages/error/ApiError';
 import Hero from './sections/Hero';
 import CategoriesSlider from './sections/CategoriesSlider';
 import ProductSlider from './sections/ProductsSlider';
-import "./MainPage.css"
+import './MainPage.css';
 import NewBlogs from './sections/NewBlogs';
 import ProductsSliderTwo from './sections/ProductsSliderTwo';
 import Banner from './sections/Banner';
@@ -58,9 +58,13 @@ const MainPage = () => {
   }
 
   return (
-    <main className='pb-10 max-w-7xl mx-auto'>
-      <Stories stories={index?.stories ?? []} />
-      <Hero slides={sliderGalleries} />
+    <main>
+      <div className="sm:container mx-auto px-4">
+        <Stories stories={index?.stories ?? []} />
+      </div>
+      <div className="sm:container mx-auto px-4">
+        <Hero slides={sliderGalleries} />
+      </div>
       <CategoriesSlider categories={index?.categories ?? []} />
       <ProductSlider showCase={showcases && showcases[0]} />
       <section className="sm:container mx-auto mt-8 lg:mt-16 px-4 ">
@@ -72,8 +76,7 @@ const MainPage = () => {
           </div>
           <aside className="w-full   lg:w-16/48 xl:w-12/48 xxl:w-11/48">
             <div className="h-full rounded-2xl bg-color-for-layer-on-body">
-              <BestProducts showcase={showcases && showcases[3]}
-              />
+              <BestProducts showcase={showcases && showcases[3]} />
             </div>
           </aside>
         </div>

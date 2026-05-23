@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Autoplay } from 'swiper/modules';
 import { Story as StoryInterface } from '@/types/index';
-import "swiper/swiper.css"
+import 'swiper/swiper.css';
 
 interface Props {
   stories: StoryInterface[];
@@ -41,7 +41,6 @@ const Story = ({ stories }: Props) => {
         <div className="relative flex flex-wrap justify-between">
           <Swiper
             loop={true}
-            slidesPerView={10}
             spaceBetween={20}
             speed={10000}
             autoplay={{
@@ -54,13 +53,14 @@ const Story = ({ stories }: Props) => {
             }}
             modules={[Navigation, Autoplay]}
             breakpoints={{
+              300: { slidesPerView: 2.5 },
               500: { slidesPerView: 3.5 },
               640: { slidesPerView: 4.5 },
               768: { slidesPerView: 5.5 },
-              1024: { slidesPerView: 4.5 },
-              1280: { slidesPerView: 5.5 },
-              1536: { slidesPerView: 6.5 },
-              1792: { slidesPerView: 13.5 },
+              1024: { slidesPerView: 6.5 },
+              1280: { slidesPerView: 7.5 },
+              1536: { slidesPerView: 8.5 },
+              1792: { slidesPerView: 11.5 },
             }}
           >
             {stories?.map((story, index) => (
