@@ -176,19 +176,19 @@ body.light {
   --rt-transition-closing-delay: 0.3s;
   /* End  Color For Theme Raect Tooltip */
   /* Start Bg Color For Theme */
-  --bg-color-for-body: #ebf2fa;
+  --bg-color-for-body: #f2f6fc;
   --bg-color-for-layer-on-body: #ffffff;
-  --bg-color-for-layer-sec: #ebf2fa;
+  --bg-color-for-layer-sec: #f2f6fc;
   --bg-color-for-layer-three: #f0f0f1;
-  --bg-color-for-layer-on-body-rotate: #ebf2fa;
+  --bg-color-for-layer-on-body-rotate: #f2f6fc;
   --bg-color-for-layer-sec-return: #ffffff;
-  --bg-color-for-layer-sec-prev: #ebf2fa;
+  --bg-color-for-layer-sec-prev: #f2f6fc;
   --bg-color-for-red: #ED1D24;
   /* End Bg Color For Theme */
   --first-text-color: #141d26;
   --first-text-color-const: #141d26;
   --first-text-color-svg: #606060;
-  --first-text-color-hr: #ebf2fa;
+  --first-text-color-hr: #f2f6fc;
   --first-text-color-hr-on-secound-layer: #60606040;
   --first-text-color-red: #ED1D24;
   --text-color-svg-white: #ffffff;
@@ -200,7 +200,7 @@ body.light {
   /* Start Section Button */
   --first-style-button-bg: #1b7efb;
   --first-style-button-bg-hover: #0e63e7;
-  --button-style-icon-first-bg: #ebf2fa;
+  --button-style-icon-first-bg: #f2f6fc;
   --first-bg-gradiant-for-section-one: linear-gradient(180deg, #FFFFFF 0%, rgba(16, 185, 129, 0.05) 100%);
 }
 
@@ -285,6 +285,7 @@ body.dark {
 @utility first-bg-gradiant-for-section-one {
   background-image: var(--first-bg-gradiant-for-section-one);
 }
+
 
 .first-text-color-svg * {
   color: var(--first-text-color-svg);

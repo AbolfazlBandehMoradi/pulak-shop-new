@@ -47,7 +47,7 @@ const Hero = ({ slides: gallerySlides = [] }: HeroProps) => {
     : fallbackSlides;
 
   return (
-    <section className="my-8 mx-auto px-4 relative">
+    <section className="mt-8 mx-auto  relative">
       <div className="first-slider">
         <Swiper
           className="rounded-2xl"

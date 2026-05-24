@@ -58,7 +58,7 @@ const MainPage = () => {
 
   return (
     <main>
-      <div className="sm:container mx-auto px-4">
+      <div className=" ">
         <Stories stories={index?.stories ?? []} />
       </div>
       <div className="sm:container mx-auto px-4">

@@ -17,7 +17,8 @@
     "titleAccent": "Categories",
     "titleSuffix": "",
     "description": "Browse product categories for easier access",
-    "more": "More categories...",
+    "more": "More categories",
+    "moreInPhone": "More",
     "productCountSuffix": "items",
     "empty": "No categories found."
   },

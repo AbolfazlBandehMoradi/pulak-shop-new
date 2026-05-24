@@ -1,12 +1,12 @@
-import { t } from "i18next";
-import type { Swiper as SwiperType } from "swiper";
-import { Navigation } from "swiper/modules";
-import { useState, useRef } from "react";
-import { Link } from "react-router-dom";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Showcase } from "@/hooks/useShowcases";
-import { ShowCaseCard } from "./ShowCaseCard";
-import { useLocalizedPath } from "@/hooks/useLocalizedPath";
+import { t } from 'i18next';
+import type { Swiper as SwiperType } from 'swiper';
+import { Navigation } from 'swiper/modules';
+import { useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Showcase } from '@/hooks/useShowcases';
+import { ShowCaseCard } from './ShowCaseCard';
+import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 
 interface Props {
   showCase?: Showcase;
@@ -25,23 +25,20 @@ const ShowCases = ({ showCase }: Props) => {
   };
   return (
     <section className="product-slider relative sm:container mx-auto mt-8 lg:mt-16 px-4 ">
-
       <div className="flex flex-wrap items-center justify-between">
         <div className="flex w-full flex-wrap items-center justify-between  lg:w-11/24  ">
           <div className="flex w-full items-center gap-2">
-            <h2 className="font-s-sbold first-text-color text-2xl">
-              {t("products.newest")}
-            </h2>
+            <h2 className="font-s-sbold first-text-color text-2xl">{t('products.newest')}</h2>
           </div>
         </div>
         <div className="flex items-center justify-between lg:justify-end mt-4 lg:mt-0 w-full  lg:w-12/24 lg:gap-3 ">
           <div className="mt-4 flex w-full lg:mt-0 lg:w-6/12 lg:flex-row-reverse">
             <Link
               className="button-with-icon-on-secound-layout   text-sm flex items-center h-14 px-4 rounded-2xl gap-2"
-              to={localizedPath("/products")}
+              to={localizedPath('/products')}
             >
               <span className="button-with-icon-on-secound-layout__span">
-                {t("product.viewAll")}
+                {t('product.viewAll')}
               </span>
               <span className="button-with-icon-on-secound-layout__svg h-8 flex justify-center items-center rounded-full w-8">
                 <svg
@@ -99,8 +96,9 @@ const ShowCases = ({ showCase }: Props) => {
               <div className="flex justify-center gap-2 ">
                 <div
                   ref={prevRef}
-                  className={`swiper-button-prev_product-sliderflex justify-center flex w-8 h-8 items-center rounded bg-white  ${isBeginning ? "opacity-50 " : "cursor-pointer"
-                    }`}
+                  className={`swiper-button-prev_product-sliderflex justify-center flex w-8 h-8 items-center rounded bg-white  ${
+                    isBeginning ? 'opacity-50 ' : 'cursor-pointer'
+                  }`}
                 >
                   <svg
                     width="24"
@@ -120,8 +118,9 @@ const ShowCases = ({ showCase }: Props) => {
                 </div>
                 <div
                   ref={nextRef}
-                  className={`swiper-button-next_product-slider flex justify-center w-8 h-8 items-center rounded bg-white ${isEnd ? "opacity-50 cursor-pointer" : "cursor-pointer"
-                    }`}
+                  className={`swiper-button-next_product-slider flex justify-center w-8 h-8 items-center rounded bg-white ${
+                    isEnd ? 'opacity-50 cursor-pointer' : 'cursor-pointer'
+                  }`}
                 >
                   <svg
                     width="24"
@@ -153,8 +152,7 @@ const ShowCases = ({ showCase }: Props) => {
                   swiper.params.navigation = {
                     prevEl: prevRef.current,
                     nextEl: nextRef.current,
-                    disabledClass:
-                      "opacity-30 cursor-not-allowed pointer-events-none",
+                    disabledClass: 'opacity-30 cursor-not-allowed pointer-events-none',
                   };
                   swiper.navigation.init();
                   swiper.navigation.update();
@@ -174,15 +172,13 @@ const ShowCases = ({ showCase }: Props) => {
               {showCase?.items.map((showCase) => (
                 <SwiperSlide key={showCase.id}>
                   <div
-                    className={`transition-all duration-300 ${hoveredId && hoveredId !== showCase.id
-                      ? "blur-xs opacity-100 scale-[0.95]"
-                      : ""
-                      } ${hoveredId === showCase.id ? "z-10" : ""}`}
+                    className={`transition-all duration-300 ${
+                      hoveredId && hoveredId !== showCase.id
+                        ? 'blur-xs opacity-100 scale-[0.95]'
+                        : ''
+                    } ${hoveredId === showCase.id ? 'z-10' : ''}`}
                   >
-                    <ShowCaseCard
-                      showCaseItem={showCase}
-                      onLinkHover={handleLinkHover}
-                    />
+                    <ShowCaseCard showCaseItem={showCase} onLinkHover={handleLinkHover} />
                   </div>
                 </SwiperSlide>
               ))}

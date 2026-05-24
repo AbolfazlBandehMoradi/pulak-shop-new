@@ -35,62 +35,47 @@ const CategoriesSlider = ({ categories }: Props) => {
             delay: 0.2,
           }}
         >
-          <div className="flex w-full items-center lg:w-6/12">
-            <span className="first-text-color-svg inline-block rounded-lg p-3">
-              <svg
-                className="h-6 w-6 lg:h-16 lg:w-16"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M8 8H16M8 12H16M8 16H12M3.5 12C3.5 5.5 5.5 3.5 12 3.5C18.5 3.5 20.5 5.5 20.5 12C20.5 18.5 18.5 20.5 12 20.5C5.5 20.5 3.5 18.5 3.5 12Z"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </span>
+          <div className="flex items-center justify-between w-full ">
             <div>
-              <h2 className="font-s-sbold first-text-color text-xl sm:text-2xl">
+              <h2 className="font-s-sbold first-text-color text-base sm:text-xl">
                 {t('mainpage.categories.titlePrefix') && (
                   <span>{t('mainpage.categories.titlePrefix')} </span>
                 )}
-                <span className="text-first me-3 inline-block">
+                <span className="text-first me-1 inline-block">
                   {t('mainpage.categories.titleAccent')}
                 </span>
                 {t('mainpage.categories.titleSuffix')}
               </h2>
-              <p className="first-text-color-for-paragraph mt-2 text-sm sm:text-base">
+              <p className=" hidden md:flex first-text-color-for-paragraph mt-2 text-sm sm:text-base">
                 {t('mainpage.categories.description')}
               </p>
             </div>
-          </div>
-          <div className="mt-3 flex w-full lg:mt-0 lg:w-6/12 lg:flex-row-reverse">
             <Link
-              className="button-with-icon-on-white-layout text-sm flex items-center h-12 sm:h-14 px-4 rounded-2xl gap-2 w-fit"
+              className="button-with-icon-on-white-layout text-sm flex items-center h-10 sm:h-14 px-4 rounded-lg sm:rounded-2xl  gap-2 w-fit"
               to="/categories"
             >
-              <span className="button-with-icon-on-white-layout__svg h-8 flex justify-center items-center rounded-full w-8">
+              <span className=" hidden sm:flex button-with-icon-on-white-layout__span">
+                {t('mainpage.categories.more')}
+              </span>
+              <span className="flex sm:hidden button-with-icon-on-white-layout__span">
+                {t('mainpage.categories.moreInPhone')}
+              </span>
+              <span className="h-5 flex justify-center items-center sm:rounded-full w-5">
                 <svg
-                  width="18"
-                  height="18"
+                  width="24"
+                  height="24"
                   viewBox="0 0 24 24"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    d="M21 10L15 4M21 10H3M21 10L19.6431 16.7845C19.2692 18.6542 17.6275 20 15.7208 20H8.27922C6.37249 20 4.73083 18.6542 4.35689 16.7845L3 10M3 10L9 4"
+                    d="M14 7L9 12L14 17"
                     stroke="currentColor"
                     strokeWidth="1.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
                 </svg>
-              </span>
-              <span className="button-with-icon-on-white-layout__span">
-                {t('mainpage.categories.more')}
               </span>
             </Link>
           </div>
@@ -118,11 +103,13 @@ const CategoriesSlider = ({ categories }: Props) => {
               }}
               initialSlide={Math.floor(categories.length / 1)}
               breakpoints={{
-                640: { slidesPerView: 1 },
+                300: { slidesPerView: 1 },
+                400: { slidesPerView: 2 },
+                500: { slidesPerView: 3 },
                 1024: { slidesPerView: 4 },
                 1280: { slidesPerView: 5 },
                 1420: { slidesPerView: 6 },
-                1536: { slidesPerView: 6 },
+                1536: { slidesPerView: 7 },
               }}
             >
               {categories.map((category, index) => (
@@ -136,14 +123,14 @@ const CategoriesSlider = ({ categories }: Props) => {
                     }}
                   >
                     <div
-                      className="my-4 flex h-72 cursor-pointer flex-col items-center justify-center rounded-2xl p-4"
+                      className="mb-4 flex group hover:border-first hover:border-2 h-60 border border-gray-100 dark:border-gray-900 cursor-pointer flex-col items-center justify-center rounded-2xl p-4"
                       onClick={() =>
                         navigate(`products?categoryIds=${category.id}`, {
                           state: { name: category.name },
                         })
                       }
                     >
-                      <div className="flex h-50 w-50 relative">
+                      <div className="flex h-30 flex-wrap w-30 relative">
                         {category.image && (
                           <img
                             src={category.image}
@@ -151,14 +138,14 @@ const CategoriesSlider = ({ categories }: Props) => {
                             alt={category.name}
                           />
                         )}
-                        <span className="bg-color-for-layer-three absolute h-6 inset-0 rounded-full top-40"></span>
+                        <span className="w-full h-full rounded-full absolute group-hover:opacity-100 opacity-20 bg-color-for-layer-sec"></span>
                       </div>
-                      <div className="flex flex-col items-center justify-center">
-                        <h3 className="font-s-bold first-text-color text-base text-center line-clamp-2 2xl:text-lg">
+                      <div className="flex flex-col items-center mt-2 justify-center">
+                        <h3 className="font-s-medium first-text-color text-base text-center line-clamp-2 2xl:text-lg">
                           {category.name}
                         </h3>
-                        <p className="first-text-color-for-paragraph mt-1 flex items-center justify-center rounded-sm text-sm">
-                          <span className="inline-block text-center text-sm">
+                        <p className="first-text-color-for-paragraph-low px-2 py-0.5 mt-1 flex items-center justify-center  text-xs">
+                          <span className="inline-block text-center text-xs">
                             <span className="me-1 inline-block">{category.productCount}</span>
                             {t('mainpage.categories.productCountSuffix')}
                           </span>

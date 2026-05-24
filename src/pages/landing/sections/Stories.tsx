@@ -37,7 +37,9 @@ const Story = ({ stories }: Props) => {
 
   return (
     <>
-      <section className="relative mx-auto  px-4 sm:container">
+      <section className="relative  sm:container mx-auto overflow-hidden px-4 ">
+        <div className="pointer-events-none absolute left-4 top-0 z-10 h-full w-20 bg-linear-to-r from-[#f2f6fc] dark:from-[#101010] to-transparent" />
+        <div className="pointer-events-none absolute right-4 top-0 z-10 h-full w-20 bg-linear-to-r to-[#f2f6fc] dark:to-[#101010] from-transparent" />
         <div className="relative flex flex-wrap justify-between">
           <Swiper
             loop={true}
@@ -53,14 +55,14 @@ const Story = ({ stories }: Props) => {
             }}
             modules={[Navigation, Autoplay]}
             breakpoints={{
-              300: { slidesPerView: 2.5 },
-              500: { slidesPerView: 3.5 },
-              640: { slidesPerView: 4.5 },
-              768: { slidesPerView: 5.5 },
-              1024: { slidesPerView: 6.5 },
-              1280: { slidesPerView: 7.5 },
-              1536: { slidesPerView: 8.5 },
-              1792: { slidesPerView: 11.5 },
+              300: { slidesPerView: 3.5 },
+              500: { slidesPerView: 4.5 },
+              640: { slidesPerView: 5.5 },
+              768: { slidesPerView: 6.5 },
+              1024: { slidesPerView: 7.5 },
+              1280: { slidesPerView: 8.5 },
+              1536: { slidesPerView: 9.5 },
+              1792: { slidesPerView: 12.5 },
             }}
           >
             {stories?.map((story, index) => (
@@ -71,12 +73,14 @@ const Story = ({ stories }: Props) => {
               >
                 <div className="flex flex-col items-center">
                   <div className="relative p-3">
-                    <div className="outline-first rounded-full bg-cover p-1 outline-1">
-                      <img
-                        src={story.image}
-                        alt={story?.title}
-                        className="relative h-[60px] w-[60px] rounded-full bg-cover bg-center"
-                      />
+                    <div className="rounded-full p-0.5 bg-linear-to-tr from-violet-500 via-fuchsia-500 to-orange-400">
+                      <div className="rounded-full bg-white dark:bg-black p-1">
+                        <img
+                          src={story.image}
+                          alt={story?.title}
+                          className="h-15 w-15 rounded-full object-cover"
+                        />
+                      </div>
                     </div>
                   </div>
                   <div>

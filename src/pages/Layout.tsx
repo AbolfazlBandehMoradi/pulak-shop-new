@@ -1,11 +1,11 @@
-import { Outlet, ScrollRestoration, useLocation } from "react-router-dom";
-import { Footer } from "@/components/layout/footer/Footer";
-import useCart from "@/hooks/cart/useCart";
-import { Navbar } from "@/components/layout/navbar/Navbar";
-import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav/MobileBottomNav";
-import { ReactNode, useEffect } from "react";
-import { useLangStore } from "@/stores/languageStore";
-import { isSupportedLang, stripLangPrefix } from "@/utils/langRouting";
+import { Outlet, ScrollRestoration, useLocation } from 'react-router-dom';
+import { Footer } from '@/components/layout/footer/Footer';
+import useCart from '@/hooks/cart/useCart';
+import { NavbarWithDrawer } from '@/components/layout/navbar/NavbarWithDrawer';
+import { MobileBottomNav } from '@/components/layout/mobile-bottom-nav/MobileBottomNav';
+import { ReactNode, useEffect } from 'react';
+import { useLangStore } from '@/stores/languageStore';
+import { isSupportedLang, stripLangPrefix } from '@/utils/langRouting';
 
 interface LayoutProps {
   children?: ReactNode;
@@ -18,14 +18,14 @@ const Layout = ({ children }: LayoutProps) => {
 
   useCart();
   const basePath = stripLangPrefix(location.pathname);
-  const isCheckoutOrPaymentPage = basePath === "/checkout" || basePath === "/payment";
+  const isCheckoutOrPaymentPage = basePath === '/checkout' || basePath === '/payment';
   const isProductDetailPage = /^\/products\/[^/]+$/.test(basePath);
-  const hideNavAndFooter = basePath === "/auth" || isCheckoutOrPaymentPage;
+  const hideNavAndFooter = basePath === '/auth' || isCheckoutOrPaymentPage;
   const showMobileBottomNav = !hideNavAndFooter && !isProductDetailPage;
   const shouldReserveBottomSpace = showMobileBottomNav || isProductDetailPage;
 
   useEffect(() => {
-    const pathLang = location.pathname.split("/").filter(Boolean)[0];
+    const pathLang = location.pathname.split('/').filter(Boolean)[0];
     if (isSupportedLang(pathLang) && pathLang !== lang) {
       setLang(pathLang);
     }
@@ -33,8 +33,8 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <>
-      {!hideNavAndFooter && <Navbar />}
-      <div className={shouldReserveBottomSpace ? "pb-28 lg:pb-0" : undefined}>
+      {!hideNavAndFooter && <NavbarWithDrawer />}
+      <div className={shouldReserveBottomSpace ? 'pb-28 lg:pb-0' : undefined}>
         {children ?? <Outlet />}
       </div>
       {/* <GoftinoWidget /> */}
