@@ -183,6 +183,7 @@ body.light {
   --bg-color-for-layer-on-body-rotate: #f2f6fc;
   --bg-color-for-layer-sec-return: #ffffff;
   --bg-color-for-layer-sec-prev: #f2f6fc;
+  --bg-color-for-layer-sec-fill: #ffffff;
   --bg-color-for-red: #ED1D24;
   /* End Bg Color For Theme */
   --first-text-color: #141d26;
@@ -226,6 +227,8 @@ body.dark {
   --bg-color-for-layer-on-body-rotate: #101010;
   --bg-color-for-layer-sec-return: #050505;
   --bg-color-for-layer-sec-prev: #1f2633;
+  --bg-color-for-layer-sec-fill: #1f2633;
+
   --bg-color-for-red: #ED1D24;
   /* End Bg Color For Theme */
   --first-text-color: #f7f7f7;
@@ -272,6 +275,10 @@ body.dark {
 
 @utility bg-color-for-layer-sec-return {
   background-color: var(--bg-color-for-layer-sec-return);
+}
+
+.bg-color-for-layer-sec-fill * {
+  color: var(--bg-color-for-layer-sec-fill);
 }
 
 @utility bg-color-for-layer-three {
