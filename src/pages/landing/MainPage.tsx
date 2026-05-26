@@ -67,12 +67,10 @@ const MainPage = () => {
       <CategoriesSlider categories={index?.categories ?? []} />
       <ProductSlider showCase={showcases && showcases[0]} />
       <section className="bg-color-for-layer-on-body  pt-8 lg:py-16 px-4 ">
-        <div className="sm:container  mx-auto  px-4">
-          <div className="flex h-full flex-wrap lg:flex-nowrap justify-between">
-            <div className="w-full  lg:w-31/48 xl:w-35/48 xxl:w-36/48 ">
-              <div className="h-full rounded-2xl bg-color-for-layer-sec">
-                <DiscountedProducts discountedProduct={index?.discountProducts ?? []} />
-              </div>
+        <div className="sm:container mx-auto  px-4">
+          <div className="flex  flex-wrap lg:flex-nowrap justify-between">
+            <div className="w-full items-stretch  lg:w-31/48 xl:w-35/48 xxl:w-36/48 ">
+              <DiscountedProducts discountedProduct={index?.discountProducts ?? []} />
             </div>
             <aside className="w-full   lg:w-16/48 xl:w-12/48 xxl:w-11/48">
               <div className="h-full rounded-2xl bg-color-for-layer-sec">

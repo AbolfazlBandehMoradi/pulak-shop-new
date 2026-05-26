@@ -4,7 +4,7 @@ import { Product } from '@/types';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Navigation, EffectCreative, Autoplay } from 'swiper/modules';
+import { Navigation, Autoplay } from 'swiper/modules';
 import { SwiperSlide, Swiper, SwiperRef } from 'swiper/react';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { useLangStore } from '@/stores/languageStore';
@@ -39,150 +39,104 @@ const DiscountedProducts = ({ discountedProduct }: Props) => {
   }, []);
 
   return (
-    <div className="w-full h-full  flex items-center ">
-      <div className=" w-full h-full ">
-        <Swiper
-          className="rounded-2xl  h-full"
-          ref={mainSwiper}
-          loop={true}
-          effect="creative"
-          modules={[Navigation, EffectCreative, Autoplay]}
-          navigation={{
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
-          }}
-          creativeEffect={{
-            prev: {
-              shadow: true,
-              translate: [0, 0, -400],
-            },
-            next: {
-              translate: ['100%', 0, 0],
-            },
-          }}
-          breakpoints={{
-            320: { slidesPerView: 1 },
-            640: { slidesPerView: 1 },
-            768: { slidesPerView: 1 },
-            1024: { slidesPerView: 1 },
-            1280: { slidesPerView: 1 },
-          }}
-        >
-          {discountedProduct.map((product) => (
-            <SwiperSlide key={product.id}>
-              <div className="p-6 md:p-4   flex-wrap  h-full items-center flex justify-between  rounded-xl ">
-                <div className="flex justify-center bg-color-for-layer-sec gap-3 flex-wrap ">
-                  <div className="flex flex-row items-start flex-wrap w-full  lg:w-18/48 ">
-                    <div className="flex rounded-2xl p-6  bg-color-for-layer-on-body w-full ">
-                      <div className=" bg-color-for-layer-sec cursor-grab h-full w-full  flex rounded-2xl justify-center p-6">
-                        <img className="max-w-full h-auto" src={product.image} alt={product.name} />
-                      </div>
+    <div className="w-full items-stretch rounded-3xl bg-color-for-layer-on-body border border-gray-100 dark:border-gray-900k  flex  ">
+      <Swiper
+        ref={mainSwiper}
+        loop={true}
+        modules={[Navigation, Autoplay]}
+        navigation={{
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
+        }}
+        breakpoints={{
+          320: { slidesPerView: 1 },
+          640: { slidesPerView: 1 },
+          768: { slidesPerView: 1 },
+          1024: { slidesPerView: 1 },
+          1280: { slidesPerView: 1 },
+        }}
+      >
+        {discountedProduct.map((product) => (
+          <SwiperSlide className="h-full " key={product.id}>
+            <div className="group relative h-full  overflow-hidden ">
+              <div className="grid  grid-cols-1 lg:grid-cols-2 h-full">
+                <div className="relative  flex items-center justify-center    overflow-hidden">
+                  <span className="bg-color-for-layer-sec opacity-50 absolute rounded-2xl inset-0"></span>
+                  <div className="absolute w-80 h-80 rounded-full border-4 border-red-500/10" />
+                  <div className="absolute w-70 h-70 rounded-full bg-red-500/5 blur-3xl" />
+                  <div className="absolute top-0  left-0 z-20">
+                    <div
+                      className=" h-32 w-16  bg-red-500 shadow-2xl flex items-center  "
+                      style={{
+                        clipPath: 'polygon(0 0, 100% 0, 100% 78%, 50% 100%, 0 78%)',
+                      }}
+                    >
+                      <span className="flex flex-col justify-center items-center w-full">
+                        <span className="text-white text-3xl font-black">{product.discount}</span>
+                        <span className="text-white  font-bold">OFF</span>
+                      </span>
                     </div>
                   </div>
-                  <div className="w-full flex flex-col   justify-between  lg:w-29/48">
-                    <h2 className="text-lg first-text-color font-s-bold mt-3 w-full ">
-                      {product.name}
-                    </h2>
-                    <p className="text-base first-text-color mt-1 font-f-light w-full line-clamp-5 xl:line-clamp-6 ">
+                  <img
+                    className="
+            relative
+            z-10
+            max-h-[420px]
+            object-contain
+            transition-all
+            duration-700
+            group-hover:scale-105
+            drop-shadow-[0_30px_60px_rgba(0,0,0,0.18)]
+          "
+                    src={product.image}
+                    alt={product.name}
+                  />
+                </div>
+                <div className="flex  flex-col justify-between p-4 md:p-8">
+                  <div>
+                    <div className="inline-flex items-center gap-2 rounded-full border border-red-500/20 bg-red-500/5 px-4 py-2">
+                      <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
+                      <span className="text-xs font-bold uppercase tracking-[0.25em] text-red-500">
+                        Limited Offer
+                      </span>
+                    </div>
+                    <h2 className="">{product.name}</h2>
+
+                    {/* desc */}
+                    <p className="mt-6 text-sm md:text-base leading-8 text-gray-500 dark:text-gray-400 line-clamp-5">
                       {product.description}
                     </p>
+
+                    {/* timer */}
                     {product.saleEndDate && (
-                      <div className=" w-full  flex justify-between mt-4 flex-wrap items-center">
-                        <h5 className="text-sm first-text-color ">
-                          {t('mainpage.discount.remainingTime')}
-                        </h5>
+                      <div className="mt-8 flex items-center justify-between rounded-2xl border border-black/5 dark:border-white/5 bg-[#F8FAFC] dark:bg-[#111827] px-5 py-4">
+                        <div>
+                          <p className="text-xs uppercase tracking-[0.2em] text-gray-400">
+                            Ends In
+                          </p>
+
+                          <h5 className="mt-1 text-sm font-bold text-[#111827] dark:text-white">
+                            {t('mainpage.discount.remainingTime')}
+                          </h5>
+                        </div>
+
                         <RemainingTime expireDate={product.saleEndDate} />
                       </div>
                     )}
-                    <div className="lg:hidden  flex xl:flex  w-full flex-wrap mt-4 justify-between items-center ">
-                      <div className="flex items-center w-30/48 sm:w-24/48  gap-2">
-                        <div className="bg-first py-1 rounded-md flex  gap-1 px-2   items-center justify-between">
-                          <span className="flex">
-                            <svg
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M8 16L16 8M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12ZM17 15C17 16.1046 16.1046 17 15 17C13.8954 17 13 16.1046 13 15C13 13.8954 13.8954 13 15 13C16.1046 13 17 13.8954 17 15ZM11 9C11 10.1046 10.1046 11 9 11C7.89543 11 7 10.1046 7 9C7 7.89543 7.89543 7 9 7C10.1046 7 11 7.89543 11 9Z"
-                                stroke="white"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </span>
-                          <span className="flex bg-first-600 px-2 text-white rounded-xs leading-4.5   text-xs items-center ">
-                            {product.discount}
-                          </span>
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-gray-500 line-through">
-                            <PriceDisplay
-                              amount={product.originalPrice || 0}
-                              currency={currency}
-                              currencyMode="none"
-                              languageCode={lang}
-                            />
-                          </span>
-                          <span className="text-secound font-bold">
-                            <PriceDisplay
-                              amount={product.price}
-                              currency={currency}
-                              currencyMode="none"
-                              languageCode={lang}
-                            />
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex  w-12/48 sm:w-24/48 ">
-                        <Link
-                          to={`/products/${product.slug}`}
-                          className="text-white text-base w-full"
-                        >
-                          <Button className={'w-full  rounded-md  bg-first  text-white'}>
-                            <span className="text-white">{t('mainpage.discount.buy')}</span>
-                          </Button>
-                        </Link>
-                      </div>
-                    </div>
                   </div>
-                  <div className="hidden  lg:flex xl:hidden w-full flex-wrap mt-4 justify-between items-center ">
-                    <div className="flex items-center gap-2">
-                      <div className="bg-first py-1 rounded-md flex  gap-1 px-2   items-center justify-between">
-                        <span className="flex">
-                          <svg
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M8 16L16 8M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12ZM17 15C17 16.1046 16.1046 17 15 17C13.8954 17 13 16.1046 13 15C13 13.8954 13.8954 13 15 13C16.1046 13 17 13.8954 17 15ZM11 9C11 10.1046 10.1046 11 9 11C7.89543 11 7 10.1046 7 9C7 7.89543 7.89543 7 9 7C10.1046 7 11 7.89543 11 9Z"
-                              stroke="white"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        </span>
-                        <span className="inline-block bg-first-600 px-2 text-white rounded-xs leading-4.5  text-xs items-center ">
-                          {product.discount}
-                        </span>
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-gray-500 line-through">
-                          <PriceDisplay
-                            amount={product.originalPrice}
-                            currency={currency}
-                            currencyMode="none"
-                            languageCode={lang}
-                          />
-                        </span>
-                        <span className="text-secound font-bold">
+                  <div className="mt-10 flex flex-wrap items-end justify-between gap-6">
+                    <div>
+                      <span className="block text-lg text-gray-400 line-through">
+                        <PriceDisplay
+                          amount={product.originalPrice || 0}
+                          currency={currency}
+                          currencyMode="none"
+                          languageCode={lang}
+                        />
+                      </span>
+
+                      <div className="mt-2 flex items-center gap-4">
+                        <span className="text-4xl md:text-5xl font-black tracking-tight text-[#111827] dark:text-white">
                           <PriceDisplay
                             amount={product.price}
                             currency={currency}
@@ -190,27 +144,55 @@ const DiscountedProducts = ({ discountedProduct }: Props) => {
                             languageCode={lang}
                           />
                         </span>
+
+                        <div className="rounded-full bg-red-500 px-4 py-2 text-sm font-black text-white shadow-lg shadow-red-500/20">
+                          SAVE
+                        </div>
                       </div>
                     </div>
-                    <div className="flex  w-24/48 ">
-                      <Link
-                        to={`/products/${product.slug}`}
-                        className="text-white text-base w-full"
+
+                    {/* button */}
+                    <Link to={`/products/${product.slug}`} className="w-full sm:w-auto">
+                      <Button
+                        className="
+                h-16
+                px-10
+                rounded-2xl
+                bg-[#111827]
+                hover:bg-black
+                dark:bg-white
+                dark:hover:bg-gray-200
+                text-white
+                dark:text-black
+                text-base
+                font-bold
+                transition-all
+                duration-300
+                hover:scale-[1.03]
+                shadow-xl
+              "
                       >
-                        <Button className={'w-full bg-first  text-white'}>
-                          <span className="text-white">
-                            {t('mainpage.discount.buyThisProduct')}
-                          </span>
-                        </Button>
-                      </Link>
-                    </div>
+                        <span className="flex items-center gap-3">
+                          {t('mainpage.discount.buy')}
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path
+                              d="M5 12H19M19 12L12 5M19 12L12 19"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </span>
+                      </Button>
+                    </Link>
                   </div>
                 </div>
-              </div>{' '}
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </div>
+              </div>
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
     </div>
   );
 };

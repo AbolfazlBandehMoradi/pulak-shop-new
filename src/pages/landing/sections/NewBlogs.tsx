@@ -53,7 +53,9 @@ const NewBlogs = ({ blogs }: Props) => {
               to="/blogs"
               className="button-with-icon-on-secound-layout   text-sm flex items-center h-14 px-4 rounded-2xl gap-2"
             >
-              <span className="button-with-icon-on-secound-layout__span">{t('mainpage.blogs.more')}</span>
+              <span className="button-with-icon-on-secound-layout__span">
+                {t('mainpage.blogs.more')}
+              </span>
               <span className="button-with-icon-on-secound-layout__svg h-8 flex justify-center items-center rounded-full w-8">
                 <svg
                   width="24"
@@ -80,7 +82,7 @@ const NewBlogs = ({ blogs }: Props) => {
         <div className="lg:w-30/48 xl:w-21/48 w-full bg-color-for-layer-on-body p-4 pb-0 rounded-2xl ">
           {/* big card */}
           {blogs?.length && (
-            <Link to={`/blogs/${blogs[blogs.length - 1]?.title}`} className="">
+            <Link to={`/blogs/${blogs[blogs.length - 1]?.slug}`} className="">
               <div className=" w-full  rounded-xl overflow-hidden">
                 <img
                   className="w-full h-52 sm:h-auto object-cover"
@@ -127,7 +129,7 @@ const NewBlogs = ({ blogs }: Props) => {
                       </span>
                       <div className="h-8 w-8 rounded-full flex justify-center items-center ">
                         <span className="first-text-color-svg">
-                         <Clock />
+                          <Clock />
                         </span>
                       </div>
                     </div>
@@ -143,7 +145,7 @@ const NewBlogs = ({ blogs }: Props) => {
             blogs?.map((blog) => (
               <Link
                 key={blog.id}
-                to={`/blogs/${blog?.title}`}
+                to={`/blogs/${blog?.slug}`}
                 className="w-full bg-color-for-layer-on-body rounded-2xl lg:first:mt-0 mt-3 p-4 flex flex-col sm:flex-row justify-between gap-3"
               >
                 <div className="w-full sm:w-15/48">
