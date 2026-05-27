@@ -7,12 +7,18 @@ import cleanText from '@/utils/cleanText';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { useLangStore } from '@/stores/languageStore';
 import { useTranslation } from 'react-i18next';
+import { useRef, useState } from 'react';
+import type { Swiper as SwiperType } from 'swiper';
 
 interface Props {
   showcase?: Showcase;
 }
 
 const ProductsSliderTwo = ({ showcase }: Props) => {
+  const prevRef = useRef<HTMLDivElement>(null);
+  const nextRef = useRef<HTMLDivElement>(null);
+  const [isBeginning, setIsBeginning] = useState(true);
+  const [isEnd, setIsEnd] = useState(false);
   const lang = useLangStore((s) => s.lang);
   const currency = lang === 'fa' ? 'IRT' : 'USD';
   const { t } = useTranslation();
@@ -22,29 +28,12 @@ const ProductsSliderTwo = ({ showcase }: Props) => {
       <div className="flex flex-wrap items-center justify-between">
         <div className="flex w-full flex-wrap items-center justify-between  lg:w-11/24  ">
           <div className="flex w-full items-center gap-2">
-            <div className="first-text-color-svg  inline-block rounded-lg bg-color-for-layer-on-body p-2 ">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M12 20C12 20 21 16 21 9.71405C21 6 18.9648 4 16.4543 4C15.2487 4 14.0925 4.49666 13.24 5.38071L12.7198 5.92016C12.3266 6.32798 11.6734 6.32798 11.2802 5.92016L10.76 5.38071C9.90749 4.49666 8.75128 4 7.54569 4C5 4 3 6 3 9.71405C3 16 12 20 12 20Z"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
             <div>
               <h2 className="font-s-sbold first-text-color text-xl">
                 {t('mainpage.featured.titlePrefix') && (
                   <span>{t('mainpage.featured.titlePrefix')} </span>
                 )}
-                <span className="text-first me-3 inline-block">
+                <span className="text-first me-1 inline-block">
                   {t('mainpage.featured.titleAccent')}
                 </span>
                 {t('mainpage.featured.titleSuffix')}
@@ -80,47 +69,6 @@ const ProductsSliderTwo = ({ showcase }: Props) => {
               </span>
             </Link>
           </div>
-          <div className="flex justify-end ">
-            <div
-              className="swiper-button-next_product-slider
-             w-8 h-8
-             lg:w-14 lg:h-14
-              cursor-pointer flex justify-center items-center
-             bg-secound 
-            rounded-sm rounded-e-none
-            lg:rounded-xl lg:rounded-e-none
-              "
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                className="h-8 w-8 text-white"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 6l6 6-6 6" />
-              </svg>
-            </div>
-            <div
-              className="swiper-button-prev_product-slider
-            cursor-pointer flex justify-center items-center
-             w-8 h-8
-             lg:w-14 lg:h-14
-            rounded-sm rounded-s-none
-            lg:rounded-xl lg:rounded-s-none
-             bg-secound"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                className="h-8 w-8 text-white"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 18l-6-6 6-6" />
-              </svg>
-            </div>
-          </div>
         </div>
       </div>
       <div className="w-full  mt-4">
@@ -154,17 +102,74 @@ const ProductsSliderTwo = ({ showcase }: Props) => {
               <p className="text-sm/6 first-text-color-for-paragraph-const  mb-2 lg:mb-0 mt-2">
                 {showcase?.translation.description}
               </p>
+              <div className="flex justify-center mt-4 gap-2 ">
+                <div
+                  ref={prevRef}
+                  className={`swiper-button-prev_product-sliderflex justify-center flex sm:w-8 sm:h-8 w-10 h-10 items-center rounded bg-white  ${
+                    isBeginning ? 'opacity-50 ' : 'cursor-pointer'
+                  }`}
+                >
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 17L15 12L10 7"
+                      stroke="#1b7efb"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+                <div
+                  ref={nextRef}
+                  className={`swiper-button-next_product-slider flex justify-center sm:w-8 sm:h-8 w-10 h-10 items-center rounded bg-white ${
+                    isEnd ? 'opacity-50 cursor-pointer' : 'cursor-pointer'
+                  }`}
+                >
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M14 7L9 12L14 17"
+                      stroke="#1b7efb"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+              </div>
             </div>
           </div>
           <div className=" w-full xl:w-38/48 lg:w-32/48 lg:px-4 lg:pe-0 mx-auto relative">
             <Swiper
               slidesPerView={1}
               spaceBetween={24}
-              loop={true}
               modules={[Navigation]}
-              navigation={{
-                prevEl: '.swiper-button-prev_product-slider',
-                nextEl: '.swiper-button-next_product-slider',
+              navigation={false} // ابتدا false
+              onSwiper={(swiper: SwiperType) => {
+                if (prevRef.current && nextRef.current) {
+                  swiper.params.navigation = {
+                    prevEl: prevRef.current,
+                    nextEl: nextRef.current,
+                    disabledClass: 'opacity-30 cursor-not-allowed pointer-events-none',
+                  };
+                  swiper.navigation.init();
+                  swiper.navigation.update();
+                }
+              }}
+              onSlideChange={(swiper) => {
+                setIsBeginning(swiper.isBeginning);
+                setIsEnd(swiper.isEnd);
               }}
               breakpoints={{
                 640: {

@@ -47,12 +47,12 @@ const WhyUs = () => {
       </header>
 
       {/* Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 items-center">
-        <div className="space-y-6 order-2 lg:order-1">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 items-stretch auto-rows-fr">
+        <div className="flex flex-col justify-between order-2 lg:order-1">
           {features.slice(0, 2).map((item) => (
             <article
               key={item.titleKey}
-              className="bg-color-for-layer-on-body p-5 sm:p-6 rounded-2xl h-full"
+              className="bg-color-for-layer-on-body p-5 sm:p-6 rounded-2xl "
             >
               <span
                 className={`flex w-full text-2xl mb-2 ${lang === 'fa' ? ' ' : 'flex-row-reverse'}`}
@@ -62,7 +62,7 @@ const WhyUs = () => {
               </span>
 
               <h3
-                className={`text-lg font-bold first-text-color mb-2 ${
+                className={`text-lg font-bold mb-2 first-text-color ${
                   lang === 'fa' ? 'text-right' : 'text-left'
                 }`}
               >
@@ -81,8 +81,8 @@ const WhyUs = () => {
         </div>
 
         {/* Image */}
-        <figure className="order-1 lg:order-2 flex justify-center">
-          <div className="rounded-xl overflow-hidden shadow-lg w-full max-w-[32rem] lg:max-w-none">
+        <figure className="order-1 lg:order-2 flex justify-center h-full">
+          <div className="rounded-xl h-96 overflow-hidden ">
             <img
               src={PlusImage}
               alt={t('mainpage.whyUs.imageAlt')}
@@ -93,11 +93,11 @@ const WhyUs = () => {
         </figure>
 
         {/* Right Features */}
-        <div className="space-y-6 order-3">
+        <div className="  flex flex-col justify-between order-3">
           {features.slice(2).map((item) => (
             <article
               key={item.titleKey}
-              className="bg-color-for-layer-on-body p-5 sm:p-6 rounded-2xl h-full"
+              className="bg-color-for-layer-on-body p-5 sm:p-6 rounded-2xl "
             >
               <span
                 className={`flex w-full text-2xl mb-2 ${lang === 'fa' ? ' ' : 'flex-row-reverse'}`}

@@ -46,6 +46,8 @@
   "discount": {
     "remainingTime": "Time left",
     "buy": "Buy",
+    "save": "Save",
+    "limitedOffer": "Limited Offer",
     "buyThisProduct": "Buy this product"
   },
   "bestProducts": {

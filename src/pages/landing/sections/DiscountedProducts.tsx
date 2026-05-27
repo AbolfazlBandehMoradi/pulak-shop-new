@@ -39,7 +39,7 @@ const DiscountedProducts = ({ discountedProduct }: Props) => {
   }, []);
 
   return (
-    <div className="w-full items-stretch rounded-3xl bg-color-for-layer-on-body border border-gray-100 dark:border-gray-900k  flex  ">
+    <div className="w-full items-stretch h-full  rounded-3xl  border border-gray-100 dark:border-gray-900  flex  ">
       <Swiper
         ref={mainSwiper}
         loop={true}
@@ -57,23 +57,23 @@ const DiscountedProducts = ({ discountedProduct }: Props) => {
         }}
       >
         {discountedProduct.map((product) => (
-          <SwiperSlide className="h-full " key={product.id}>
+          <SwiperSlide className="h-full  " key={product.id}>
             <div className="group relative h-full  overflow-hidden ">
               <div className="grid  grid-cols-1 lg:grid-cols-2 h-full">
                 <div className="relative  flex items-center justify-center    overflow-hidden">
                   <span className="bg-color-for-layer-sec opacity-50 absolute rounded-2xl inset-0"></span>
-                  <div className="absolute w-80 h-80 rounded-full border-4 border-red-500/10" />
-                  <div className="absolute w-70 h-70 rounded-full bg-red-500/5 blur-3xl" />
+                  <div className="absolute w-40 h-40 lg:w-80 lg:h-80 rounded-full border-4 border-red-500/10" />
+                  <div className="absolute w-35 h-35 lg:w-70 lg:h-70 rounded-full bg-red-500/5 blur-3xl" />
                   <div className="absolute top-0  left-0 z-20">
                     <div
-                      className=" h-32 w-16  bg-red-500 shadow-2xl flex items-center  "
+                      className=" h-24 w-14  bg-red-500 shadow-2xl flex items-center  "
                       style={{
                         clipPath: 'polygon(0 0, 100% 0, 100% 78%, 50% 100%, 0 78%)',
                       }}
                     >
                       <span className="flex flex-col justify-center items-center w-full">
-                        <span className="text-white text-3xl font-black">{product.discount}</span>
-                        <span className="text-white  font-bold">OFF</span>
+                        <span className="text-white text-xl font-s-bold">{product.discount}</span>
+                        <span className="text-white  font-bold">%</span>
                       </span>
                     </div>
                   </div>
@@ -92,18 +92,19 @@ const DiscountedProducts = ({ discountedProduct }: Props) => {
                     alt={product.name}
                   />
                 </div>
-                <div className="flex  flex-col justify-between p-4 md:p-8">
+                <div className="flex  flex-col justify-between p-2 md:p-4">
                   <div>
                     <div className="inline-flex items-center gap-2 rounded-full border border-red-500/20 bg-red-500/5 px-4 py-2">
                       <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
                       <span className="text-xs font-bold uppercase tracking-[0.25em] text-red-500">
-                        Limited Offer
+                        {t('mainpage.discount.limitedOffer')}
                       </span>
                     </div>
-                    <h2 className="">{product.name}</h2>
-
+                    <h2 className="font-s-medium  text-3xl mt-2 mb-1 first-text-color  ">
+                      {product.name}
+                    </h2>
                     {/* desc */}
-                    <p className="mt-6 text-sm md:text-base leading-8 text-gray-500 dark:text-gray-400 line-clamp-5">
+                    <p className="font-f-light text-lg first-text-color-for-paragraph mt-2 ">
                       {product.description}
                     </p>
 
@@ -124,19 +125,19 @@ const DiscountedProducts = ({ discountedProduct }: Props) => {
                       </div>
                     )}
                   </div>
-                  <div className="mt-10 flex flex-wrap items-end justify-between gap-6">
-                    <div>
-                      <span className="block text-lg text-gray-400 line-through">
+                  <div className="mt-8 flex flex-wrap items-end justify-between gap-6">
+                    <div className="">
+                      <span className=" text-lg inline-block relative   text-gray-400 ">
                         <PriceDisplay
                           amount={product.originalPrice || 0}
                           currency={currency}
                           currencyMode="none"
                           languageCode={lang}
                         />
+                        <span className="bg-color-for-red absolute h-0.5 opacity-30 rotate-15 top-2 left-0 right-0"></span>
                       </span>
-
-                      <div className="mt-2 flex items-center gap-4">
-                        <span className="text-4xl md:text-5xl font-black tracking-tight text-[#111827] dark:text-white">
+                      <div className="mt-2 flex items-center gap-2">
+                        <span className="text-4xl md:text-2xl font-black tracking-tight text-[#111827] dark:text-white">
                           <PriceDisplay
                             amount={product.price}
                             currency={currency}
@@ -144,46 +145,25 @@ const DiscountedProducts = ({ discountedProduct }: Props) => {
                             languageCode={lang}
                           />
                         </span>
-
-                        <div className="rounded-full bg-red-500 px-4 py-2 text-sm font-black text-white shadow-lg shadow-red-500/20">
-                          SAVE
-                        </div>
+                        <div className="text-sm text-red-600">{t('mainpage.discount.save')}</div>
                       </div>
                     </div>
 
                     {/* button */}
                     <Link to={`/products/${product.slug}`} className="w-full sm:w-auto">
-                      <Button
-                        className="
-                h-16
-                px-10
-                rounded-2xl
-                bg-[#111827]
-                hover:bg-black
-                dark:bg-white
-                dark:hover:bg-gray-200
-                text-white
-                dark:text-black
-                text-base
-                font-bold
-                transition-all
-                duration-300
-                hover:scale-[1.03]
-                shadow-xl
-              "
-                      >
-                        <span className="flex items-center gap-3">
-                          {t('mainpage.discount.buy')}
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <Button className="bg-first  flex text-lg justify-between text-center overflow-hidden px-8 py-2 gap-2 rounded-md text-white group">
+                        {t('mainpage.discount.buy')}
+                        <div className="flex rotate-180">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                             <path
                               d="M5 12H19M19 12L12 5M19 12L12 19"
                               stroke="currentColor"
-                              strokeWidth="2"
+                              strokeWidth="1.5"
                               strokeLinecap="round"
                               strokeLinejoin="round"
                             />
                           </svg>
-                        </span>
+                        </div>
                       </Button>
                     </Link>
                   </div>

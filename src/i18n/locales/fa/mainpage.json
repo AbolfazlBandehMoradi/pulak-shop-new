@@ -45,7 +45,9 @@
   },
   "discount": {
     "remainingTime": "فرصت باقی مانده",
+    "limitedOffer": "پیشنهاد محدود",
     "buy": "خرید",
+    "save": "سود شما",
     "buyThisProduct": "خرید این محصول"
   },
   "bestProducts": {
