@@ -1,7 +1,7 @@
 .first-slider__thumb-slider {
   position: absolute !important;
   bottom: -0px !important;
-  right: 16px !important;
+  right: 0px !important;
   border-radius: 24px 0px 0px 0px !important;
   padding: 16px !important;
   background-color: var(--bg-color-for-layer-sec) !important;

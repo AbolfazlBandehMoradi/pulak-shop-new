@@ -1,38 +1,38 @@
 {
   "title": "Frequently Asked Questions",
-  "subtitle": "Answers to common questions about the company's products and services",
+  "subtitle": "Answers to common questions about products",
   "items": [
     {
-      "question": "Do your products have official Ministry of Health approvals?",
-      "answer": "Yes, all products produced by the company have the necessary approvals from the Ministry of Health, Treatment, and Medical Education, and are manufactured according to national and international standards."
+      "question": "How can I track my order?",
+      "answer": "After placing your order, a tracking code will be sent to you via email or SMS, and you can view the status in the 'Order Tracking' section."
     },
     {
-      "question": "How are sterile products manufactured?",
-      "answer": "According to Food and Drug regulations and international standards, operating room packs must be produced in a Class C cleanroom, which is currently how production is carried out in the facility."
+      "question": "What payment methods are available in the store?",
+      "answer": "You can choose online payment with bank cards, cash on delivery, or use the internal wallet of the website."
     },
     {
-      "question": "How is the sterilization process performed?",
-      "answer": "The sterilization process is carried out using ethylene oxide gas under the strict supervision of the quality control unit."
+      "question": "How are shipping costs and delivery time calculated?",
+      "answer": "Shipping costs are determined based on product weight and destination, and delivery time varies between 2 to 7 business days."
     },
     {
-      "question": "Is it possible to place bulk orders for medical centers?",
-      "answer": "Yes, bulk orders and long-term collaboration with hospitals, clinics, pharmacies, and other medical centers are available."
+      "question": "Is it possible to return or exchange a product?",
+      "answer": "For some products, return or exchange is possible within 7 days after receiving the item in case of issues or dissatisfaction, but some products are excluded due to hygiene conditions or their specific nature."
     },
     {
-      "question": "Are products quality-checked before market release?",
-      "answer": "Due to ISO 13485 certification, all products undergo quality, safety, and performance tests before being released to the market."
+      "question": "How can I use discounts and coupons?",
+      "answer": "Enter your discount code at the checkout stage to have the amount deducted from your order."
     },
     {
-      "question": "What are the features of the company's mouth freshener spray?",
-      "answer": "The mouth freshener spray is produced with a safe and approved formulation that provides a long-lasting sense of freshness without harming oral tissues."
+      "question": "Do the products come with a warranty?",
+      "answer": "Yes, most products come with an official manufacturer warranty, and detailed information is provided on the product page."
     },
     {
-      "question": "Does the mouth freshener spray have health approvals?",
-      "answer": "Yes, this product is manufactured according to the regulations of the Food and Drug Organization and has the necessary health approvals."
+      "question": "How can I manage my user account?",
+      "answer": "By logging into your account, you can manage your addresses, orders, favorites, and personal information."
     },
     {
-      "question": "How can one apply for sales representation or partnership?",
-      "answer": "To obtain sales representation or start a business collaboration, please contact the company's sales unit through the 'Contact Us' section."
+      "question": "Is wholesale or special ordering available?",
+      "answer": "For wholesale purchases or special orders, please contact the store support to receive special conditions."
     }
   ]
 }
