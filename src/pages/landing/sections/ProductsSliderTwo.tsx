@@ -26,52 +26,44 @@ const ProductsSliderTwo = ({ showcase }: Props) => {
   return (
     <section className="product-slider relative sm:container mx-auto mt-8 lg:mt-16 px-4 ">
       <div className="flex flex-wrap items-center justify-between">
-        <div className="flex w-full flex-wrap items-center justify-between  lg:w-11/24  ">
-          <div className="flex w-full items-center gap-2">
-            <div>
-              <h2 className="font-s-sbold first-text-color text-xl">
-                {t('mainpage.featured.titlePrefix') && (
-                  <span>{t('mainpage.featured.titlePrefix')} </span>
-                )}
-                <span className="text-first me-1 inline-block">
-                  {t('mainpage.featured.titleAccent')}
-                </span>
-                {t('mainpage.featured.titleSuffix')}
-              </h2>
-            </div>
-          </div>
+        <div>
+          <h2 className="font-s-sbold first-text-color text-xl">
+            {t('mainpage.featured.titlePrefix') && (
+              <span>{t('mainpage.featured.titlePrefix')} </span>
+            )}
+            <span className="text-first me-1 inline-block">
+              {t('mainpage.featured.titleAccent')}
+            </span>
+            {t('mainpage.featured.titleSuffix')}
+          </h2>
         </div>
-        <div className="flex items-center justify-between lg:justify-end mt-4 lg:mt-0 w-full  lg:w-12/24 lg:gap-3 ">
-          <div className="flex  items-center lg:justify-end ">
-            <Link
-              to={`/products`}
-              className="button-with-icon-on-secound-layout   text-sm flex items-center h-14 px-4 rounded-2xl gap-2"
+        <Link
+          to={`/products`}
+          className="button-with-icon-on-secound-layout   text-sm flex items-center h-14 px-4 rounded-2xl gap-2"
+        >
+          <span className="button-with-icon-on-secound-layout__span">
+            {t('mainpage.featured.more')}
+          </span>
+          <span className="button-with-icon-on-secound-layout__svg h-8 flex justify-center items-center rounded-full w-8">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <span className="button-with-icon-on-secound-layout__span">
-                {t('mainpage.featured.more')}
-              </span>
-              <span className="button-with-icon-on-secound-layout__svg h-8 flex justify-center items-center rounded-full w-8">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M14 7L9 12L14 17"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </span>
-            </Link>
-          </div>
-        </div>
+              <path
+                d="M14 7L9 12L14 17"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </span>
+        </Link>
       </div>
-      <div className="w-full  mt-4">
+      <div className="w-full mt-4">
         <div className=" flex justify-between flex-wrap overflow-hidden">
           <div className="w-full lg:w-16/48 xl:w-10/48 rounded-xl rounded-b-none lg:rounded-xl relative  bg-linear-to-bl from-first-100 to-first-200  flex flex-col justify-center">
             <div className=" w-full flex flex-col justify-center   p-8 h-full rounded-xl mt-0 ">

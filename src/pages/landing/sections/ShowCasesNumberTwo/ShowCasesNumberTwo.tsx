@@ -23,7 +23,7 @@ const ShowCasesNumberTwo = ({ showCase }: Props) => {
   const nextRef = useRef<HTMLDivElement>(null);
   const [, setIsBeginning] = useState(true);
   const [, setIsEnd] = useState(false);
-  const {ref, isVisible} = useInView<HTMLDivElement>()
+  const { ref, isVisible } = useInView<HTMLDivElement>();
 
   const handleLinkHover = (isHovering: boolean | null, id: number) => {
     setHoveredId(isHovering ? id : null);
@@ -49,7 +49,7 @@ const ShowCasesNumberTwo = ({ showCase }: Props) => {
               lang === 'fa' ? ' ' : 'flex flex-row-reverse'
             }`}
           >
-            <h2 className="font-s-sbold gap-1 flex first-text-color text-2xl">
+            <h2 className="font-s-sbold first-text-color text-xl">
               <span>{showCase?.translation.title}</span>
             </h2>
           </div>
@@ -98,9 +98,72 @@ const ShowCasesNumberTwo = ({ showCase }: Props) => {
           </div>
         </div>
       </header>
-      <div className="w-full mt-4 rounded-4xl p-4 lg:p-6 bg-linear-to-br from-first-50 via-white to-secound-50 border border-first-100/80 shadow-[0_16px_36px_-30px_rgba(27,126,251,0.5)]">
-        <div className="flex flex-wrap">
-          <div className="w-full  mx-auto rounded-r-none rounded-4xl relative">
+      <div className="w-full  mt-4">
+        <div ref={ref} className="flex justify-between flex-wrap overflow-hidden">
+          <div className="  w-full lg:w-16/48  xl:w-10/48 p-4  rounded-b-none lg:rounded-xl rounded-xl relative border-first  bg-first flex flex-col justify-center ">
+            <div className="absolute inset-0 z-1">
+              <svg
+                width="539"
+                height="809"
+                viewBox="0 0 539 809"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g filter="url(#filter0_f_4791_605)">
+                  <path
+                    d="M588 -65H554.215L35 932H211.665L588 -65Z"
+                    fill="white"
+                    fillOpacity="0.4"
+                  />
+                </g>
+                <defs>
+                  <filter
+                    id="filter0_f_4791_605"
+                    x="-65"
+                    y="-165"
+                    width="753"
+                    height="1197"
+                    filterUnits="userSpaceOnUse"
+                    colorInterpolationFilters="sRGB"
+                  >
+                    <feFlood floodOpacity="0" result="BackgroundImageFix" />
+                    <feBlend
+                      mode="normal"
+                      in="SourceGraphic"
+                      in2="BackgroundImageFix"
+                      result="shape"
+                    />
+                    <feGaussianBlur stdDeviation="50" result="effect1_foregroundBlur_4791_605" />
+                  </filter>
+                </defs>
+              </svg>
+            </div>
+            <div className="relative w-full h-full overflow-hidden rounded-lg rounded-b-none lg:rounded-lg  bg-white/10 backdrop-blur-xs border border-white/30 text-white flex flex-col items-center justify-center">
+              <div className="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] rounded-full blur-[60px] bg-gradient-to-br from-first-500/80 to-first-500/40 animate-float1" />
+              <div className="absolute bottom-[-20%] right-[-10%] w-[45vw] h-[45vw] rounded-full blur-[60px] bg-gradient-to-br from-first-700/80 to-first-400/40 animate-float2" />
+              <div className="absolute top-[60%] left-[20%] w-[30vw] h-[30vw] rounded-full blur-[60px] bg-gradient-to-br from-first-500/50 to-first-300/30 animate-float3" />
+              <div className="absolute inset-0 opacity-5 z-10 noise-overlay" />
+              <div className="relative z-20 text-center max-w-xl px-4">
+                <div className=" w-full flex flex-col  justify-center ">
+                  <div className=" h-32 w-full">
+                    <p className="text-sm/6  text-white text-start w-full  mb-2 lg:mb-0 mt-2">
+                      <Typewriter
+                        text={cleanText(showCase?.translation.description || '')}
+                        loop={0}
+                        cursor
+                        cursorStyle="|"
+                        typeSpeed={70}
+                        delaySpeed={2000}
+                        start={isVisible}
+                      />
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div id="particles-container" className="absolute inset-0 z-10 pointer-events-none" />
+            </div>
+          </div>
+          <div className=" w-full xl:w-38/48 lg:w-32/48 lg:px-4 lg:pe-0 mx-auto relative">
             <Swiper
               slidesPerView={1}
               spaceBetween={24}
@@ -149,9 +212,6 @@ const ShowCasesNumberTwo = ({ showCase }: Props) => {
             </Swiper>
           </div>
         </div>
-      </div>
-      <div ref={ref} className="w-full drop-shadow-2xl bg-white/90 p-6 rounded-2xl my-5">
-        <Typewriter start={isVisible}  text={cleanText(showCase?.translation.description || '')} />
       </div>
     </section>
   );

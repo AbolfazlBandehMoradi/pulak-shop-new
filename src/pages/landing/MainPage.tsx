@@ -83,7 +83,9 @@ const MainPage = () => {
       <NewBlogs blogs={index?.blogs ?? []} />
       <ProductsSliderTwo showcase={showcases && showcases[1]} />
       <Banner banners={bannerGalleries} />
-      <WhyUs />
+      <div className="hidden">
+        <WhyUs />
+      </div>
       <ShowCasesNumberTwo showCase={showcases && showcases[2]} />
     </main>
   );
