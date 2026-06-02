@@ -33,7 +33,9 @@ const Cart = () => {
               {cart && cart.items.length > 0 && (
                 <p className="  first-text-color   flex items-center gap-1 mt-1">
                   <Package className="h-4 w-4" />
-                  <span>{cart.items.length} {t('cart.shipment') || 'shipment'}</span>
+                  <span>
+                    {cart.items.length} {t('cart.shipment') || 'shipment'}
+                  </span>
                 </p>
               )}
             </div>
@@ -60,10 +62,10 @@ const Cart = () => {
             <div className="p-6 bg-linear-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 rounded-full mb-2">
               <ShoppingCart className="h-24 w-24 text-gray-400 dark:text-gray-600" />
             </div>
-            <h2 className="text-2xl font-bold mb-2">
+            <h2 className="text-2xl first-text-color-for-paragraph font-s-bold mb-2">
               {t('cart.emptyCart') || 'Your cart is empty'}
             </h2>
-            <p className="text-muted-foreground mb-6 max-w-md">
+            <p className="font-f-light mb-6 first-text-color-for-paragraph max-w-md">
               {t('cart.emptyCartMessage') || 'Add some products to your cart to get started.'}
             </p>
             <Button
@@ -124,7 +126,9 @@ const Cart = () => {
           style={{ bottom: 'calc(env(safe-area-inset-bottom) + 5.8rem)' }}
         >
           <div className="rounded-2xl border border-first/15 bg-color-for-layer-on-body p-3 shadow-dark-sm backdrop-blur-xl">
-            <div className={`mb-3 flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <div
+              className={`mb-3 flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}
+            >
               <span className="text-xs first-text-color-for-paragraph">
                 {t('cart.cartTotal') || 'Cart Total'}
               </span>
