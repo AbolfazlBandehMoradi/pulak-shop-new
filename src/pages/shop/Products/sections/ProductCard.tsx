@@ -256,7 +256,7 @@ export default function ProductCard({ product, lang, getImageUrl }: ProductCardP
               lang === 'fa' ? 'text-right' : 'text-left'
             }`}
           >
-            {cleanText(product?.translations?.desc)}
+            {cleanText(translation?.description ?? '')}
           </p>
           <div className="flex flex-col justify-end">
             {typeof originalPrice === 'number' && originalPrice > currentPrice && (
