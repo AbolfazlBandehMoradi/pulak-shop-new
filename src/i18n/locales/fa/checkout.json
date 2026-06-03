@@ -1,6 +1,7 @@
 {
   "title": "تسویه حساب",
   "address": "آدرس",
+  "addressRequired": "آدرس الزامی می باشد",
   "deliveryAddress": "آدرس تحویل",
   "backToCart": "بازگشت به سبد",
   "required": "ضروری",

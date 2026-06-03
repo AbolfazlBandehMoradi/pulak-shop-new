@@ -1,5 +1,14 @@
 import { motion } from 'framer-motion';
-import { CheckCircle2, Edit2, MapPin, MapPinHouseIcon, MapPinPlus, MoreVertical, Sparkles, Trash2 } from 'lucide-react';
+import {
+  CheckCircle2,
+  Edit2,
+  MapPin,
+  MapPinHouseIcon,
+  MapPinPlus,
+  MoreVertical,
+  Sparkles,
+  Trash2,
+} from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -201,7 +210,9 @@ export function CheckoutAddressList({
                   {address.streetAddress2 && (
                     <span className="flex flex-wrap gap-1 text-sm w-full">
                       <span className="font-f-bold">{t('checkout.streetAddress2')}</span>
-                      <span className="first-text-color-for-paragraph">: {address.streetAddress2}</span>
+                      <span className="first-text-color-for-paragraph">
+                        : {address.streetAddress2}
+                      </span>
                     </span>
                   )}
 
@@ -209,7 +220,9 @@ export function CheckoutAddressList({
                     <span className="flex">
                       {(address.firstName || address.lastName) && (
                         <div className="flex w-full text-sm gap-1">
-                          <span className="font-f-bold first-text-color">{t('checkout.receiver')}</span>
+                          <span className="font-f-bold first-text-color">
+                            {t('checkout.receiver')}
+                          </span>
                           :
                           <span className="first-text-color-for-paragraph">
                             {[address.firstName, address.lastName].filter(Boolean).join(' ') || '-'}
@@ -221,7 +234,9 @@ export function CheckoutAddressList({
                     <span className="flex">
                       {address.phoneNumber && (
                         <div className="flex w-full text-sm gap-1">
-                          <span className="font-f-bold first-text-color">{t('checkout.phoneNumber')}</span>
+                          <span className="font-f-bold first-text-color">
+                            {t('checkout.phoneNumber')}
+                          </span>
                           :
                           <span className="first-text-color-for-paragraph" dir="ltr">
                             {address.phoneNumber}
@@ -233,7 +248,9 @@ export function CheckoutAddressList({
                     <span className="flex">
                       {address.postalCode && (
                         <div className="flex w-full text-sm gap-1">
-                          <span className="font-f-bold first-text-color">{t('checkout.postalCode')}</span>
+                          <span className="font-f-bold first-text-color">
+                            {t('checkout.postalCode')}
+                          </span>
                           :
                           <span className="first-text-color-for-paragraph" dir="ltr">
                             {address.postalCode}

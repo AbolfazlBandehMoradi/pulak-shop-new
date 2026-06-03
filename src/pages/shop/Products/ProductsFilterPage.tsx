@@ -346,7 +346,7 @@ export default function ProductsFilterPage() {
             </div>
           ) : (
             <div className="rounded-xl border border-first-100/70 bg-color-for-layer-on-body p-8 text-center first-text-color-for-paragraph">
-              {t('shop.noProducts')}
+              {t('product.noProducts')}
             </div>
           )}
 

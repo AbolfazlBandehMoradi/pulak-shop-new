@@ -178,7 +178,7 @@ export function CheckoutAddressForm({
         </div>
       </div>
 
-      <div className="pt-2 border-t">
+      <div className="pt-2 ">
         <button
           type="button"
           onClick={onToggleOptionalFields}
@@ -191,7 +191,10 @@ export function CheckoutAddressForm({
             </span>
           </div>
 
-          <motion.div animate={{ rotate: showOptionalFields ? 180 : 0 }} transition={{ duration: 0.25 }}>
+          <motion.div
+            animate={{ rotate: showOptionalFields ? 180 : 0 }}
+            transition={{ duration: 0.25 }}
+          >
             <ChevronDown className="h-4 w-4 first-text-color-for-paragraph-low" />
           </motion.div>
         </button>
@@ -212,7 +215,9 @@ export function CheckoutAddressForm({
                   </label>
                   <Input
                     {...register('title')}
-                    placeholder={t('checkout.addressTitlePlaceholder') || 'e.g., Home, Work, Office'}
+                    placeholder={
+                      t('checkout.addressTitlePlaceholder') || 'e.g., Home, Work, Office'
+                    }
                   />
                 </div>
 
@@ -281,7 +286,9 @@ export function CheckoutAddressForm({
                   </label>
                   <Input
                     {...register('streetAddress2')}
-                    placeholder={t('checkout.streetAddress2Placeholder') || 'Apartment, suite, etc.'}
+                    placeholder={
+                      t('checkout.streetAddress2Placeholder') || 'Apartment, suite, etc.'
+                    }
                   />
                 </div>
               </div>
