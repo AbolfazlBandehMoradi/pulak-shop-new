@@ -376,50 +376,146 @@ export default function PaymentPage() {
               animate={{ opacity: 1, y: 0 }}
               className="bg-color-for-layer-on-body rounded-lg p-4 "
             >
-              <div className="flex items-start gap-4">
-                <div className="flex-1">
-                  {paymentMethod === 'online' && (
-                    <>
-                      {gatewaysLoading ? (
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-3">
-                          {[1, 2, 3].map((i) => (
-                            <Skeleton key={i} className="h-14 rounded-lg" />
-                          ))}
+              <div className="space-y-3">
+                <div
+                  className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                    paymentMethod === 'online'
+                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                      : 'border-gray-200 dark:border-gray-700 hover:border-blue-300'
+                  }`}
+                  onClick={() => setPaymentMethod('online')}
+                >
+                  <div className="flex items-start gap-4">
+                    <div
+                      className={`mt-1 ${paymentMethod === 'online' ? 'text-blue-500' : 'text-gray-400'}`}
+                    >
+                      <div
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                          paymentMethod === 'online'
+                            ? 'border-blue-500 bg-blue-500'
+                            : 'border-gray-300 dark:border-gray-600'
+                        }`}
+                      >
+                        {paymentMethod === 'online' && (
+                          <div className="w-3 h-3 rounded-full bg-white"></div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <CreditCard
+                          className={`h-5 w-5 ${paymentMethod === 'online' ? 'text-blue-500' : 'text-gray-400'}`}
+                        />
+                        <h3 className="font-semibold">
+                          {t('payment.onlinePayment') || 'Online Payment'}
+                        </h3>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        {t('payment.onlinePaymentDescription') ||
+                          'Online payment with all bank cards'}
+                      </p>
+                      {paymentMethod === 'online' && (
+                        <>
+                          <div className="flex items-start gap-2 mt-3 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+                            <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                            <p className="text-xs text-blue-800 dark:text-blue-200">
+                              {t('payment.onlinePaymentInfo') ||
+                                'According to Central Bank regulations, the payment gateway limit is 195 million Tomans. Therefore, by paying this amount first, your order will be finalized and reserved, and the remainder can be paid in a separate transaction.'}
+                            </p>
+                          </div>
+                          {gatewaysLoading ? (
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-3">
+                              {[1, 2, 3].map((i) => (
+                                <Skeleton key={i} className="h-14 rounded-lg" />
+                              ))}
+                            </div>
+                          ) : gateways.length > 0 ? (
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-3">
+                              {gateways.map((g) => (
+                                <button
+                                  key={g.id}
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedGatewayId(g.id);
+                                  }}
+                                  className={`flex items-center gap-2 p-3 border rounded-lg transition-colors text-left ${
+                                    selectedGatewayId === g.id
+                                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 dark:border-blue-500 ring-2 ring-blue-500/50'
+                                      : 'border-gray-200 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/20'
+                                  }`}
+                                >
+                                  {g.iconUrl ? (
+                                    <img
+                                      src={g.iconUrl}
+                                      alt=""
+                                      className="h-8 w-8 object-contain flex-shrink-0"
+                                    />
+                                  ) : (
+                                    <div className="h-8 w-8 rounded flex items-center justify-center bg-gray-100 dark:bg-gray-700 flex-shrink-0">
+                                      <CreditCard className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                                    </div>
+                                  )}
+                                  <span className="text-sm font-medium truncate">
+                                    {g.displayName}
+                                  </span>
+                                </button>
+                              ))}
+                            </div>
+                          ) : null}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Wallet Payment */}
+                <div
+                  className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                    paymentMethod === 'wallet'
+                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                      : 'border-gray-200 dark:border-gray-700 hover:border-blue-300'
+                  } ${!canUseWallet ? 'opacity-60 cursor-not-allowed' : ''}`}
+                  onClick={() => canUseWallet && setPaymentMethod('wallet')}
+                >
+                  <div className="flex items-start gap-4">
+                    <div
+                      className={`mt-1 ${paymentMethod === 'wallet' ? 'text-blue-500' : 'text-gray-400'}`}
+                    >
+                      <div
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                          paymentMethod === 'wallet'
+                            ? 'border-blue-500 bg-blue-500'
+                            : 'border-gray-300 dark:border-gray-600'
+                        }`}
+                      >
+                        {paymentMethod === 'wallet' && (
+                          <div className="w-3 h-3 rounded-full bg-white"></div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Wallet
+                          className={`h-5 w-5 ${paymentMethod === 'wallet' ? 'text-blue-500' : 'text-gray-400'}`}
+                        />
+                        <h3 className="font-semibold">{t('payment.wallet') || 'Wallet'}</h3>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        {t('payment.walletBalance') || 'Balance'}{' '}
+                        <PriceDisplay amount={walletBalance} languageCode={effectiveLangCode} />
+                      </p>
+                      {!canUseWallet && walletBalance < total && (
+                        <div className="flex items-start gap-2 mt-3 p-3 bg-red-50 dark:bg-red-900/30 rounded-lg border border-red-200 dark:border-red-800">
+                          <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
+                          <p className="text-xs text-red-800 dark:text-red-200">
+                            {t('payment.insufficientWalletBalance') ||
+                              'Your wallet balance is not sufficient for this order. You can increase your wallet balance up to 200 million Tomans daily, but your order amount is more than this.'}
+                          </p>
                         </div>
-                      ) : gateways.length > 0 ? (
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-3">
-                          {gateways.map((g) => (
-                            <button
-                              key={g.id}
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedGatewayId(g.id);
-                              }}
-                              className={`flex items-center gap-2 p-3 border rounded-lg transition-colors text-left ${
-                                selectedGatewayId === g.id
-                                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 dark:border-blue-500 ring-2 ring-blue-500/50'
-                                  : 'border-gray-200 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/20'
-                              }`}
-                            >
-                              {g.iconUrl ? (
-                                <img
-                                  src={g.iconUrl}
-                                  alt=""
-                                  className="h-8 w-8 object-contain flex-shrink-0"
-                                />
-                              ) : (
-                                <div className="h-8 w-8 rounded flex items-center justify-center bg-gray-100 dark:bg-gray-700 flex-shrink-0">
-                                  <CreditCard className="h-5 w-5 text-gray-500 dark:text-gray-400" />
-                                </div>
-                              )}
-                              <span className="text-sm font-medium truncate">{g.displayName}</span>
-                            </button>
-                          ))}
-                        </div>
-                      ) : null}
-                    </>
-                  )}
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             </motion.div>

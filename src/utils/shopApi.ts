@@ -1,4 +1,4 @@
-import { apiRequest } from "./api";
+import { apiRequest } from './api';
 
 export interface MediaFile {
   id: number;
@@ -92,7 +92,7 @@ export interface Product {
   sellerKind: string;
   prices: ProductListPrice[];
   attributeValuesWithDefinitions: Array<Record<string, unknown>>;
-  translations: ProductListTranslation | ProductTranslation[] | null;
+  translations: ProductTranslation[] | null;
 }
 
 export interface ProductsResponse {
@@ -131,44 +131,35 @@ export interface ProductsInfiniteResponse {
  * @param params - Query parameters for filtering and pagination
  * @returns Products response with pagination info
  */
-export async function getProducts(
-  params: GetProductsParams = {}
-): Promise<ProductsResponse> {
+export async function getProducts(params: GetProductsParams = {}): Promise<ProductsResponse> {
   const queryParams = new URLSearchParams();
 
-  if (params.langCode) queryParams.append("langCode", params.langCode);
-  if (params.pageNumber)
-    queryParams.append("pageNumber", params.pageNumber.toString());
-  if (params.pageSize)
-    queryParams.append("pageSize", params.pageSize.toString());
-  if (params.search) queryParams.append("search", params.search);
+  if (params.langCode) queryParams.append('langCode', params.langCode);
+  if (params.pageNumber) queryParams.append('pageNumber', params.pageNumber.toString());
+  if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString());
+  if (params.search) queryParams.append('search', params.search);
   if (params.categoryIds?.length) {
-    params.categoryIds.forEach((id) =>
-      queryParams.append("categoryIds", id.toString())
-    );
+    params.categoryIds.forEach((id) => queryParams.append('categoryIds', id.toString()));
   }
-  if (params.minPrice !== undefined)
-    queryParams.append("minPrice", params.minPrice.toString());
-  if (params.maxPrice !== undefined)
-    queryParams.append("maxPrice", params.maxPrice.toString());
-  if (params.hasOffer !== undefined)
-    queryParams.append("hasOffer", params.hasOffer.toString());
-  if (params.status) queryParams.append("status", params.status);
+  if (params.minPrice !== undefined) queryParams.append('minPrice', params.minPrice.toString());
+  if (params.maxPrice !== undefined) queryParams.append('maxPrice', params.maxPrice.toString());
+  if (params.hasOffer !== undefined) queryParams.append('hasOffer', params.hasOffer.toString());
+  if (params.status) queryParams.append('status', params.status);
   if (params.isFeatured !== undefined)
-    queryParams.append("isFeatured", params.isFeatured.toString());
-  if (params.sortBy) queryParams.append("sortBy", params.sortBy);
+    queryParams.append('isFeatured', params.isFeatured.toString());
+  if (params.sortBy) queryParams.append('sortBy', params.sortBy);
   if (params.sortDescending !== undefined)
-    queryParams.append("sortDescending", params.sortDescending.toString());
+    queryParams.append('sortDescending', params.sortDescending.toString());
 
   const response = (await apiRequest(
-    `/api/ui/shop/products?${queryParams.toString()}`
+    `/api/ui/shop/products?${queryParams.toString()}`,
   )) as ProductsResponse;
 
   return response;
 }
 
 export async function getProductsInfinite(
-  params: GetProductsParams & { pageParam?: number }
+  params: GetProductsParams & { pageParam?: number },
 ): Promise<ProductsInfiniteResponse> {
   const pageNumber = params.pageParam ?? params.pageNumber ?? 1;
 
@@ -220,10 +211,10 @@ export interface FiltersResponse {
  */
 export async function getFilters(langCode?: string): Promise<FiltersResponse> {
   const queryParams = new URLSearchParams();
-  if (langCode) queryParams.append("langCode", langCode);
+  if (langCode) queryParams.append('langCode', langCode);
 
   const response = (await apiRequest(
-    `/api/ui/shop/products/filters?${queryParams.toString()}`
+    `/api/ui/shop/products/filters?${queryParams.toString()}`,
   )) as FiltersResponse;
 
   return response;
@@ -487,15 +478,11 @@ export interface ProductReviewsResponse {
 
 function buildLangQuery(langCode?: string): string {
   const queryParams = new URLSearchParams();
-  if (langCode) queryParams.append("langCode", langCode);
+  if (langCode) queryParams.append('langCode', langCode);
   return queryParams.toString();
 }
 
-function buildProductDetailEndpoint(
-  slug: string,
-  section?: string,
-  langCode?: string
-): string {
+function buildProductDetailEndpoint(slug: string, section?: string, langCode?: string): string {
   const encodedSlug = encodeURIComponent(slug);
   const path = section
     ? `/api/ui/shop/products/${encodedSlug}/${section}`
@@ -511,12 +498,9 @@ function buildProductDetailEndpoint(
  * @param langCode - Language code for translations
  * @returns Product basic info
  */
-export async function getProductBySlug(
-  slug: string,
-  langCode?: string
-): Promise<ProductDetail> {
+export async function getProductBySlug(slug: string, langCode?: string): Promise<ProductDetail> {
   const response = (await apiRequest(
-    buildProductDetailEndpoint(slug, undefined, langCode)
+    buildProductDetailEndpoint(slug, undefined, langCode),
   )) as ProductDetail;
 
   return response;
@@ -525,12 +509,9 @@ export async function getProductBySlug(
 /**
  * Get product images
  */
-export async function getProductImages(
-  slug: string,
-  langCode?: string
-): Promise<ProductImage[]> {
+export async function getProductImages(slug: string, langCode?: string): Promise<ProductImage[]> {
   const response = (await apiRequest(
-    buildProductDetailEndpoint(slug, "images", langCode)
+    buildProductDetailEndpoint(slug, 'images', langCode),
   )) as ProductImage[];
 
   return response;
@@ -539,12 +520,9 @@ export async function getProductImages(
 /**
  * Get product prices
  */
-export async function getProductPrices(
-  slug: string,
-  langCode?: string
-): Promise<ProductPrice[]> {
+export async function getProductPrices(slug: string, langCode?: string): Promise<ProductPrice[]> {
   const response = (await apiRequest(
-    buildProductDetailEndpoint(slug, "prices", langCode)
+    buildProductDetailEndpoint(slug, 'prices', langCode),
   )) as ProductPrice[];
 
   return response;
@@ -555,10 +533,10 @@ export async function getProductPrices(
  */
 export async function getProductInventory(
   slug: string,
-  langCode?: string
+  langCode?: string,
 ): Promise<ProductInventory[]> {
   const response = (await apiRequest(
-    buildProductDetailEndpoint(slug, "inventory", langCode)
+    buildProductDetailEndpoint(slug, 'inventory', langCode),
   )) as ProductInventory[];
 
   return response;
@@ -569,10 +547,10 @@ export async function getProductInventory(
  */
 export async function getProductVariants(
   slug: string,
-  langCode?: string
+  langCode?: string,
 ): Promise<ProductVariant[]> {
   const response = (await apiRequest(
-    buildProductDetailEndpoint(slug, "variants", langCode)
+    buildProductDetailEndpoint(slug, 'variants', langCode),
   )) as ProductVariant[];
 
   return response;
@@ -583,10 +561,10 @@ export async function getProductVariants(
  */
 export async function getProductAttributes(
   slug: string,
-  langCode?: string
+  langCode?: string,
 ): Promise<ProductAttributeValue[]> {
   const response = (await apiRequest(
-    buildProductDetailEndpoint(slug, "attributes", langCode)
+    buildProductDetailEndpoint(slug, 'attributes', langCode),
   )) as ProductAttributeValue[];
 
   return response;
@@ -597,10 +575,10 @@ export async function getProductAttributes(
  */
 export async function getProductCategories(
   slug: string,
-  langCode?: string
+  langCode?: string,
 ): Promise<ProductCategory[]> {
   const response = (await apiRequest(
-    buildProductDetailEndpoint(slug, "categories", langCode)
+    buildProductDetailEndpoint(slug, 'categories', langCode),
   )) as ProductCategory[];
 
   return response;
@@ -609,12 +587,9 @@ export async function getProductCategories(
 /**
  * Get product tags
  */
-export async function getProductTags(
-  slug: string,
-  langCode?: string
-): Promise<ProductTag[]> {
+export async function getProductTags(slug: string, langCode?: string): Promise<ProductTag[]> {
   const response = (await apiRequest(
-    buildProductDetailEndpoint(slug, "tags", langCode)
+    buildProductDetailEndpoint(slug, 'tags', langCode),
   )) as ProductTag[];
 
   return response;
@@ -625,10 +600,10 @@ export async function getProductTags(
  */
 export async function getRelatedProducts(
   slug: string,
-  langCode?: string
+  langCode?: string,
 ): Promise<RelatedProduct[]> {
   const response = (await apiRequest(
-    buildProductDetailEndpoint(slug, "related", langCode)
+    buildProductDetailEndpoint(slug, 'related', langCode),
   )) as RelatedProduct[];
 
   return response;
@@ -639,10 +614,10 @@ export async function getRelatedProducts(
  */
 export async function getProductReviews(
   slug: string,
-  langCode?: string
+  langCode?: string,
 ): Promise<ProductReviewsResponse> {
   const response = (await apiRequest(
-    buildProductDetailEndpoint(slug, "reviews", langCode)
+    buildProductDetailEndpoint(slug, 'reviews', langCode),
   )) as ProductReviewsResponse;
 
   return response;
@@ -662,15 +637,12 @@ export interface CreateProductReviewRequest {
 export async function createProductReview(
   slug: string,
   review: CreateProductReviewRequest,
-  langCode?: string
+  langCode?: string,
 ): Promise<ProductReview> {
-  const response = (await apiRequest(
-    buildProductDetailEndpoint(slug, "reviews", langCode),
-    {
-      method: "POST",
-      body: JSON.stringify(review),
-    }
-  )) as ProductReview;
+  const response = (await apiRequest(buildProductDetailEndpoint(slug, 'reviews', langCode), {
+    method: 'POST',
+    body: JSON.stringify(review),
+  })) as ProductReview;
 
   return response;
 }
@@ -704,14 +676,14 @@ export interface ProductDetailResponse {
  */
 export async function getProductDetail(
   slug: string,
-  langCode?: string
+  langCode?: string,
 ): Promise<ProductDetailResponse> {
   const params = new URLSearchParams();
 
-  if (langCode) params.append("langCode", langCode);
+  if (langCode) params.append('langCode', langCode);
 
   const url = `/api/ui/shop/products/${encodeURIComponent(slug)}/detail${
-    params.toString() ? `?${params}` : ""
+    params.toString() ? `?${params}` : ''
   }`;
 
   return apiRequest(url);

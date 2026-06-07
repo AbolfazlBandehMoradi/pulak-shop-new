@@ -16,7 +16,14 @@ import ProductCard from './sections/ProductCard';
 
 const GRID_SKELETON_COUNT = 9;
 const MAX_GRID_SKELETON_COUNT = 12;
-const MANAGED_QUERY_KEYS = ['q', 'search', 'categoryIds', 'minPrice', 'maxPrice', 'hasOffer'] as const;
+const MANAGED_QUERY_KEYS = [
+  'q',
+  'search',
+  'categoryIds',
+  'minPrice',
+  'maxPrice',
+  'hasOffer',
+] as const;
 
 type ShopFiltersSnapshot = {
   search?: string;
@@ -59,7 +66,10 @@ const parseFiltersFromSearch = (searchValue: string): ShopFiltersSnapshot => {
   });
 };
 
-const buildSearchParams = (currentSearch: string, filters: ShopFiltersSnapshot): URLSearchParams => {
+const buildSearchParams = (
+  currentSearch: string,
+  filters: ShopFiltersSnapshot,
+): URLSearchParams => {
   const normalizedFilters = normalizeFilters(filters);
   const params = new URLSearchParams(currentSearch);
 
@@ -90,7 +100,11 @@ const toStableQueryString = (params: URLSearchParams): string => {
 export default function ProductsFilterPage() {
   const [, setSearchParams] = useSearchParams();
   const location = useLocation();
-  const { data: categories, isLoading: isCategoriesLoading, isError: isCategoriesError } = useCategories();
+  const {
+    data: categories,
+    isLoading: isCategoriesLoading,
+    isError: isCategoriesError,
+  } = useCategories();
   const { t } = useTranslation();
   const lang = useLangStore((s) => s.lang);
   const dir = useLangStore((s) => s.dir);
@@ -146,72 +160,60 @@ export default function ProductsFilterPage() {
     }
   }, [isLoading]);
 
-
-
   const showInitialPageSkeleton = !hasCompletedInitialLoadRef.current && isLoading;
 
   useEffect(() => {
-  try {
-    const nextFilters = parseFiltersFromSearch(location.search);
+    try {
+      const nextFilters = parseFiltersFromSearch(location.search);
 
-    const currentFilters = normalizeFilters({
-      search,
-      categoryIds,
-      hasOffer,
-    });
+      const currentFilters = normalizeFilters({
+        search,
+        categoryIds,
+        hasOffer,
+      });
 
-    if (!areSameFilters(nextFilters, currentFilters)) {
-      setFilters(nextFilters);
+      if (!areSameFilters(nextFilters, currentFilters)) {
+        setFilters(nextFilters);
+      }
+
+      syncedQueryRef.current = toStableQueryString(new URLSearchParams(location.search));
+
+      setIsUrlHydrated(true);
+    } catch (err: unknown) {
+      console.error('Error hydrating URL params:', err);
+
+      setComponentError(
+        err instanceof Error ? err.message : t('productsFilter.failedToParseUrlParams'),
+      );
     }
+  }, [location.search]);
 
-    syncedQueryRef.current = toStableQueryString(
-      new URLSearchParams(location.search),
-    );
+  useEffect(() => {
+    try {
+      if (!isUrlHydrated) return;
 
-    setIsUrlHydrated(true);
-  } catch (err: unknown) {
-    console.error('Error hydrating URL params:', err);
+      // IMPORTANT:
+      // DON'T build from location.search
+      const nextParams = buildSearchParams('', normalizedActiveFilters);
 
-    setComponentError(
-      err instanceof Error
-        ? err.message
-        : t('productsFilter.failedToParseUrlParams'),
-    );
-  }
-}, [location.search]);
+      const nextStableQuery = toStableQueryString(nextParams);
 
-useEffect(() => {
-  try {
-    if (!isUrlHydrated) return;
+      // Prevent loops
+      if (nextStableQuery === syncedQueryRef.current) {
+        return;
+      }
 
-    // IMPORTANT:
-    // DON'T build from location.search
-    const nextParams = buildSearchParams('', normalizedActiveFilters);
+      syncedQueryRef.current = nextStableQuery;
 
-    const nextStableQuery = toStableQueryString(nextParams);
+      setSearchParams(nextParams, {
+        replace: true,
+      });
+    } catch (err: unknown) {
+      console.error('Error updating URL:', err);
 
-    // Prevent loops
-    if (nextStableQuery === syncedQueryRef.current) {
-      return;
+      setComponentError(err instanceof Error ? err.message : t('productsFilter.failedToUpdateUrl'));
     }
-
-    syncedQueryRef.current = nextStableQuery;
-
-    setSearchParams(nextParams, {
-      replace: true,
-    });
-  } catch (err: unknown) {
-    console.error('Error updating URL:', err);
-
-    setComponentError(
-      err instanceof Error
-        ? err.message
-        : t('productsFilter.failedToUpdateUrl'),
-    );
-  }
-}, [normalizedActiveFilters, isUrlHydrated]);
-
-
+  }, [normalizedActiveFilters, isUrlHydrated]);
 
   useEffect(() => {
     if (!hasNextPage || !loadMoreRef.current) {
@@ -329,33 +331,22 @@ useEffect(() => {
         />
 
         <section className="w-full md:w-32/96 lg:w-75/96">
-          {hasActiveFilters && (
-            <div className="mb-4 flex flex-wrap items-center gap-2">
-              {activeFilterTags.map((tag) => (
-                <button
-                  key={tag.key}
-                  type="button"
-                  onClick={tag.onRemove}
-                  className="inline-flex items-center gap-1 rounded-full border border-first-100 bg-color-for-layer-on-body px-3 py-1 text-xs first-text-color-for-paragraph transition-colors hover:border-first hover:text-first"
-                >
-                  <span>{tag.label}</span>
-                  <X className="h-3 w-3" />
-                </button>
-              ))}
-            </div>
-          )}
-
           {showProductsSkeleton ? (
             <ProductsContentSkeleton count={skeletonCount} />
           ) : hasProducts ? (
             <div className="grid grid-cols-1 gap-3 min-[480px]:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
               {products.map((product) => (
-                <ProductCard key={product.id} product={product} lang={lang} getImageUrl={getImageUrl} />
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  lang={lang}
+                  getImageUrl={getImageUrl}
+                />
               ))}
             </div>
           ) : (
             <div className="rounded-xl border border-first-100/70 bg-color-for-layer-on-body p-8 text-center first-text-color-for-paragraph">
-              {t('shop.noProducts')}
+              {t('product.noProducts')}
             </div>
           )}
 

@@ -19,20 +19,18 @@ const defaultContact: ContactTranslation = {
 
 const ContactUs = () => {
   const { t } = useTranslation();
-  const contactData = (t('contact', { returnObjects: true }) as ContactTranslation) || defaultContact;
+  const contactData =
+    (t('contact', { returnObjects: true }) as ContactTranslation) || defaultContact;
 
   const contactItems = [
-    { icon: Phone, text: contactData.phone, href: 'tel:+982166419417' },
-    { icon: Phone, text: contactData.phoneFactory, href: 'tel:+982636670300' },
-    { icon: Phone, text: contactData.phoneSound, href: 'tel:+989307587686' },
-    { icon: Mail, text: contactData.email, href: 'mailto:info@gammatebasia.com' },
+    { icon: Phone, text: contactData.phone, href: 'tel:+989392056442' },
+    { icon: Mail, text: contactData.email, href: 'mailto:info@pulakshop.com' },
     { icon: MapPin, text: contactData.location },
   ];
 
   return (
     <section className="mx-auto mt-24 px-4 sm:container lg:mt-8">
       <div className="bg-secound p-8 flex flex-col lg:flex-row gap-8 rounded-2xl">
-        {/* --- Contact Info --- */}
         <div className="flex-1 flex flex-col gap-4">
           {contactItems.map((item, idx) => (
             <a
@@ -47,13 +45,11 @@ const ContactUs = () => {
             </a>
           ))}
         </div>
-
-        {/* --- Map Section --- */}
-        <div className="flex-1 h-[400px] lg:h-auto rounded-2xl overflow-hidden">
+        <div className="flex-1 h-100 lg:h-auto rounded-2xl overflow-hidden">
           <iframe
             title={contactData.location}
             className="w-full h-full"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3238.104929508516!2d51.02600307608302!3d35.74822562629037!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3f8deb83f8885b33%3A0xc1e0407eb87e5991!2z2q_Yp9mF2Kcg2LfYqCDYqNmK2Kkg2YXYr9mK2Ykg2YbZhNin2Kk!5e0!3m2!1sfa!2sir!4v1680000000000!5m2!1sfa!2sir"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3472.9716700715194!2d60.8517875!3d29.4880244!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ee7310052524349%3A0xae1b9dd0821cccdf!2z2KjZh9i02Kog2LLbjNio2KfbjNuMINm-2YjZhNqp!5e0!3m2!1sen!2s!4v1756555547210!5m2!1sen!2s"
             allowFullScreen
             loading="lazy"
           ></iframe>

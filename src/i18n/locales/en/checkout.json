@@ -1,6 +1,7 @@
 {
   "title": "Checkout",
   "address": "Address",
+  "addressRequired": "Address Is Required",
   "deliveryAddress": "Delivery Address",
   "backToCart": "Back to Cart",
   "required": "required",

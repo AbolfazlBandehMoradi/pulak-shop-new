@@ -20,7 +20,8 @@ const Layout = ({ children }: LayoutProps) => {
   const basePath = stripLangPrefix(location.pathname);
   const isCheckoutOrPaymentPage = basePath === '/checkout' || basePath === '/payment';
   const isProductDetailPage = /^\/products\/[^/]+$/.test(basePath);
-  const hideNavAndFooter = basePath === '/auth' || isCheckoutOrPaymentPage;
+  const hideNavAndFooter = basePath === '/auth';
+  // const hideNavAndFooter = basePath === '/auth' || isCheckoutOrPaymentPage;
   const showMobileBottomNav = !hideNavAndFooter && !isProductDetailPage;
   const shouldReserveBottomSpace = showMobileBottomNav || isProductDetailPage;
 

@@ -1,5 +1,4 @@
 import { Blog } from '@/types';
-import cleanText from '@/utils/cleanText';
 import { Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -10,7 +9,6 @@ interface Props {
 
 const NewBlogs = ({ blogs }: Props) => {
   const { t } = useTranslation();
-  console.log(blogs);
   return (
     <div className="sm:container mt-8 lg:mt-16 mx-auto px-4 relative">
       <div className="flex items-center justify-between ">

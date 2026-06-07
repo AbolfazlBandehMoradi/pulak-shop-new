@@ -55,7 +55,6 @@ export default function CheckoutPage() {
         }
       } catch (entryError) {
         if (!isMounted) return;
-        console.error('Failed to validate cart on checkout entry:', entryError);
         showErrorToast(t('common.retry') || 'Failed to load your cart. Please try again.');
         navigate(localizedPath('/cart'), { replace: true });
       } finally {
@@ -110,6 +109,10 @@ export default function CheckoutPage() {
   });
 
   const handleContinue = async () => {
+    if (!addresses.length || !selectedAddressId) {
+      showErrorToast(t('checkout.addressRequired') || 'افزودن آدرس الزامی است');
+      return;
+    }
     const canContinue = await continueToPayment();
     if (!canContinue) {
       return;
@@ -140,11 +143,12 @@ export default function CheckoutPage() {
 
   return (
     <main className="mx-auto mt-8 px-4 pb-28 lg:pb-8 sm:container">
-      <CheckoutTopLogo />
       <CheckoutStepper currentStep={2} />
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
-          <h1 className="font-s-bold first-text-color text-xl">{t('checkout.title') || 'Checkout'}</h1>
+          <h1 className="font-s-bold first-text-color text-xl">
+            {t('checkout.title') || 'Checkout'}
+          </h1>
         </div>
       </div>
 
@@ -154,7 +158,7 @@ export default function CheckoutPage() {
           <Skeleton className="h-96 w-full" />
         </div>
       ) : error ? (
-        <div className="text-center py-12">
+        <div className="text-center  py-12">
           <div className="flex flex-col items-center gap-4">
             <div className="p-4 bg-red-100 dark:bg-red-900/30 rounded-full">
               <AlertCircle className="h-12 w-12 text-red-600 dark:text-red-400" />
@@ -167,7 +171,7 @@ export default function CheckoutPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2  space-y-6">
             {showAddressForm ? (
               <CheckoutAddressForm
                 form={form}
@@ -211,7 +215,7 @@ export default function CheckoutPage() {
       )}
 
       {showMobileContinueBar && (
-        <div className="fixed inset-x-0 bottom-0 z-[40] border-t border-gray-300/50 bg-color-for-layer-on-body shadow-dark-sm lg:hidden">
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-gray-300/50 bg-color-for-layer-on-body shadow-dark-sm lg:hidden">
           <div
             className="mx-auto w-full max-w-3xl px-4 pt-3"
             style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.75rem)' }}

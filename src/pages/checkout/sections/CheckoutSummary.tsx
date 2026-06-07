@@ -26,7 +26,7 @@ export function CheckoutSummary({
   const isPersian = languageCode === 'fa';
 
   return (
-    <div className="rounded-lg bg-color-for-layer-on-body p-6 space-y-2">
+    <div className="rounded-lg bg-color-for-layer-on-body  p-6 space-y-2">
       {cart && cart.items.length > 0 && (
         <>
           <span className="flex w-full justify-center items-center gap-2">
