@@ -8,6 +8,7 @@ import { Navigation, Autoplay } from 'swiper/modules';
 import { SwiperSlide, Swiper, SwiperRef } from 'swiper/react';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { useLangStore } from '@/stores/languageStore';
+import cleanText from '@/utils/cleanText';
 
 interface Props {
   discountedProduct: Product[];
@@ -105,7 +106,7 @@ const DiscountedProducts = ({ discountedProduct }: Props) => {
                     </h2>
                     {/* desc */}
                     <p className="font-f-light text-lg first-text-color-for-paragraph mt-2 ">
-                      {product.description}
+                      {cleanText(product?.description)}
                     </p>
 
                     {/* timer */}
