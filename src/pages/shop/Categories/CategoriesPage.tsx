@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import Masonry from 'react-masonry-css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Category } from '@/types';
 import useCategories from '@/hooks/useCategories';
@@ -13,7 +13,8 @@ import { ChevronLeft, Smartphone } from 'lucide-react';
 const CATEGORY_FALLBACK_IMAGE = 'https://panell.pulakshop.ir/site-assets/gallery/no-image.png';
 
 const hasProducts = (category: Category) => (category.productCount ?? 0) > 0;
-const sortByAvailability = (a: Category, b: Category) => Number(hasProducts(b)) - Number(hasProducts(a));
+const sortByAvailability = (a: Category, b: Category) =>
+  Number(hasProducts(b)) - Number(hasProducts(a));
 
 const ChildCategoryCard: React.FC<{ category: Category }> = ({ category }) => {
   const { t } = useTranslation();
@@ -82,6 +83,7 @@ const ParentCategoryCard: React.FC<{ category: Category }> = ({ category }) => {
   const { t } = useTranslation();
   const localizedPath = useLocalizedPath();
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
   const children = getCategoryChildren(category);
   const hasChildren = children.length > 0;
 
@@ -90,7 +92,12 @@ const ParentCategoryCard: React.FC<{ category: Category }> = ({ category }) => {
       <button
         type="button"
         className="flex w-full items-center"
-        onClick={() => hasChildren && setIsOpen(!isOpen)}
+        onClick={() => {
+          hasChildren && setIsOpen(!isOpen);
+          if (!hasChildren && hasProducts(category)) {
+            navigate(localizedPath(`/products?categoryIds=${category.id}`));
+          }
+        }}
       >
         <div className="w-4/48 rounded-lg bg-color-for-layer-on-body">
           <img
@@ -193,7 +200,8 @@ const MobileCategoriesSplitView: React.FC<{ categories: Category[] }> = ({ categ
     }
   }, [activeParentId, sortedParents]);
 
-  const activeParent = sortedParents.find((category) => category.id === activeParentId) ?? sortedParents[0];
+  const activeParent =
+    sortedParents.find((category) => category.id === activeParentId) ?? sortedParents[0];
   const activeChildren = useMemo(
     () => (activeParent ? getCategoryChildren(activeParent).slice().sort(sortByAvailability) : []),
     [activeParent],
@@ -211,7 +219,10 @@ const MobileCategoriesSplitView: React.FC<{ categories: Category[] }> = ({ categ
             dir === 'rtl' ? 'justify-end' : 'justify-start'
           }`}
         >
-          <ChevronLeft className={`h-3.5 w-3.5 ${dir === 'ltr' ? 'rotate-180' : ''}`} strokeWidth={1.7} />
+          <ChevronLeft
+            className={`h-3.5 w-3.5 ${dir === 'ltr' ? 'rotate-180' : ''}`}
+            strokeWidth={1.7}
+          />
           <Link to={localizedPath(`/products?categoryIds=${activeParent.id}`)} className="truncate">
             {t('categories.viewAllProducts')}
           </Link>
@@ -244,9 +255,7 @@ const MobileCategoriesSplitView: React.FC<{ categories: Category[] }> = ({ categ
                   >
                     <span className="truncate">{child.name}</span>
                     <ChevronLeft
-                      className={`h-4 w-4 shrink-0 ${
-                        dir === 'ltr' ? 'rotate-180' : ''
-                      }`}
+                      className={`h-4 w-4 shrink-0 ${dir === 'ltr' ? 'rotate-180' : ''}`}
                       strokeWidth={1.9}
                     />
                   </div>
