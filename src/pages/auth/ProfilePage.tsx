@@ -4,6 +4,7 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import {
   AlertCircle,
+  Eye,
   Mail,
   Package,
   Phone,
@@ -19,6 +20,11 @@ import { useLangStore } from "@/stores/languageStore";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
+import { OrderDetailModal } from "@/components/profile/OrderDetailModal";
+import { OrderInvoicePrintButton } from "@/components/prints";
+import type { OrderDetail } from "@/types/order.types";
+import { fetchProfileOrder } from "@/utils/profileOrderApi";
+import getImageUrl from "@/utils/getImageUrl";
 
 interface ProfileData {
   id?: number;
@@ -36,6 +42,7 @@ interface ProfileOrder {
   id?: number | string;
   orderNumber?: string;
   status?: string;
+  orderStatus?: string;
   createdAt?: string;
   totalAmount?: number | string;
   finalAmount?: number | string;
@@ -177,6 +184,18 @@ function normalizeOrdersResponse(payload: OrdersResponse | null | undefined): {
   };
 }
 
+function resolveOrderId(order: ProfileOrder): number | null {
+  if (typeof order.id === "number" && Number.isFinite(order.id)) {
+    return order.id;
+  }
+
+  if (typeof order.id === "string" && /^\d+$/.test(order.id)) {
+    return Number.parseInt(order.id, 10);
+  }
+
+  return null;
+}
+
 function toNumericValue(value: number | string | undefined): number {
   if (typeof value === "number" && Number.isFinite(value)) {
     return value;
@@ -193,6 +212,7 @@ function toNumericValue(value: number | string | undefined): number {
 const ProfilePage = () => {
   const { token, user, logout } = useAuth();
   const currentLanguage = useLangStore((s) => s.lang);
+  const dir = useLangStore((s) => s.dir);
   const { t } = useTranslation();
 
   const [profile, setProfile] = useState<ProfileData | null>(null);
@@ -200,6 +220,8 @@ const ProfilePage = () => {
   const [ordersMeta, setOrdersMeta] = useState<OrdersMeta>(EMPTY_ORDERS_META);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [detailOrderId, setDetailOrderId] = useState<number | null>(null);
+  const [orderCache, setOrderCache] = useState<Record<number, OrderDetail>>({});
   const tRef = useRef(t);
   const logoutRef = useRef(logout);
 
@@ -311,6 +333,35 @@ const ProfilePage = () => {
   const isNameMissing =
     !(profile?.firstName || user?.firstName) && !(profile?.lastName || user?.lastName);
   const hasNoOrders = ordersMeta.totalCount === 0;
+
+  const locale = currentLanguage === "fa" ? "fa-IR" : "en-US";
+  const resolveImageUrl = (path: string) => getImageUrl(path) ?? path;
+
+  const cacheOrder = useCallback((order: OrderDetail) => {
+    setOrderCache((prev) => ({ ...prev, [order.id]: order }));
+  }, []);
+
+  const fetchAndCacheOrder = useCallback(
+    async (orderId: number): Promise<OrderDetail | null> => {
+      if (orderCache[orderId]) {
+        return orderCache[orderId];
+      }
+
+      if (!token) {
+        return null;
+      }
+
+      try {
+        const data = await fetchProfileOrder(orderId, token);
+        cacheOrder(data);
+        return data;
+      } catch (err) {
+        console.error("Failed to fetch order for print:", err);
+        return null;
+      }
+    },
+    [cacheOrder, orderCache, token]
+  );
 
   const formatOrderDate = (value?: string) => {
     if (!value) {
@@ -486,6 +537,9 @@ const ProfilePage = () => {
                       order.finalAmount ?? order.totalAmount ?? order.total
                     );
                     const count = toNumericValue(order.itemsCount ?? order.itemCount);
+                    const orderId = resolveOrderId(order);
+                    const cachedOrder = orderId ? orderCache[orderId] : undefined;
+                    const displayStatus = order.orderStatus || order.status || "-";
 
                     return (
                       <motion.div
@@ -509,7 +563,7 @@ const ProfilePage = () => {
                             <p className="text-sm text-muted-foreground">
                               {translateOr("profile.status", "Status")}
                             </p>
-                            <p className="font-medium">{order.status || "-"}</p>
+                            <p className="font-medium">{displayStatus}</p>
                           </div>
 
                           <div>
@@ -539,6 +593,34 @@ const ProfilePage = () => {
                               />
                             </p>
                           </div>
+
+                          {orderId && (
+                            <div className="flex w-full flex-wrap items-center justify-end gap-2 border-t pt-3 sm:w-auto sm:border-0 sm:pt-0">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setDetailOrderId(orderId)}
+                              >
+                                <Eye className="h-4 w-4" />
+                                <span className="ms-2">
+                                  {translateOr("profile.viewDetails", "View details")}
+                                </span>
+                              </Button>
+                              <OrderInvoicePrintButton
+                                order={cachedOrder ?? null}
+                                onRequestOrder={() => fetchAndCacheOrder(orderId)}
+                                dir={dir}
+                                locale={locale}
+                                languageCode={currentLanguage}
+                                t={t}
+                                label={translateOr("profile.printInvoice", "Print invoice")}
+                                resolveImageUrl={resolveImageUrl}
+                                size="sm"
+                                variant="outline"
+                              />
+                            </div>
+                          )}
                         </div>
                       </motion.div>
                     );
@@ -549,6 +631,15 @@ const ProfilePage = () => {
           </div>
         )}
       </main>
+
+      <OrderDetailModal
+        orderId={detailOrderId}
+        isOpen={detailOrderId != null}
+        onClose={() => setDetailOrderId(null)}
+        authToken={token}
+        cachedOrder={detailOrderId ? orderCache[detailOrderId] : null}
+        onOrderLoaded={cacheOrder}
+      />
     </div>
   );
 };

@@ -35,5 +35,17 @@
   "backToHome": "Back to Home",
   "failureTitle": "Payment Failed",
   "failureMessage": "Your payment could not be completed. Please try again.",
+  "failureDebugTitle": "Payment debug details",
+  "failureDebugHint": "Share these details with support if the problem continues.",
+  "systemBusyTitle": "System Busy",
+  "systemBusyMessage": "The payment gateway is temporarily busy. Please wait 15 minutes and try again.",
+  "failureReason": {
+    "gatewayCallback": "The bank reported payment failure or did not return a track ID.",
+    "orderNotFound": "Order was not found. The return link may have expired.",
+    "trackIdMismatch": "Payment track ID does not match the order.",
+    "gatewayNotFound": "Zibal payment gateway is not active or configured.",
+    "verifyFailed": "Zibal could not verify this payment.",
+    "verifyError": "An error occurred while contacting Zibal verify API."
+  },
   "tryAgain": "Try Again"
 }
