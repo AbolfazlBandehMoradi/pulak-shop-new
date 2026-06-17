@@ -1,8 +1,13 @@
 import he from 'he';
-function cleanText(htmlString?: string | null) {
-  if (!htmlString) return ""
-  const withoutTags = htmlString.replace(/<[^>]+>/g, '');
-  return he.decode(withoutTags).trim();
-}
 
-export default cleanText
+export function cleanText(htmlString?: string | null): string {
+  if (!htmlString) return '';
+
+  return he
+    .decode(htmlString)
+    .replace(/<[^>]*>/g, '')
+    .replace(/\u00A0/g, ' ') 
+    .replace(/\s+/g, ' ') 
+    .trim();
+}
+export default cleanText;

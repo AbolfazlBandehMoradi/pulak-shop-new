@@ -4,6 +4,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Autoplay } from 'swiper/modules';
 import { Story as StoryInterface } from '@/types/index';
 import 'swiper/swiper.css';
+import cleanText from '@/utils/cleanText';
 
 interface Props {
   stories: StoryInterface[];
@@ -114,7 +115,7 @@ const Story = ({ stories }: Props) => {
               <div className="p-2">
                 <h3 className="font-s-bold first-text-color">{stories[isVideoOpen].title}</h3>
                 <p className="mt-2 first-text-color-for-paragraph text-sm">
-                  {stories[isVideoOpen].caption.slice(0, 180)}...
+                  {cleanText(stories[isVideoOpen].caption.slice(0, 450))}
                 </p>
                 <div className="absolute bottom-1 flex w-11/12 justify-between">
                   <button className="bg-first w-5/12 cursor-pointer rounded-xl text-white">
