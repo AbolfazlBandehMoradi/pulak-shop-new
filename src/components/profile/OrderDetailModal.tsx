@@ -54,16 +54,44 @@ function DetailField({
   mono?: boolean;
 }) {
   return (
-    <div>
-      <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+    <div className="rounded-2xl bg-color-for-layer-sec px-3 py-3">
+      <div className="text-xs font-f-sbold uppercase tracking-wide first-text-color-for-paragraph-low">
         {label}
       </div>
       <div
-        className={`mt-1 text-sm text-foreground ${mono ? "break-all font-mono text-xs sm:text-sm" : ""}`}
+        className={`mt-1 text-sm first-text-color ${
+          mono ? "break-all font-mono text-xs sm:text-sm" : ""
+        }`}
       >
         {value}
       </div>
     </div>
+  );
+}
+
+function ModalSection({
+  title,
+  icon: Icon,
+  children,
+  className = "",
+}: {
+  title: string;
+  icon: typeof Package;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <section
+      className={`rounded-3xl border border-first-100/80 bg-color-for-layer-on-body p-4 shadow-dark-sm ${className}`}
+    >
+      <h3 className="mb-4 flex items-center gap-2 border-b border-gray-300/40 pb-3 font-s-sbold first-text-color">
+        <span className="grid h-9 w-9 place-items-center rounded-xl bg-first/10 text-first">
+          <Icon className="h-4 w-4" />
+        </span>
+        {title}
+      </h3>
+      {children}
+    </section>
   );
 }
 
@@ -80,46 +108,44 @@ function ShippingAddressCard({
     null;
 
   return (
-    <div className="space-y-3 text-sm text-foreground">
+    <div className="space-y-3 text-sm first-text-color">
       {address.title && (
-        <div>
-          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            {t("profile.orders.addressTitle")}
-          </div>
-          <div className="mt-1 font-medium">{address.title}</div>
-        </div>
+        <DetailField label={t("profile.orders.addressTitle")} value={address.title} />
       )}
-      {displayName && (
-        <div>
-          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            {t("profile.orders.name")}
-          </div>
-          <div className="mt-1 font-medium">{displayName}</div>
-        </div>
-      )}
+      {displayName && <DetailField label={t("profile.orders.name")} value={displayName} />}
       {address.phone && (
-        <div className="flex items-center gap-2 rounded-lg border border-border/50 bg-card/60 px-3 py-2 dark:bg-gray-900/40">
-          <Phone className="h-4 w-4 shrink-0 text-muted-foreground" />
+        <div className="flex items-center gap-2 rounded-2xl bg-color-for-layer-sec px-3 py-3">
+          <Phone className="h-4 w-4 shrink-0 text-first" />
           <span className="tabular-nums">{address.phone}</span>
         </div>
       )}
       {address.alternativePhone && (
-        <div className="flex items-center gap-2 rounded-lg border border-border/50 bg-card/60 px-3 py-2 dark:bg-gray-900/40">
-          <Phone className="h-4 w-4 shrink-0 text-muted-foreground" />
+        <div className="flex items-center gap-2 rounded-2xl bg-color-for-layer-sec px-3 py-3">
+          <Phone className="h-4 w-4 shrink-0 text-first" />
           <span className="tabular-nums">{address.alternativePhone}</span>
         </div>
       )}
-      {address.addressLine1 && <div>{address.addressLine1}</div>}
-      {address.addressLine2 && <div>{address.addressLine2}</div>}
-      {(address.city || address.province || address.postalCode) && (
-        <div>
-          {[address.city, address.province].filter(Boolean).join(", ")}
-          {address.postalCode ? ` — ${address.postalCode}` : ""}
+      {address.addressLine1 && (
+        <div className="rounded-2xl bg-color-for-layer-sec px-3 py-3">
+          {address.addressLine1}
         </div>
       )}
-      {address.country && <div>{address.country}</div>}
+      {address.addressLine2 && (
+        <div className="rounded-2xl bg-color-for-layer-sec px-3 py-3">
+          {address.addressLine2}
+        </div>
+      )}
+      {(address.city || address.province || address.postalCode) && (
+        <div className="rounded-2xl bg-color-for-layer-sec px-3 py-3">
+          {[address.city, address.province].filter(Boolean).join(", ")}
+          {address.postalCode ? ` - ${address.postalCode}` : ""}
+        </div>
+      )}
+      {address.country && (
+        <div className="rounded-2xl bg-color-for-layer-sec px-3 py-3">{address.country}</div>
+      )}
       {address.additionalDetails && (
-        <div className="rounded-lg border border-border/50 bg-muted/20 px-3 py-2 text-muted-foreground">
+        <div className="rounded-2xl border border-first-100/80 bg-first/5 px-3 py-3 first-text-color-for-paragraph">
           {address.additionalDetails}
         </div>
       )}
@@ -144,7 +170,7 @@ export function OrderDetailModal({
   const [error, setError] = useState<string | null>(null);
 
   const locale = currentLanguage === "fa" ? "fa-IR" : "en-US";
-  const notAvailable = "—";
+  const notAvailable = "-";
 
   const translateOr = useCallback(
     (key: string, fallback: string) => {
@@ -204,185 +230,224 @@ export function OrderDetailModal({
     : 0;
 
   const resolveImageUrl = (path: string) => getImageUrl(path) ?? path;
+  const orderHeading = order?.orderNumber
+    ? `#${order.orderNumber}`
+    : orderId
+      ? `#${orderId}`
+      : notAvailable;
 
   return (
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-0 backdrop-blur-sm sm:items-center sm:p-4"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/60 p-0 backdrop-blur-sm sm:items-center sm:p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
         >
           <motion.div
-            className="flex max-h-[92vh] w-full max-w-5xl flex-col overflow-hidden rounded-t-2xl bg-white shadow-2xl dark:bg-gray-900 sm:rounded-2xl"
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 40 }}
+            className="relative flex max-h-[94vh] w-full max-w-6xl flex-col overflow-hidden rounded-t-3xl border border-first-100/80 bg-color-for-layer-sec shadow-2xl sm:rounded-3xl"
+            initial={{ opacity: 0, y: 44, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 44, scale: 0.98 }}
             onClick={(e) => e.stopPropagation()}
             dir={dir}
           >
-            <div className="flex items-start justify-between gap-3 border-b px-5 py-4">
-              <div className="min-w-0">
-                <p className="text-sm text-muted-foreground">
-                  {translateOr("profile.orderDetails", "Order details")}
-                </p>
-                <h2 className="truncate text-xl font-bold">
-                  {order?.orderNumber
-                    ? `#${order.orderNumber}`
-                    : orderId
-                      ? `#${orderId}`
-                      : "—"}
-                </h2>
-              </div>
-              <div className="flex shrink-0 items-center gap-2">
-                {order && (
-                  <OrderInvoicePrintButton
-                    order={order}
-                    dir={dir}
-                    locale={locale}
-                    languageCode={currentLanguage}
-                    t={t}
-                    label={translateOr("profile.printInvoice", "Print invoice")}
-                    resolveImageUrl={resolveImageUrl}
-                    size="sm"
-                    variant="outline"
-                  />
-                )}
-                <Button type="button" variant="ghost" size="sm" onClick={onClose} aria-label="Close">
-                  <X className="h-5 w-5" />
-                </Button>
-              </div>
-            </div>
+            <header className="border-b border-gray-300/40 bg-color-for-layer-on-body p-4 sm:p-5">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div className="flex min-w-0 items-center gap-3">
+                  <div className="grid h-13 w-13 shrink-0 place-items-center rounded-2xl bg-linear-to-br from-first to-first-700 text-white shadow-first-sm sm:h-14 sm:w-14">
+                    <Receipt className="h-6 w-6" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm first-text-color-for-paragraph-low">
+                      {translateOr("profile.orderDetails", "Order details")}
+                    </p>
+                    <h2 className="truncate text-2xl font-s-sbold first-text-color">
+                      {orderHeading}
+                    </h2>
+                  </div>
+                </div>
 
-            <div className="flex-1 overflow-y-auto px-5 py-4">
+                <div className="flex shrink-0 flex-wrap items-center gap-2">
+                  {order && (
+                    <OrderInvoicePrintButton
+                      order={order}
+                      dir={dir}
+                      locale={locale}
+                      languageCode={currentLanguage}
+                      t={t}
+                      label={translateOr("profile.printInvoice", "Print invoice")}
+                      resolveImageUrl={resolveImageUrl}
+                      className="gap-2 rounded-xl border-first/30 text-first hover:bg-first hover:text-white"
+                      size="sm"
+                      variant="outline"
+                    />
+                  )}
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={onClose}
+                    aria-label="Close"
+                    className="h-10 w-10 rounded-xl border border-gray-300/50 bg-color-for-layer-sec p-0 first-text-color-for-paragraph hover:bg-first hover:text-white"
+                  >
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
+              </div>
+
+              {order && (
+                <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  {[
+                    {
+                      icon: Package,
+                      label: translateOr("profile.orders.orderStatus", "Order status"),
+                      value: (
+                        <span
+                          className={`inline-flex rounded-full border px-3 py-1 text-sm font-f-sbold ${orderStatusTone(order.orderStatus)}`}
+                        >
+                          {translateOrderStatus(order.orderStatus, t)}
+                        </span>
+                      ),
+                    },
+                    {
+                      icon: CreditCard,
+                      label: translateOr("profile.orders.paymentStatus", "Payment status"),
+                      value: (
+                        <span
+                          className={`inline-flex rounded-full border px-3 py-1 text-sm font-f-sbold ${paymentStatusTone(order.paymentStatus)}`}
+                        >
+                          {translatePaymentStatus(order.paymentStatus, t)}
+                        </span>
+                      ),
+                    },
+                    {
+                      icon: Receipt,
+                      label: translateOr("profile.total", "Total"),
+                      value: (
+                        <PriceDisplay
+                          amount={order.totalAmount}
+                          currency={order.currencyCode || order.currencySymbol}
+                          currencyMode="symbol"
+                          languageCode={currentLanguage}
+                          valueClassName="text-lg font-s-sbold"
+                        />
+                      ),
+                    },
+                    {
+                      icon: Calendar,
+                      label: translateOr("profile.date", "Date"),
+                      value: formatOrderDateTime(order.createdAt, locale) ?? notAvailable,
+                    },
+                  ].map(({ icon: Icon, label, value }) => (
+                    <div
+                      key={label}
+                      className="rounded-2xl border border-first-100/70 bg-color-for-layer-sec p-3"
+                    >
+                      <div className="mb-2 flex items-center gap-2 first-text-color-for-paragraph-low">
+                        <Icon className="h-4 w-4 text-first" />
+                        <span className="text-xs font-f-sbold uppercase tracking-wide">
+                          {label}
+                        </span>
+                      </div>
+                      <div className="text-sm first-text-color">{value}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </header>
+
+            <div className="flex-1 overflow-y-auto p-4 sm:p-5">
               {loading ? (
-                <div className="space-y-4">
-                  <Skeleton className="h-24 w-full" />
-                  <Skeleton className="h-40 w-full" />
-                  <Skeleton className="h-32 w-full" />
+                <div className="grid gap-4 lg:grid-cols-2">
+                  <Skeleton className="h-32 rounded-3xl lg:col-span-2" />
+                  <Skeleton className="h-72 rounded-3xl lg:col-span-2" />
+                  <Skeleton className="h-52 rounded-3xl" />
+                  <Skeleton className="h-52 rounded-3xl" />
                 </div>
               ) : error ? (
-                <div className="py-12 text-center">
-                  <p className="text-red-600 dark:text-red-400">{error}</p>
-                  <Button className="mt-4" size="sm" onClick={() => void loadOrder()}>
+                <div className="rounded-3xl border border-red-200/70 bg-color-for-layer-on-body px-5 py-12 text-center shadow-dark-sm dark:border-red-900/50">
+                  <p className="text-base font-f-sbold text-red-600 dark:text-red-300">
+                    {error}
+                  </p>
+                  <Button
+                    className="mt-4 gap-2 rounded-xl bg-red-600 text-white hover:bg-red-700"
+                    size="sm"
+                    onClick={() => void loadOrder()}
+                  >
+                    <Loader2 className="h-4 w-4" />
                     {translateOr("common.retry", "Retry")}
                   </Button>
                 </div>
               ) : order ? (
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                    {[
-                      {
-                        icon: Package,
-                        label: translateOr("profile.orders.orderStatus", "Order status"),
-                        value: (
-                          <span
-                            className={`inline-flex rounded-full border px-3 py-1 text-sm font-medium ${orderStatusTone(order.orderStatus)}`}
-                          >
-                            {translateOrderStatus(order.orderStatus, t)}
-                          </span>
-                        ),
-                      },
-                      {
-                        icon: CreditCard,
-                        label: translateOr("profile.orders.paymentStatus", "Payment status"),
-                        value: (
-                          <span
-                            className={`inline-flex rounded-full border px-3 py-1 text-sm font-medium ${paymentStatusTone(order.paymentStatus)}`}
-                          >
-                            {translatePaymentStatus(order.paymentStatus, t)}
-                          </span>
-                        ),
-                      },
-                      {
-                        icon: Receipt,
-                        label: translateOr("profile.total", "Total"),
-                        value: (
-                          <PriceDisplay
-                            amount={order.totalAmount}
-                            currency={order.currencyCode || order.currencySymbol}
-                            currencyMode="symbol"
-                            languageCode={currentLanguage}
-                            valueClassName="text-lg font-semibold"
-                          />
-                        ),
-                      },
-                      {
-                        icon: Calendar,
-                        label: translateOr("profile.date", "Date"),
-                        value: formatOrderDateTime(order.createdAt, locale) ?? notAvailable,
-                      },
-                    ].map(({ icon: Icon, label, value }) => (
-                      <div
-                        key={label}
-                        className="rounded-xl border bg-white p-4 dark:bg-gray-900/40"
-                      >
-                        <div className="mb-2 flex items-center gap-2 text-muted-foreground">
-                          <Icon className="h-4 w-4" />
-                          <span className="text-xs font-medium uppercase tracking-wide">
-                            {label}
-                          </span>
-                        </div>
-                        <div className="text-sm">{value}</div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <section className="overflow-hidden rounded-xl border">
-                    <div className="border-b bg-muted/40 px-4 py-3 dark:bg-gray-900/30">
-                      <h3 className="flex items-center gap-2 font-semibold">
-                        <Package className="h-5 w-5 text-muted-foreground" />
-                        {translateOr("profile.orders.orderItems", "Order items")}
-                        <span className="rounded-full bg-background px-2 py-0.5 text-xs text-muted-foreground ring-1 ring-border">
-                          {order.items.length}
-                        </span>
-                      </h3>
+                <div className="space-y-5">
+                  <ModalSection
+                    title={translateOr("profile.orders.orderItems", "Order items")}
+                    icon={Package}
+                  >
+                    <div className="mb-4 flex items-center justify-between gap-3">
+                      <p className="text-sm first-text-color-for-paragraph-low">
+                        {translateOr("profile.orders.quantity", "Qty")}: {order.items.length}
+                      </p>
+                      <span className="rounded-full bg-first/10 px-3 py-1 text-xs font-f-sbold text-first">
+                        {order.currencyCode || order.currencySymbol || "IRT"}
+                      </span>
                     </div>
+
                     {order.items.length === 0 ? (
-                      <p className="px-4 py-10 text-center text-sm text-muted-foreground">
+                      <p className="rounded-2xl bg-color-for-layer-sec px-4 py-10 text-center text-sm first-text-color-for-paragraph-low">
                         {translateOr("profile.orders.noItems", "No items in this order.")}
                       </p>
                     ) : (
-                      <div className="divide-y">
+                      <div className="space-y-3">
                         {order.items.map((item) => {
                           const imgPath =
                             item.productImage?.thumbnailPath || item.productImage?.filePath;
                           return (
-                            <div key={item.id} className="flex gap-4 px-4 py-4">
-                              <div className="shrink-0 overflow-hidden rounded-lg border bg-muted/30">
+                            <div
+                              key={item.id}
+                              className="grid gap-3 rounded-2xl bg-color-for-layer-sec p-3 sm:grid-cols-[4.5rem_1fr_auto] sm:items-center"
+                            >
+                              <div className="h-18 w-18 overflow-hidden rounded-2xl border border-first-100/80 bg-color-for-layer-on-body">
                                 {imgPath ? (
                                   <img
                                     src={resolveImageUrl(imgPath)}
                                     alt={item.productImage?.alt || item.itemName}
-                                    className="h-16 w-16 object-cover"
+                                    className="h-full w-full object-cover"
                                   />
                                 ) : (
-                                  <div className="flex h-16 w-16 items-center justify-center text-muted-foreground">
+                                  <div className="grid h-full w-full place-items-center text-first">
                                     <Package className="h-6 w-6" />
                                   </div>
                                 )}
                               </div>
-                              <div className="min-w-0 flex-1">
-                                <div className="font-medium">{item.itemName}</div>
-                                <div className="mt-0.5 text-sm text-muted-foreground">
-                                  {translateOr("profile.orders.sku", "SKU")}: {item.sku}
+                              <div className="min-w-0">
+                                <div className="line-clamp-2 font-f-sbold first-text-color">
+                                  {item.itemName}
                                 </div>
-                                <div className="mt-0.5 text-xs text-muted-foreground">
-                                  {translateOr("profile.orders.quantity", "Qty")}: {item.quantity}
+                                <div className="mt-1 flex flex-wrap items-center gap-2 text-xs first-text-color-for-paragraph-low">
+                                  <span>
+                                    {translateOr("profile.orders.sku", "SKU")}: {item.sku}
+                                  </span>
+                                  <span className="rounded-full bg-color-for-layer-on-body px-2 py-0.5">
+                                    {translateOr("profile.orders.quantity", "Qty")}:{" "}
+                                    {item.quantity}
+                                  </span>
                                 </div>
                               </div>
-                              <div className="shrink-0 text-end">
-                                <div className="font-semibold">
+                              <div className="text-start sm:text-end">
+                                <div className="font-s-sbold text-first">
                                   <PriceDisplay
                                     amount={item.total}
                                     currency={order.currencyCode || order.currencySymbol}
                                     currencyMode="symbol"
                                     languageCode={currentLanguage}
+                                    valueClassName="font-s-sbold"
                                   />
                                 </div>
-                                <div className="text-xs text-muted-foreground">
+                                <div className="mt-1 text-xs first-text-color-for-paragraph-low">
                                   <PriceDisplay
                                     amount={item.unitPrice}
                                     currency={order.currencyCode || order.currencySymbol}
@@ -397,10 +462,11 @@ export function OrderDetailModal({
                         })}
                       </div>
                     )}
-                    <div className="border-t bg-muted/20 px-4 py-4 dark:bg-gray-900/30">
-                      <div className="ms-auto max-w-sm space-y-2 text-sm">
+
+                    <div className="mt-4 rounded-2xl border border-first-100/80 bg-color-for-layer-sec p-4">
+                      <div className="ms-auto max-w-md space-y-3 text-sm">
                         <div className="flex justify-between gap-4">
-                          <span className="text-muted-foreground">
+                          <span className="first-text-color-for-paragraph-low">
                             {translateOr("profile.orders.subtotal", "Subtotal")}
                           </span>
                           <PriceDisplay
@@ -412,7 +478,7 @@ export function OrderDetailModal({
                         </div>
                         {savedDeliveryFee > 0 && (
                           <div className="flex justify-between gap-4">
-                            <span className="text-muted-foreground">
+                            <span className="first-text-color-for-paragraph-low">
                               {translateOr("profile.orders.deliveryFee", "Delivery")}
                             </span>
                             <PriceDisplay
@@ -425,7 +491,7 @@ export function OrderDetailModal({
                         )}
                         {order.discountAmount > 0 && (
                           <div className="flex justify-between gap-4">
-                            <span className="text-muted-foreground">
+                            <span className="first-text-color-for-paragraph-low">
                               {translateOr("profile.orders.discount", "Discount")}
                             </span>
                             <PriceDisplay
@@ -437,7 +503,7 @@ export function OrderDetailModal({
                           </div>
                         )}
                         <div className="flex justify-between gap-4">
-                          <span className="text-muted-foreground">
+                          <span className="first-text-color-for-paragraph-low">
                             {translateOr("profile.orders.tax", "Tax")}
                           </span>
                           <PriceDisplay
@@ -447,25 +513,25 @@ export function OrderDetailModal({
                             languageCode={currentLanguage}
                           />
                         </div>
-                        <div className="flex justify-between gap-4 border-t pt-2 text-base font-bold">
+                        <div className="flex justify-between gap-4 border-t border-gray-300/40 pt-3 text-base font-s-sbold first-text-color">
                           <span>{translateOr("profile.total", "Total")}</span>
                           <PriceDisplay
                             amount={order.totalAmount}
                             currency={order.currencyCode || order.currencySymbol}
                             currencyMode="symbol"
                             languageCode={currentLanguage}
+                            valueClassName="font-s-sbold"
                           />
                         </div>
                       </div>
                     </div>
-                  </section>
+                  </ModalSection>
 
                   <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                    <section className="rounded-xl border p-4">
-                      <h3 className="mb-3 flex items-center gap-2 border-b pb-2 font-semibold">
-                        <User className="h-5 w-5 text-muted-foreground" />
-                        {translateOr("profile.orders.customer", "Customer")}
-                      </h3>
+                    <ModalSection
+                      title={translateOr("profile.orders.customer", "Customer")}
+                      icon={User}
+                    >
                       {order.userName ? (
                         <div className="space-y-3 text-sm">
                           <DetailField
@@ -473,27 +539,25 @@ export function OrderDetailModal({
                             value={order.userName}
                           />
                           {order.userEmail && (
-                            <div className="flex items-start gap-2">
-                              <Mail className="mt-0.5 h-4 w-4 text-muted-foreground" />
-                              <DetailField
-                                label={translateOr("profile.orders.email", "Email")}
-                                value={order.userEmail}
-                              />
+                            <div className="flex items-center gap-2 rounded-2xl bg-color-for-layer-sec px-3 py-3">
+                              <Mail className="h-4 w-4 shrink-0 text-first" />
+                              <span className="min-w-0 break-words first-text-color">
+                                {order.userEmail}
+                              </span>
                             </div>
                           )}
                         </div>
                       ) : (
-                        <p className="text-sm text-muted-foreground">
+                        <p className="rounded-2xl bg-color-for-layer-sec px-3 py-3 text-sm first-text-color-for-paragraph-low">
                           {translateOr("profile.orders.guest", "Guest customer")}
                         </p>
                       )}
-                    </section>
+                    </ModalSection>
 
-                    <section className="rounded-xl border p-4">
-                      <h3 className="mb-3 flex items-center gap-2 border-b pb-2 font-semibold">
-                        <Hash className="h-5 w-5 text-muted-foreground" />
-                        {translateOr("profile.orders.orderInfo", "Order information")}
-                      </h3>
+                    <ModalSection
+                      title={translateOr("profile.orders.orderInfo", "Order information")}
+                      icon={Hash}
+                    >
                       <div className="grid gap-3 sm:grid-cols-2">
                         <DetailField
                           label={translateOr("profile.orders.orderNumber", "Order number")}
@@ -502,7 +566,11 @@ export function OrderDetailModal({
                         />
                         <DetailField
                           label={translateOr("profile.orders.currencyCode", "Currency")}
-                          value={`${order.currencyCode}${order.currencySymbol && order.currencySymbol !== order.currencyCode ? ` (${order.currencySymbol})` : ""}`}
+                          value={`${order.currencyCode}${
+                            order.currencySymbol && order.currencySymbol !== order.currencyCode
+                              ? ` (${order.currencySymbol})`
+                              : ""
+                          }`}
                         />
                         <DetailField
                           label={translateOr("profile.orders.createdAt", "Created at")}
@@ -513,36 +581,34 @@ export function OrderDetailModal({
                           value={formatOrderDateTime(order.completedAt, locale) ?? notAvailable}
                         />
                       </div>
-                    </section>
+                    </ModalSection>
 
-                    <section className="rounded-xl border p-4">
-                      <h3 className="mb-3 flex items-center gap-2 border-b pb-2 font-semibold">
-                        <MapPin className="h-5 w-5 text-muted-foreground" />
-                        {translateOr("profile.orders.shippingAddress", "Shipping address")}
-                      </h3>
+                    <ModalSection
+                      title={translateOr("profile.orders.shippingAddress", "Shipping address")}
+                      icon={MapPin}
+                    >
                       {shippingAddress ? (
                         <ShippingAddressCard address={shippingAddress} t={t} />
                       ) : (
-                        <p className="text-sm text-muted-foreground">
+                        <p className="rounded-2xl bg-color-for-layer-sec px-3 py-3 text-sm first-text-color-for-paragraph-low">
                           {translateOr(
                             "profile.orders.noShippingAddress",
                             "No shipping address on file."
                           )}
                         </p>
                       )}
-                    </section>
+                    </ModalSection>
 
-                    <section className="rounded-xl border p-4">
-                      <h3 className="mb-3 flex items-center gap-2 border-b pb-2 font-semibold">
-                        <Receipt className="h-5 w-5 text-muted-foreground" />
-                        {translateOr("profile.orders.paymentInfo", "Payment information")}
-                      </h3>
+                    <ModalSection
+                      title={translateOr("profile.orders.paymentInfo", "Payment information")}
+                      icon={Receipt}
+                    >
                       <div className="grid gap-3 sm:grid-cols-2">
                         <DetailField
                           label={translateOr("profile.orders.paymentStatus", "Payment status")}
                           value={
                             <span
-                              className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-medium ${paymentStatusTone(order.paymentStatus)}`}
+                              className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-f-sbold ${paymentStatusTone(order.paymentStatus)}`}
                             >
                               {translatePaymentStatus(order.paymentStatus, t)}
                             </span>
@@ -563,42 +629,47 @@ export function OrderDetailModal({
                           />
                         )}
                       </div>
-                    </section>
+                    </ModalSection>
 
                     {order.delivery && (
-                      <section className="rounded-xl border p-4 lg:col-span-2">
-                        <h3 className="mb-3 flex items-center gap-2 border-b pb-2 font-semibold">
-                          <Truck className="h-5 w-5 text-muted-foreground" />
-                          {translateOr("profile.orders.deliveryInfo", "Delivery")}
-                        </h3>
-                        <div className="space-y-2 text-sm">
-                          <div className="font-medium">
-                            {order.delivery.localizedMethodName?.[currentLanguage] ||
-                              order.delivery.localizedMethodName?.en ||
-                              order.delivery.methodName}
+                      <ModalSection
+                        title={translateOr("profile.orders.deliveryInfo", "Delivery")}
+                        icon={Truck}
+                        className="lg:col-span-2"
+                      >
+                        <div className="space-y-3 text-sm">
+                          <div className="rounded-2xl bg-color-for-layer-sec px-3 py-3">
+                            <div className="font-f-sbold first-text-color">
+                              {order.delivery.localizedMethodName?.[currentLanguage] ||
+                                order.delivery.localizedMethodName?.en ||
+                                order.delivery.methodName}
+                            </div>
+                            {(order.delivery.baseCost ?? 0) > 0 && (
+                              <div className="mt-2 text-first">
+                                <PriceDisplay
+                                  amount={order.delivery.baseCost ?? 0}
+                                  currency={order.currencyCode || order.currencySymbol}
+                                  currencyMode="symbol"
+                                  languageCode={currentLanguage}
+                                />
+                              </div>
+                            )}
                           </div>
-                          {(order.delivery.baseCost ?? 0) > 0 && (
-                            <PriceDisplay
-                              amount={order.delivery.baseCost ?? 0}
-                              currency={order.currencyCode || order.currencySymbol}
-                              currencyMode="symbol"
-                              languageCode={currentLanguage}
-                            />
-                          )}
+
                           {order.delivery.fieldDefinitions.length > 0 && (
-                            <dl className="mt-2 grid gap-2 sm:grid-cols-2">
+                            <dl className="grid gap-3 sm:grid-cols-2">
                               {order.delivery.fieldDefinitions.map((def) => (
                                 <div
                                   key={def.key}
-                                  className="rounded-lg border bg-muted/20 px-3 py-2"
+                                  className="rounded-2xl bg-color-for-layer-sec px-3 py-3"
                                 >
-                                  <dt className="text-xs text-muted-foreground">
+                                  <dt className="text-xs first-text-color-for-paragraph-low">
                                     {def.label?.[currentLanguage] ||
                                       def.label?.en ||
                                       def.label?.fa ||
                                       def.key}
                                   </dt>
-                                  <dd className="mt-0.5 font-medium">
+                                  <dd className="mt-1 font-f-sbold first-text-color">
                                     {order.delivery?.fieldValues[def.key] ?? notAvailable}
                                   </dd>
                                 </div>
@@ -606,36 +677,38 @@ export function OrderDetailModal({
                             </dl>
                           )}
                         </div>
-                      </section>
+                      </ModalSection>
                     )}
 
                     {billingAddress && (
-                      <section className="rounded-xl border p-4 lg:col-span-2">
-                        <h3 className="mb-3 flex items-center gap-2 border-b pb-2 font-semibold">
-                          <CreditCard className="h-5 w-5 text-muted-foreground" />
-                          {translateOr("profile.orders.billingAddress", "Billing address")}
-                        </h3>
+                      <ModalSection
+                        title={translateOr("profile.orders.billingAddress", "Billing address")}
+                        icon={CreditCard}
+                        className="lg:col-span-2"
+                      >
                         <ShippingAddressCard address={billingAddress} t={t} />
-                      </section>
+                      </ModalSection>
                     )}
 
                     {order.notes && (
-                      <section className="rounded-xl border p-4 lg:col-span-2">
-                        <h3 className="mb-2 flex items-center gap-2 font-semibold">
-                          <FileText className="h-5 w-5 text-muted-foreground" />
-                          {translateOr("profile.orders.notes", "Notes")}
-                        </h3>
-                        <p className="whitespace-pre-wrap text-sm">{order.notes}</p>
-                      </section>
+                      <ModalSection
+                        title={translateOr("profile.orders.notes", "Notes")}
+                        icon={FileText}
+                        className="lg:col-span-2"
+                      >
+                        <p className="whitespace-pre-wrap rounded-2xl bg-color-for-layer-sec px-3 py-3 text-sm first-text-color">
+                          {order.notes}
+                        </p>
+                      </ModalSection>
                     )}
                   </div>
                 </div>
               ) : null}
             </div>
 
-            {loading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-background/40">
-                <Loader2 className="h-8 w-8 animate-spin text-primary-600" />
+            {loading && order && (
+              <div className="absolute inset-0 grid place-items-center bg-color-for-layer-on-body/60 backdrop-blur-sm">
+                <Loader2 className="h-8 w-8 animate-spin text-first" />
               </div>
             )}
           </motion.div>
