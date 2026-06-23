@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useLangStore } from '@/stores/languageStore';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import { stripLangPrefix } from '@/utils/langRouting';
 
 const instagramUrl =
   'https://www.instagram.com/galery_pulak?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==';
@@ -15,12 +16,20 @@ export const Footer = () => {
   const sealCode = 'elivVMnN81AnBnmI1GZuXAjn4s4avRKQ';
   const sealUrl = `https://trustseal.enamad.ir/?id=${sealId}&Code=${sealCode}`;
   const imageUrl = `https://trustseal.enamad.ir/logo.aspx?id=${sealId}&Code=${sealCode}`;
+  const basePath = stripLangPrefix(location.pathname);
+  const isProductDetailPage = /^\/products\/[^/]+$/.test(basePath);
 
   const features = [
     {
       key: 'freeShipping',
       icon: (
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg
+          width="32"
+          height="32"
+          viewBox="0 0 32 32"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <path
             d="M4 21.3359H28V26.6693C28 27.0229 27.8595 27.362 27.6095 27.6121C27.3594 27.8621 27.0203 28.0026 26.6667 28.0026H5.33333C4.97971 28.0026 4.64057 27.8621 4.39052 27.6121C4.14048 27.362 4 27.0229 4 26.6693V21.3359Z"
             fill="#1b7efb"
@@ -42,7 +51,13 @@ export const Footer = () => {
     {
       key: 'support',
       icon: (
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg
+          width="32"
+          height="32"
+          viewBox="0 0 32 32"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <path
             d="M28 12C28 9.87827 27.1571 7.84344 25.6569 6.34315C24.1566 4.84286 22.1217 4 20 4"
             stroke="#1b7efb"
@@ -67,7 +82,13 @@ export const Footer = () => {
     {
       key: 'quality',
       icon: (
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg
+          width="32"
+          height="32"
+          viewBox="0 0 32 32"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <path
             d="M26.6673 13.3353C25.7606 12.522 24.494 12.1486 23.5873 11.362C22.4673 10.3486 21.6807 8.38862 20.334 7.84195C18.9873 7.29529 17.454 8.33528 16.014 8.33528C14.574 8.33528 12.9873 7.32195 11.6807 7.84195C10.374 8.36195 9.54732 10.3353 8.42732 11.3486C7.50732 12.1353 6.24065 12.5086 5.33398 13.3353C5.41678 12.8366 5.4702 12.3335 5.49398 11.8286C5.48694 11.084 5.62742 10.3453 5.90732 9.65529C6.32326 9.14864 6.85962 8.75439 7.46732 8.50862C8.13746 8.19403 8.76474 7.79526 9.33398 7.32195C9.87343 6.78654 10.356 6.19673 10.774 5.56195C11.1006 4.93974 11.5715 4.40482 12.1473 4.00195C12.2707 3.97852 12.3973 3.97852 12.5207 4.00195C12.9746 4.04221 13.4222 4.1362 13.854 4.28195C14.5511 4.49381 15.2726 4.61481 16.0007 4.64195C16.7064 4.61032 17.4053 4.48936 18.0807 4.28195C18.6475 4.03869 19.2666 3.94238 19.8806 4.00195C20.4291 4.40157 20.884 4.91567 21.214 5.50862C21.6278 6.16645 22.1154 6.77485 22.6673 7.32195C23.233 7.78695 23.8504 8.18514 24.5073 8.50862C25.1146 8.7619 25.6536 9.15474 26.0806 9.65529C26.3422 10.3502 26.4777 11.0861 26.4807 11.8286C26.5473 12.282 26.5873 12.802 26.6673 13.3353Z"
             fill="#1b7efb"
@@ -92,7 +113,13 @@ export const Footer = () => {
     {
       key: 'payment',
       icon: (
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg
+          width="32"
+          height="32"
+          viewBox="0 0 32 32"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <path
             d="M10.6667 9.33584V28.0025H6.66667C5.95942 28.0025 5.28115 27.7216 4.78105 27.2215C4.28095 26.7214 4 26.0431 4 25.3358V9.33584H10.6667ZM22.6667 9.33584L20.5733 5.13584C20.4184 4.83067 20.152 4.59679 19.8293 4.48262C19.5066 4.36845 19.1524 4.38273 18.84 4.52251L8 9.33584"
             fill="#1b7efb"
@@ -115,7 +142,7 @@ export const Footer = () => {
 
   return (
     <footer dir={dir} className="footer-shell bg-color-for-layer-on-body">
-      <div className="footer-wrapper relative mx-auto mt-8 px-4 py-4 sm:container lg:pb-12 lg:pt-4">
+      <div className={`footer-wrapper relative mx-auto mt-8 px-4 ${isProductDetailPage ? ' pt-4 pb-20 ' : ' pt-4 pb-8 ' } sm:container lg:pb-12 lg:pt-4`} >
         <div className="footer-highlights">
           {features.map((feature) => (
             <div key={feature.key} className="footer-feature-item">

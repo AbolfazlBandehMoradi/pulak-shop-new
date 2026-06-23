@@ -22,7 +22,7 @@ const Layout = ({ children }: LayoutProps) => {
   const isProductDetailPage = /^\/products\/[^/]+$/.test(basePath);
   const hideNavAndFooter = basePath === '/auth';
   // const hideNavAndFooter = basePath === '/auth' || isCheckoutOrPaymentPage;
-  const showMobileBottomNav = !hideNavAndFooter && !isProductDetailPage;
+  const showMobileBottomNav = !hideNavAndFooter && !isProductDetailPage && !isCheckoutOrPaymentPage ;
   const shouldReserveBottomSpace = showMobileBottomNav || isProductDetailPage;
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <>
       {!hideNavAndFooter && <NavbarWithDrawer />}
-      <div className={shouldReserveBottomSpace ? 'pb-28 lg:pb-0' : undefined}>
+      <div>
         {children ?? <Outlet />}
       </div>
       {/* <GoftinoWidget /> */}

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import Masonry from 'react-masonry-css';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Category } from '@/types';
 import useCategories from '@/hooks/useCategories';
@@ -13,8 +13,7 @@ import { ChevronLeft, Smartphone } from 'lucide-react';
 const CATEGORY_FALLBACK_IMAGE = 'https://panell.pulakshop.ir/site-assets/gallery/no-image.png';
 
 const hasProducts = (category: Category) => (category.productCount ?? 0) > 0;
-const sortByAvailability = (a: Category, b: Category) =>
-  Number(hasProducts(b)) - Number(hasProducts(a));
+const sortByAvailability = (a: Category, b: Category) => Number(hasProducts(b)) - Number(hasProducts(a));
 
 const ChildCategoryCard: React.FC<{ category: Category }> = ({ category }) => {
   const { t } = useTranslation();
@@ -34,6 +33,10 @@ const ChildCategoryCard: React.FC<{ category: Category }> = ({ category }) => {
           <img
             src={category.image || CATEGORY_FALLBACK_IMAGE}
             alt={category.name}
+            width={160}
+            height={160}
+            loading="lazy"
+            decoding="async"
             className="h-full w-full rounded-lg object-cover"
           />
         </div>
@@ -83,7 +86,6 @@ const ParentCategoryCard: React.FC<{ category: Category }> = ({ category }) => {
   const { t } = useTranslation();
   const localizedPath = useLocalizedPath();
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
   const children = getCategoryChildren(category);
   const hasChildren = children.length > 0;
 
@@ -92,17 +94,16 @@ const ParentCategoryCard: React.FC<{ category: Category }> = ({ category }) => {
       <button
         type="button"
         className="flex w-full items-center"
-        onClick={() => {
-          hasChildren && setIsOpen(!isOpen);
-          if (!hasChildren && hasProducts(category)) {
-            navigate(localizedPath(`/products?categoryIds=${category.id}`));
-          }
-        }}
+        onClick={() => hasChildren && setIsOpen(!isOpen)}
       >
         <div className="w-4/48 rounded-lg bg-color-for-layer-on-body">
           <img
             src={category.image || CATEGORY_FALLBACK_IMAGE}
             alt={category.name}
+            width={160}
+            height={160}
+            loading="lazy"
+            decoding="async"
             className="h-full w-full object-cover"
           />
         </div>
@@ -200,8 +201,7 @@ const MobileCategoriesSplitView: React.FC<{ categories: Category[] }> = ({ categ
     }
   }, [activeParentId, sortedParents]);
 
-  const activeParent =
-    sortedParents.find((category) => category.id === activeParentId) ?? sortedParents[0];
+  const activeParent = sortedParents.find((category) => category.id === activeParentId) ?? sortedParents[0];
   const activeChildren = useMemo(
     () => (activeParent ? getCategoryChildren(activeParent).slice().sort(sortByAvailability) : []),
     [activeParent],
@@ -219,17 +219,14 @@ const MobileCategoriesSplitView: React.FC<{ categories: Category[] }> = ({ categ
             dir === 'rtl' ? 'justify-end' : 'justify-start'
           }`}
         >
-          <ChevronLeft
-            className={`h-3.5 w-3.5 ${dir === 'ltr' ? 'rotate-180' : ''}`}
-            strokeWidth={1.7}
-          />
           <Link to={localizedPath(`/products?categoryIds=${activeParent.id}`)} className="truncate">
             {t('categories.viewAllProducts')}
           </Link>
+          <ChevronLeft className={`h-3.5 w-3.5 ${dir === 'ltr' ? 'rotate-180' : ''}`} strokeWidth={1.7} />
         </div>
       )}
 
-      <div className="grid grid-cols-[1fr_6.5rem] gap-2">
+      <div className="grid grid-cols-[8rem_1fr] gap-2">
         <div className={dir === 'rtl' ? 'order-2' : 'order-1'}>
           <div className="space-y-2">
             {activeChildren.length > 0 ? (
@@ -255,7 +252,9 @@ const MobileCategoriesSplitView: React.FC<{ categories: Category[] }> = ({ categ
                   >
                     <span className="truncate">{child.name}</span>
                     <ChevronLeft
-                      className={`h-4 w-4 shrink-0 ${dir === 'ltr' ? 'rotate-180' : ''}`}
+                      className={`h-4 w-4 shrink-0 ${
+                        dir === 'ltr' ? 'rotate-180' : ''
+                      }`}
                       strokeWidth={1.9}
                     />
                   </div>
@@ -288,6 +287,10 @@ const MobileCategoriesSplitView: React.FC<{ categories: Category[] }> = ({ categ
                       <img
                         src={parent.image}
                         alt={parent.name}
+                        width={20}
+                        height={20}
+                        loading="lazy"
+                        decoding="async"
                         className="h-5 w-5 rounded-full object-cover"
                       />
                     ) : (
@@ -326,7 +329,7 @@ const AllCategoriesPage = () => {
   };
 
   return (
-    <main dir={dir} className="mx-auto mt-2 max-w-7xl px-0 md:px-6 lg:mt-16">
+    <main dir={dir} className="page-container page-section">
       <div className="bg-color-for-layer-on-body p-2 md:rounded-3xl md:p-6">
         <div className="mb-6 hidden w-full items-center gap-3 md:flex lg:w-6/12">
           <span className="first-text-color-svg inline-block rounded-lg p-3">
