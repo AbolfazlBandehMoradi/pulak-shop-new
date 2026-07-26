@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useLangStore } from '@/stores/languageStore';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import { stripLangPrefix } from '@/utils/langRouting';
 
 const instagramUrl =
   'https://www.instagram.com/galery_pulak?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==';
@@ -15,6 +16,8 @@ export const Footer = () => {
   const sealCode = 'elivVMnN81AnBnmI1GZuXAjn4s4avRKQ';
   const sealUrl = `https://trustseal.enamad.ir/?id=${sealId}&Code=${sealCode}`;
   const imageUrl = `https://trustseal.enamad.ir/logo.aspx?id=${sealId}&Code=${sealCode}`;
+  const basePath = stripLangPrefix(location.pathname);
+  const isProductDetailPage = /^\/products\/[^/]+$/.test(basePath);
 
   const features = [
     {
@@ -139,7 +142,7 @@ export const Footer = () => {
 
   return (
     <footer dir={dir} className="footer-shell bg-color-for-layer-on-body">
-      <div className="footer-wrapper relative mx-auto mt-8 px-4 py-4 sm:container lg:pb-12 lg:pt-4">
+      <div className={`footer-wrapper relative mx-auto mt-8 px-4 ${isProductDetailPage ? ' pt-4 pb-20 ' : ' pt-4 pb-8 ' } sm:container lg:pb-12 lg:pt-4`} >
         <div className="footer-highlights">
           {features.map((feature) => (
             <div key={feature.key} className="footer-feature-item">
