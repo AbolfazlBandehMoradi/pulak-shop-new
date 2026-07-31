@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { ChevronLeft, ChevronRight, ImageOff, ShoppingBag, Truck } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslation } from '@/i18n/useTranslation';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import type { ProductRelatedProduct, RelatedProduct, RelatedProductItem } from '@/utils/shopApi';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
@@ -60,7 +60,7 @@ export function RelatedProducts({ relatedProducts, languageCode, loading }: Rela
 
   const scroll = (direction: 'left' | 'right') => {
     if (!scrollContainerRef.current) return;
-    const scrollAmount = 336; // Card width (320px) + gap (16px)
+    const scrollAmount = Math.min(scrollContainerRef.current.clientWidth * 0.85, 648);
     const currentScroll = scrollContainerRef.current.scrollLeft;
     const newScroll =
       direction === 'left' ? currentScroll - scrollAmount : currentScroll + scrollAmount;
@@ -70,48 +70,58 @@ export function RelatedProducts({ relatedProducts, languageCode, loading }: Rela
       behavior: 'smooth',
     });
 
-    // Update button visibility after scroll animation
-    setTimeout(() => checkScrollability(), 300);
+    window.setTimeout(() => checkScrollability(), 300);
   };
 
-  // Initialize scroll state and check on resize
   useEffect(() => {
-    // Use setTimeout to ensure DOM is fully rendered
-    const timer = setTimeout(() => {
+    const timer = window.setTimeout(() => {
       checkScrollability();
     }, 100);
 
     const handleResize = () => {
-      setTimeout(() => checkScrollability(), 100);
+      window.setTimeout(() => checkScrollability(), 100);
     };
 
     window.addEventListener('resize', handleResize);
     return () => {
-      clearTimeout(timer);
+      window.clearTimeout(timer);
       window.removeEventListener('resize', handleResize);
     };
   }, [relatedProducts]);
 
   if (loading) {
     return (
-      <div>
-        <Skeleton className="h-8 w-64 mb-6" />
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-8 w-48 bg-first-100" />
+          <div className="hidden gap-2 sm:flex">
+            <Skeleton className="h-9 w-9 rounded-lg bg-first-100" />
+            <Skeleton className="h-9 w-9 rounded-lg bg-first-100" />
+          </div>
+        </div>
         <div className="flex gap-4 overflow-hidden">
-          {[...Array(4)].map((_, i) => (
+          {Array.from({ length: 4 }).map((_, index) => (
             <div
-              key={i}
-              className="flex-shrink-0 w-80 border dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-800"
+              key={`related-loading-${index}`}
+              className="flex h-[26.5rem] w-72 shrink-0 flex-col rounded-lg border border-first-100/70 bg-color-for-layer-on-body p-3 sm:w-80"
             >
-              <Skeleton className="aspect-square w-full" />
-              <div className="p-4 space-y-2">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-6 w-24" />
+              <Skeleton className="h-44 w-full rounded-lg bg-first-100" />
+              <div className="flex flex-1 flex-col justify-between pt-3">
+                <div className="space-y-2">
+                  <Skeleton className="h-5 w-full bg-first-100" />
+                  <Skeleton className="h-5 w-4/5 bg-first-100" />
+                  <Skeleton className="h-4 w-2/3 bg-first-100" />
+                  <Skeleton className="h-4 w-1/2 bg-first-100" />
+                </div>
+                <div className="space-y-3">
+                  <Skeleton className="h-14 w-full bg-first-100" />
+                  <Skeleton className="h-10 w-full rounded-md bg-first-100" />
+                </div>
               </div>
             </div>
           ))}
         </div>
-      </div>
+      </section>
     );
   }
 
@@ -121,156 +131,165 @@ export function RelatedProducts({ relatedProducts, languageCode, loading }: Rela
 
   return (
     <motion.section
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="relative"
+      transition={{ duration: 0.35 }}
+      className="relative space-y-4"
     >
-      <h2 className="w-full font-s-bold first-text-color text-xl mb-4 ">
-        {t('product.relatedProducts') || 'Related Products'}
-      </h2>
-      <div className="relative">
-        {/* Navigation Arrows */}
-        {products.length > 0 && (
-          <>
-            {canScrollLeft && (
-              <button
-                onClick={() => scroll('left')}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border border-gray-200 dark:border-gray-700"
-                aria-label={t('productDetail.related.previousProducts') || 'Previous products'}
-              >
-                <ChevronLeft className="w-6 h-6" />
-              </button>
-            )}
-            {canScrollRight && (
-              <button
-                onClick={() => scroll('right')}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border border-gray-200 dark:border-gray-700"
-                aria-label={t('productDetail.related.nextProducts') || 'Next products'}
-              >
-                <ChevronRight className="w-6 h-6" />
-              </button>
-            )}
-          </>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span className="grid h-10 w-10 place-items-center rounded-lg bg-first/10 text-first">
+            <ShoppingBag className="h-5 w-5" />
+          </span>
+          <div>
+            <h2 className="font-s-bold text-xl first-text-color">
+              {t('product.relatedProducts') || 'Related Products'}
+            </h2>
+            <p className="mt-1 text-sm first-text-color-for-paragraph">
+              {t('product.newestDescription') || 'Check out the latest additions to our store'}
+            </p>
+          </div>
+        </div>
+
+        {products.length > 1 && (
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => scroll('left')}
+              disabled={!canScrollLeft}
+              className="grid h-9 w-9 place-items-center rounded-lg border border-first-100 bg-color-for-layer-sec first-text-color-for-paragraph transition hover:border-first-300 hover:text-first disabled:cursor-not-allowed disabled:opacity-40"
+              aria-label={t('productDetail.related.previousProducts') || 'Previous products'}
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => scroll('right')}
+              disabled={!canScrollRight}
+              className="grid h-9 w-9 place-items-center rounded-lg border border-first-100 bg-color-for-layer-sec first-text-color-for-paragraph transition hover:border-first-300 hover:text-first disabled:cursor-not-allowed disabled:opacity-40"
+              aria-label={t('productDetail.related.nextProducts') || 'Next products'}
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </div>
         )}
+      </div>
 
-        {/* Horizontal Scrollable Container */}
-        <div
-          ref={scrollContainerRef}
-          onScroll={checkScrollability}
-          className="flex gap-4 overflow-x-auto scrollbar-hide pb-4"
-          style={{
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
-          }}
-        >
-          {products.map((product, index) => {
-            const imageUrl = getImageUrl(product.mainImage?.filePath);
-            const discount = calculateDiscount(product.price, product.salePrice);
-            const stockQuantity = product.stockQuantity ?? null;
-            const isLowStock =
-              stockQuantity != null &&
-              stockQuantity > 0 &&
-              stockQuantity <= 5;
+      <div
+        ref={scrollContainerRef}
+        onScroll={checkScrollability}
+        className="scrollbar-hide -mx-1 flex items-stretch gap-4 overflow-x-auto px-1 pb-2"
+        style={{
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+        }}
+      >
+        {products.map((product, index) => {
+          const imageUrl = getImageUrl(product.mainImage?.filePath);
+          const discount = calculateDiscount(product.price, product.salePrice);
+          const stockQuantity = product.stockQuantity ?? null;
+          const hasSalePrice =
+            typeof product.price === 'number' &&
+            typeof product.salePrice === 'number' &&
+            product.salePrice > 0 &&
+            product.salePrice < product.price;
+          const currentPrice = hasSalePrice ? product.salePrice : product.price;
+          const isLowStock = stockQuantity != null && stockQuantity > 0 && stockQuantity <= 5;
+          const isOutOfStock = stockQuantity != null && stockQuantity <= 0;
 
-            return (
-              <motion.div
-                key={`${product.id}-${product.slug}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-                className="flex-shrink-0 w-80"
+          return (
+            <motion.article
+              key={`${product.id}-${product.slug}`}
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.04 }}
+              className="flex h-[26.5rem] w-72 shrink-0 sm:w-80"
+            >
+              <Link
+                to={localizedPath(`/products/${product.slug}`)}
+                className="group flex h-full w-full flex-col overflow-hidden rounded-lg border border-first-100/70 bg-color-for-layer-on-body p-3 shadow-[0_12px_30px_-22px_rgba(15,23,42,0.5)] transition-all duration-300 hover:-translate-y-1 hover:border-first-300 hover:shadow-[0_16px_36px_-20px_rgba(27,126,251,0.35)]"
               >
-                <Link
-                  to={localizedPath(`/products/${product.slug}`)}
-                  className="block bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-xl transition-all duration-300"
-                >
-                  {/* Special Sale Banner */}
-                  {product.isOnSale && (
-                    <div className="bg-red-600 text-white text-center py-1.5 text-sm font-bold">
-                      {t('cart.specialSale') || 'Special Sale'}
+                <div className="relative h-44 overflow-hidden rounded-lg border border-first-100/70 bg-color-for-layer-sec">
+                  <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(27,126,251,0.12),rgba(16,185,129,0.08))]" />
+                  {imageUrl ? (
+                    <img
+                      src={imageUrl}
+                      alt={product.mainImage?.alt || product.name}
+                      className="relative z-10 h-full w-full object-contain p-3 drop-shadow-[0_12px_20px_rgba(15,23,42,0.18)] transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="relative z-10 flex h-full w-full flex-col items-center justify-center gap-2 first-text-color-for-paragraph">
+                      <ImageOff className="h-8 w-8 opacity-70" />
+                      <span className="text-xs">
+                        {t('productDetail.gallery.noImage') || 'No image'}
+                      </span>
                     </div>
                   )}
 
-                  {/* Product Image */}
-                  <div className="relative aspect-square bg-gray-50 dark:bg-gray-900 overflow-hidden">
-                    {imageUrl ? (
-                      <img
-                        src={imageUrl}
-                        alt={product.mainImage?.alt || product.name}
-                        className="w-full h-full object-contain p-4 hover:scale-105 transition-transform duration-300"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <span className="text-muted-foreground dark:text-gray-400 text-sm">
-                          {t('productDetail.gallery.noImage') || 'No image'}
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Discount Badge */}
-                    {discount && discount > 0 && (
-                      <div className="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-md">
+                  <div className="absolute inset-x-0 top-0 z-20 flex items-start justify-between p-2">
+                    {discount && discount > 0 ? (
+                      <span className="rounded-md bg-color-for-red px-2 py-1 text-xs font-s-bold text-white">
                         {discount}%
-                      </div>
+                      </span>
+                    ) : (
+                      <span />
+                    )}
+                    {isOutOfStock && (
+                      <span className="rounded-md bg-color-for-red px-2 py-1 text-xs text-white">
+                        {t('product.outOfStock') || 'Out Of Stock'}
+                      </span>
                     )}
                   </div>
+                </div>
 
-                  {/* Product Info */}
-                  <div className="p-4 space-y-2">
-                    {/* Brand (if available) */}
-                    {/* Product Title */}
-                    <h3 className="font-semibold text-sm line-clamp-2 min-h-[2.5rem] text-gray-900 dark:text-gray-100">
+                <div className="flex flex-1 flex-col justify-between pt-3">
+                  <div className="min-h-24">
+                    <h3 className="line-clamp-2 min-h-10 font-s-medium first-text-color">
                       {product.name}
                     </h3>
+                    <p className="mt-1 line-clamp-2 min-h-10 text-xs leading-5 first-text-color-for-paragraph">
+                      {product.mainImage?.alt || ''}
+                    </p>
+                  </div>
 
-                    {/* Description/Short Description */}
-                    {product.mainImage?.alt && (
-                      <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
-                        {product.mainImage.alt}
-                      </p>
-                    )}
-
-                    {/* Delivery Info */}
-                    <div className="text-xs text-green-600 dark:text-green-400 font-medium">
-                      {t('product.fastDelivery') || 'Fast Delivery'}
-                    </div>
-
-                    {/* Stock Alert */}
-                    {isLowStock && (
-                      <div className="text-xs text-orange-600 dark:text-orange-400 font-medium">
-                        {t('product.lowStock') || 'Only'} {stockQuantity}{' '}
-                        {t('product.itemsLeft') || 'items left in stock'}
-                      </div>
-                    )}
-
-                    {/* Price */}
-                    <div className="flex items-center gap-2 pt-2">
-                      {product.isOnSale && product.salePrice ? (
-                        <>
-                          <span className="font-bold text-lg text-gray-900 dark:text-gray-100">
-                            <PriceDisplay amount={product.salePrice} languageCode={languageCode} />
+                  <div className="mt-4 space-y-3">
+                    <div className="flex h-14 items-end justify-between gap-3">
+                      <div className="min-w-0">
+                        {typeof currentPrice === 'number' && (
+                          <span className="text-lg font-s-bold first-text-color">
+                            <PriceDisplay amount={currentPrice} languageCode={languageCode} />
                           </span>
-                          {product.price && (
-                            <span className="text-sm text-gray-500 dark:text-gray-400 line-through">
-                              <PriceDisplay amount={product.price} languageCode={languageCode} />
-                            </span>
-                          )}
-                        </>
-                      ) : (
-                        product.price && (
-                          <span className="font-bold text-lg text-gray-900 dark:text-gray-100">
+                        )}
+                        {hasSalePrice && typeof product.price === 'number' && (
+                          <span className="mt-1 block text-sm first-text-color-for-paragraph-low line-through">
                             <PriceDisplay amount={product.price} languageCode={languageCode} />
                           </span>
-                        )
+                        )}
+                      </div>
+
+                      {isLowStock ? (
+                        <span className="rounded-md bg-third/10 px-2 py-1 text-xs text-third">
+                          {t('product.lowStock') || 'Only'} {stockQuantity}
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 rounded-md bg-first/10 px-2 py-1 text-xs text-first">
+                          <Truck className="h-3.5 w-3.5" />
+                          {t('product.fastDelivery') || 'Fast Delivery'}
+                        </span>
                       )}
                     </div>
+
+                    <span className="flex items-center justify-between rounded-md bg-first px-3 py-2 text-sm text-white transition-colors group-hover:bg-first-600">
+                      {t('mainpage.specials.viewProduct') || 'View Product'}
+                      <ChevronRight className="h-4 w-4" />
+                    </span>
                   </div>
-                </Link>
-              </motion.div>
-            );
-          })}
-        </div>
+                </div>
+              </Link>
+            </motion.article>
+          );
+        })}
       </div>
 
       <style>{`
