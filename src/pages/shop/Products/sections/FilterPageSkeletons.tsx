@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from '@/components/ui/skeleton';
 
 export const FilterItemsSkeleton = ({ rows = 7 }: { rows?: number }) => (
   <div className="space-y-3">
@@ -28,33 +28,39 @@ export const FilterPanelSkeleton = () => (
 );
 
 export const GridProductsSkeleton = ({ count }: { count: number }) => (
-  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+  <div className="grid grid-cols-1 gap-3 min-[480px]:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
     {Array.from({ length: count }).map((_, index) => (
       <div
         key={`grid-skeleton-${index}`}
-        className="h-95 rounded-xl border border-first-100/70 bg-color-for-layer-on-body p-4 shadow-[0_10px_26px_-20px_rgba(27,126,251,0.45)]"
+        className="relative flex min-h-80 flex-col overflow-hidden rounded-2xl border border-first-100/70 bg-color-for-layer-on-body p-4 shadow-[0_12px_30px_-22px_rgba(15,23,42,0.5)] sm:min-h-88"
       >
-        <div className="relative mb-3 h-1/2">
-          <div className="absolute inset-x-0 top-0 flex items-start justify-between">
-            <Skeleton className="h-7 w-12 rounded-md bg-first-100" />
-            <Skeleton className="h-7 w-20 rounded-md bg-first-100" />
-          </div>
+        <div className="relative mb-3 h-40 w-full overflow-hidden rounded-xl border border-first-100/70 bg-color-for-layer-sec">
           <Skeleton className="h-full w-full rounded-xl bg-first-100" />
-        </div>
-
-        <div className="mb-10 space-y-2">
-          <Skeleton className="h-5 w-4/5 bg-first-100" />
-        </div>
-
-        <div className="mb-3 flex items-center justify-between">
-          <div className="space-y-2">
-            <Skeleton className="h-3 w-20 bg-first-100" />
-            <Skeleton className="h-5 w-28 bg-first-100" />
+          <div className="absolute inset-x-0 top-0 flex items-start justify-between p-2">
+            <Skeleton className="h-9 w-12 rounded-md bg-first-100" />
+            <Skeleton className="h-6 w-16 rounded-full bg-first-100" />
           </div>
-          <Skeleton className="h-5 w-14 bg-first-100" />
         </div>
 
-        <Skeleton className="h-10 w-full rounded-lg bg-first-100" />
+        <div className="flex flex-1 flex-col justify-between">
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-5/6 bg-first-100" />
+            <Skeleton className="h-4 w-full bg-first-100" />
+            <Skeleton className="h-4 w-2/3 bg-first-100" />
+          </div>
+
+          <div className="space-y-4 pt-5">
+            <div className="flex items-center justify-between gap-3">
+              <div className="space-y-2">
+                <Skeleton className="h-3 w-20 bg-first-100" />
+                <Skeleton className="h-5 w-28 bg-first-100" />
+              </div>
+              <Skeleton className="h-5 w-16 bg-first-100" />
+            </div>
+
+            <Skeleton className="h-10 w-full rounded-md bg-first-100" />
+          </div>
+        </div>
       </div>
     ))}
   </div>

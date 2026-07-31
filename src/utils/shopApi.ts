@@ -383,6 +383,37 @@ export interface ProductTag {
   }>;
 }
 
+export interface RelatedProductImage {
+  id?: number;
+  fileName?: string;
+  filePath?: string;
+  thumbnailPath?: string | null;
+  alt?: string | null;
+  title?: string | null;
+}
+
+export interface RelatedProductItem {
+  id: number;
+  slug: string;
+  sku?: string;
+  name: string;
+  isPublished?: boolean;
+  isFeatured?: boolean;
+  status?: string;
+  mainImage?: RelatedProductImage | null;
+  createdAt?: string;
+  updatedAt?: string;
+  price?: number | null;
+  salePrice?: number | null;
+  currencyCode?: string;
+  currencySymbol?: string;
+  discountPercent?: number | null;
+  isOnSale?: boolean;
+  stockQuantity?: number | null;
+  tracksInventory?: boolean;
+  attributeValues?: ProductAttributeValue[];
+}
+
 export interface RelatedProduct {
   id: number;
   productId: number;
@@ -390,26 +421,10 @@ export interface RelatedProduct {
   relationType: string;
   displayOrder: number;
   isBidirectional: boolean;
-  relatedProduct: {
-    id: number;
-    slug: string;
-    sku: string;
-    name: string;
-    isPublished: boolean;
-    isFeatured: boolean;
-    status: string;
-    mainImage?: MediaFile;
-    createdAt: string;
-    updatedAt: string;
-    price?: number;
-    salePrice?: number | null;
-    currencyCode?: string;
-    currencySymbol?: string;
-    discountPercent?: number | null;
-    isOnSale: boolean;
-    stockQuantity?: number | null;
-  };
+  relatedProduct: RelatedProductItem;
 }
+
+export type ProductRelatedProduct = RelatedProduct | RelatedProductItem;
 
 export interface ProductReview {
   id: number;
@@ -456,7 +471,7 @@ export interface ProductDetail {
   variants?: ProductVariant[];
   attributeValues?: ProductAttributeValue[];
   tags?: ProductTag[];
-  relatedProducts?: RelatedProduct[];
+  relatedProducts?: ProductRelatedProduct[];
   reviews?: ProductReview[];
   reviewCount?: number;
   averageRating?: number;

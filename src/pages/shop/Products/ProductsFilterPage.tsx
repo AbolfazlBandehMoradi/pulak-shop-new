@@ -1,4 +1,3 @@
-import { X } from 'lucide-react';
 import { useTranslation } from '@/i18n/useTranslation';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { useInfiniteProducts } from '@/hooks/useInfiniteProducts';
@@ -112,8 +111,6 @@ export default function ProductsFilterPage() {
   const search = useShopStore((s) => s.search);
   const categoryIds = useShopStore((s) => s.categoryIds);
   const hasOffer = useShopStore((s) => s.hasOffer);
-  const setSearch = useShopStore((s) => s.setSearch);
-  const setCategoryIds = useShopStore((s) => s.setCategoryIds);
   const setHasOffer = useShopStore((s) => s.setHasOffer);
   const setFilters = useShopStore((s) => s.setFilters);
   const clearFilters = useShopStore((s) => s.clearFilters);
@@ -122,17 +119,7 @@ export default function ProductsFilterPage() {
   const [componentError, setComponentError] = useState<string | null>(null);
   const syncedQueryRef = useRef<string>('');
 
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-    isFetching,
-    isError: isProductsError,
-  } = useInfiniteProducts();
-
-  const products = data?.pages.flatMap((page) => page.products) ?? [];
+  const filtersFromUrl = useMemo(() => parseFiltersFromSearch(location.search), [location.search]);
 
   const normalizedActiveFilters = useMemo<ShopFiltersSnapshot>(
     () =>
@@ -144,8 +131,27 @@ export default function ProductsFilterPage() {
     [search, categoryIds, hasOffer],
   );
 
+  const isStoreSyncedWithUrl = useMemo(
+    () => areSameFilters(filtersFromUrl, normalizedActiveFilters),
+    [filtersFromUrl, normalizedActiveFilters],
+  );
+
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isFetching,
+    isError: isProductsError,
+  } = useInfiniteProducts({ enabled: isUrlHydrated && isStoreSyncedWithUrl });
+
+  const products = data?.pages.flatMap((page) => page.products) ?? [];
+
   const hasProducts = products.length > 0;
-  const showProductsSkeleton = !hasProducts && (isLoading || isFetching) && !isFetchingNextPage;
+  const showProductsSkeleton =
+    (isUrlHydrated && !isStoreSyncedWithUrl) ||
+    (!hasProducts && (isLoading || isFetching) && !isFetchingNextPage);
   const skeletonCount = Math.min(
     Math.max(products.length, GRID_SKELETON_COUNT),
     MAX_GRID_SKELETON_COUNT,
@@ -155,16 +161,17 @@ export default function ProductsFilterPage() {
   const hasCompletedInitialLoadRef = useRef(false);
 
   useEffect(() => {
-    if (!isLoading) {
+    if (isUrlHydrated && !isLoading) {
       hasCompletedInitialLoadRef.current = true;
     }
-  }, [isLoading]);
+  }, [isUrlHydrated, isLoading]);
 
-  const showInitialPageSkeleton = !hasCompletedInitialLoadRef.current && isLoading;
+  const showInitialPageSkeleton =
+    !isUrlHydrated || (!hasCompletedInitialLoadRef.current && isLoading);
 
   useEffect(() => {
     try {
-      const nextFilters = parseFiltersFromSearch(location.search);
+      const nextFilters = filtersFromUrl;
 
       const currentFilters = normalizeFilters({
         search,
@@ -216,7 +223,7 @@ export default function ProductsFilterPage() {
   }, [normalizedActiveFilters, isUrlHydrated]);
 
   useEffect(() => {
-    if (!hasNextPage || !loadMoreRef.current) {
+    if (!isStoreSyncedWithUrl || !hasNextPage || !loadMoreRef.current) {
       return;
     }
 
@@ -231,7 +238,7 @@ export default function ProductsFilterPage() {
 
     observer.observe(loadMoreRef.current);
     return () => observer.disconnect();
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [isStoreSyncedWithUrl, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const handleClearFilters = () => {
     clearFilters();
@@ -247,44 +254,6 @@ export default function ProductsFilterPage() {
     normalizedActiveFilters.categoryIds.length > 0 ||
     Boolean(normalizedActiveFilters.search) ||
     Boolean(normalizedActiveFilters.hasOffer);
-
-  const activeFilterTags = useMemo(() => {
-    const tags: Array<{ key: string; label: string; onRemove: () => void }> = [];
-
-    if (normalizedActiveFilters.search) {
-      tags.push({
-        key: 'search',
-        label: `${t('productsFilter.activeSearchLabel')}: ${normalizedActiveFilters.search}`,
-        onRemove: () => setSearch(undefined),
-      });
-    }
-
-    if (normalizedActiveFilters.hasOffer) {
-      tags.push({
-        key: 'has-offer',
-        label: t('productsFilter.onlyDiscountedProducts'),
-        onRemove: () => setHasOffer(undefined),
-      });
-    }
-
-    if (normalizedActiveFilters.categoryIds.length > 0) {
-      tags.push({
-        key: 'categories',
-        label: `${t('productsFilter.filters')}: ${t('productsFilter.categories')}`,
-        onRemove: () => setCategoryIds([]),
-      });
-    }
-
-    return tags;
-  }, [
-    normalizedActiveFilters.search,
-    normalizedActiveFilters.hasOffer,
-    normalizedActiveFilters.categoryIds,
-    t,
-    setSearch,
-    setHasOffer,
-    setCategoryIds,
-  ]);
 
   const getImageUrl = (product: CatalogProduct): string | null => {
     if (!product.mainImage?.filePath) {

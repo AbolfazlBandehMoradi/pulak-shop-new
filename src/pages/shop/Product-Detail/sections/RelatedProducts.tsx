@@ -5,13 +5,27 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslation } from '@/i18n/useTranslation';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
-import type { RelatedProduct } from '@/utils/shopApi';
+import type { ProductRelatedProduct, RelatedProduct, RelatedProductItem } from '@/utils/shopApi';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 
 interface RelatedProductsProps {
-  relatedProducts: RelatedProduct[] | undefined;
+  relatedProducts: ProductRelatedProduct[] | undefined;
   languageCode: string;
   loading?: boolean;
+}
+
+function isWrappedRelatedProduct(rel: ProductRelatedProduct): rel is RelatedProduct {
+  return 'relatedProduct' in rel;
+}
+
+function normalizeRelatedProduct(rel: ProductRelatedProduct): RelatedProductItem | null {
+  const product = isWrappedRelatedProduct(rel) ? rel.relatedProduct : rel;
+
+  if (!product?.id || !product.slug || !product.name) {
+    return null;
+  }
+
+  return product;
 }
 
 export function RelatedProducts({ relatedProducts, languageCode, loading }: RelatedProductsProps) {
@@ -20,6 +34,8 @@ export function RelatedProducts({ relatedProducts, languageCode, loading }: Rela
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const products =
+    relatedProducts?.map(normalizeRelatedProduct).filter((product) => product !== null) ?? [];
 
   const getImageUrl = (filePath?: string) => {
     if (!filePath) return null;
@@ -99,7 +115,7 @@ export function RelatedProducts({ relatedProducts, languageCode, loading }: Rela
     );
   }
 
-  if (!relatedProducts || relatedProducts.length === 0) {
+  if (products.length === 0) {
     return null;
   }
 
@@ -115,7 +131,7 @@ export function RelatedProducts({ relatedProducts, languageCode, loading }: Rela
       </h2>
       <div className="relative">
         {/* Navigation Arrows */}
-        {relatedProducts.length > 0 && (
+        {products.length > 0 && (
           <>
             {canScrollLeft && (
               <button
@@ -148,8 +164,7 @@ export function RelatedProducts({ relatedProducts, languageCode, loading }: Rela
             msOverflowStyle: 'none',
           }}
         >
-          {relatedProducts.map((rel, index) => {
-            const product = rel.relatedProduct;
+          {products.map((product, index) => {
             const imageUrl = getImageUrl(product.mainImage?.filePath);
             const discount = calculateDiscount(product.price, product.salePrice);
             const stockQuantity = product.stockQuantity ?? null;
@@ -160,7 +175,7 @@ export function RelatedProducts({ relatedProducts, languageCode, loading }: Rela
 
             return (
               <motion.div
-                key={rel.id}
+                key={`${product.id}-${product.slug}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}

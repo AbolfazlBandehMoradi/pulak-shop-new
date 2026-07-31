@@ -1,85 +1,127 @@
-import { useEffect } from 'react'
-import { CheckCircle2, Home, PackageCheck, ReceiptText, ShieldCheck } from 'lucide-react'
-import { useQueryClient } from '@tanstack/react-query'
-import { useTranslation } from '@/i18n/useTranslation'
-import { useLangStore } from '@/stores/languageStore'
-import { useLocalizedNavigate } from '@/hooks/useLocalizedNavigate'
-import { useAuth } from '@/context/AuthContext'
-import useCartStore from '@/stores/cartStore'
-import { getCart } from '@/utils/cartApi'
-import { PaymentResultShell } from './sections/PaymentResultShell'
+import { useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { CheckCircle2, Home, PackageCheck, ReceiptText, ShieldCheck } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from '@/i18n/useTranslation';
+import { useLangStore } from '@/stores/languageStore';
+import { useLocalizedNavigate } from '@/hooks/useLocalizedNavigate';
+import { useAuth } from '@/context/AuthContext';
+import useCartStore from '@/stores/cartStore';
+import { getCart } from '@/utils/cartApi';
+import { PaymentResultShell } from './sections/PaymentResultShell';
 
 export default function PaymentSuccessPage() {
-  const navigate = useLocalizedNavigate()
-  const { t } = useTranslation()
-  const dir = useLangStore((s) => s.dir)
-  const currentLanguage = useLangStore((s) => s.lang)
-  const { isAuthenticated, user } = useAuth()
-  const queryClient = useQueryClient()
-  const setCart = useCartStore((state) => state.setCart)
-  const effectiveLangCode = currentLanguage || 'fa'
+  const navigate = useLocalizedNavigate();
+  const { t } = useTranslation();
+  const dir = useLangStore((s) => s.dir);
+  const currentLanguage = useLangStore((s) => s.lang);
+  const { isAuthenticated, user } = useAuth();
+  const queryClient = useQueryClient();
+  const setCart = useCartStore((state) => state.setCart);
+  const effectiveLangCode = currentLanguage || 'fa';
+  const [searchParams] = useSearchParams();
+  const isCardToCardSuccess = searchParams.get('method') === 'cardToCard';
+  const orderNumber = searchParams.get('orderNumber') ?? '';
 
   useEffect(() => {
-    if (!isAuthenticated) return
 
-    const cartScope = `user:${user?.id ?? 'authenticated'}`
-    let isMounted = true
+    if (!isAuthenticated) return;
+
+    const cartScope = `user:${user?.id ?? 'authenticated'}`;
+    let isMounted = true;
 
     const syncCartAfterPayment = async () => {
       try {
         const latestCart = await queryClient.fetchQuery({
           queryKey: ['cart', effectiveLangCode, cartScope],
           queryFn: () => getCart(effectiveLangCode),
-        })
+        });
 
-        if (!isMounted) return
-        setCart(latestCart)
+        if (!isMounted) return;
+        setCart(latestCart);
       } catch (error) {
         if (import.meta.env.DEV) {
-          console.warn('[PaymentSuccessPage] failed to refresh cart', error)
+          console.warn('[PaymentSuccessPage] failed to refresh cart', error);
         }
       }
-    }
+    };
 
-    void syncCartAfterPayment()
+    void syncCartAfterPayment();
 
     return () => {
-      isMounted = false
-    }
-  }, [effectiveLangCode, isAuthenticated, queryClient, setCart, user?.id])
+      isMounted = false;
+    };
+  }, [effectiveLangCode, isAuthenticated, queryClient, setCart, user?.id]);
 
-  const nextSteps = [
-    {
-      icon: <ReceiptText className="h-5 w-5" />,
-      title: t('payment.successReceiptTitle') || 'Payment recorded',
-      description:
-        t('payment.successReceiptDescription') ||
-        'Your order receipt and payment status are saved in your profile.',
-    },
-    {
-      icon: <PackageCheck className="h-5 w-5" />,
-      title: t('payment.successPreparationTitle') || 'Order is being prepared',
-      description:
-        t('payment.successPreparationDescription') ||
-        'We will start processing your purchase and update your order history.',
-    },
-    {
-      icon: <ShieldCheck className="h-5 w-5" />,
-      title: t('payment.successSecureTitle') || 'Secure transaction',
-      description:
-        t('payment.successSecureDescription') ||
-        'Your payment confirmation has been received through the gateway.',
-    },
-  ]
+  const nextSteps = isCardToCardSuccess
+    ? [
+        {
+          icon: <ReceiptText className="h-5 w-5" />,
+          title: t('payment.cardToCardSuccessReceiptTitle') || 'Receipt submitted',
+          description:
+            t('payment.cardToCardSuccessReceiptDescription') ||
+            'Your transfer details and receipt image were saved for review.',
+        },
+        {
+          icon: <ShieldCheck className="h-5 w-5" />,
+          title: t('payment.cardToCardSuccessSecureTitle') || 'Verification pending',
+          description:
+            t('payment.cardToCardSuccessSecureDescription') ||
+            'Our team will verify the bank transfer before confirming payment.',
+        },
+        {
+          icon: <PackageCheck className="h-5 w-5" />,
+          title: t('payment.cardToCardSuccessPreparationTitle') || 'Order received',
+          description:
+            t('payment.cardToCardSuccessPreparationDescription') ||
+            'You can follow the order status from your profile.',
+        },
+      ]
+    : [
+        {
+          icon: <ReceiptText className="h-5 w-5" />,
+          title: t('payment.successReceiptTitle') || 'Payment recorded',
+          description:
+            t('payment.successReceiptDescription') ||
+            'Your order receipt and payment status are saved in your profile.',
+        },
+        {
+          icon: <PackageCheck className="h-5 w-5" />,
+          title: t('payment.successPreparationTitle') || 'Order is being prepared',
+          description:
+            t('payment.successPreparationDescription') ||
+            'We will start processing your purchase and update your order history.',
+        },
+        {
+          icon: <ShieldCheck className="h-5 w-5" />,
+          title: t('payment.successSecureTitle') || 'Secure transaction',
+          description:
+            t('payment.successSecureDescription') ||
+            'Your payment confirmation has been received through the gateway.',
+        },
+      ];
 
   return (
     <PaymentResultShell
       dir={dir}
       tone="success"
       icon={<CheckCircle2 className="h-12 w-12" strokeWidth={1.8} />}
-      eyebrow={t('payment.successEyebrow') || 'Payment confirmed'}
-      title={t('payment.successTitle') || 'Payment Successful'}
-      message={t('payment.successMessage') || 'Your payment was completed successfully.'}
+      eyebrow={
+        isCardToCardSuccess
+          ? t('payment.cardToCardSuccessEyebrow') || 'Receipt submitted'
+          : t('payment.successEyebrow') || 'Payment confirmed'
+      }
+      title={
+        isCardToCardSuccess
+          ? t('payment.cardToCardSuccessTitle') || 'Receipt Submitted'
+          : t('payment.successTitle') || 'Payment Successful'
+      }
+      message={
+        isCardToCardSuccess
+          ? t('payment.cardToCardSuccessMessage') ||
+            'Your order was submitted and is waiting for transfer verification.'
+          : t('payment.successMessage') || 'Your payment was completed successfully.'
+      }
       primaryAction={{
         label: t('payment.viewOrders') || 'View orders',
         onClick: () => navigate('/profile'),
@@ -98,8 +140,11 @@ export default function PaymentSuccessPage() {
               {t('payment.whatHappensNext') || 'What happens next'}
             </p>
             <p className="mt-1 text-xs leading-6 first-text-color-for-paragraph">
-              {t('payment.successNextHint') ||
-                'You can follow the latest status from your profile whenever you need it.'}
+              {isCardToCardSuccess
+                ? t('payment.cardToCardSuccessNextHint') ||
+                  'We will update your order once the receipt is verified.'
+                : t('payment.successNextHint') ||
+                  'You can follow the latest status from your profile whenever you need it.'}
             </p>
           </div>
 
@@ -120,6 +165,17 @@ export default function PaymentSuccessPage() {
           </div>
         </div>
       }
-    />
-  )
+    >
+      {isCardToCardSuccess && orderNumber && (
+        <div className="rounded-2xl border rounded-b-none border-emerald-200/80 bg-emerald-50 px-4 py-3 text-start dark:border-emerald-500/30 dark:bg-emerald-900/20">
+          <p className="text-xs font-f-sbold text-emerald-700 dark:text-emerald-200">
+            {t('payment.cardToCardOrderNumber') || 'Order number'}
+          </p>
+          <p className="mt-1 font-mono text-sm text-emerald-900 dark:text-emerald-100">
+            #{orderNumber}
+          </p>
+        </div>
+      )}
+    </PaymentResultShell>
+  );
 }

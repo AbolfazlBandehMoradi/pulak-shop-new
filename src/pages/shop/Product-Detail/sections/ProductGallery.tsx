@@ -7,6 +7,7 @@ import { FreeMode, Thumbs } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
 import { ChevronLeftIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from '@/i18n/useTranslation';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ProductGalleryProps {
   images: MediaFile[]; // ✅ اصلاح شد
@@ -16,7 +17,12 @@ interface ProductGalleryProps {
   lang?: string;
 }
 
-export function ProductGallery({ images = [], mainImage, productName }: ProductGalleryProps) {
+export function ProductGallery({
+  images = [],
+  mainImage,
+  productName,
+  loading,
+}: ProductGalleryProps) {
   const { t } = useTranslation();
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
   const [mainSwiper, setMainSwiper] = useState<SwiperType | null>(null);
@@ -36,6 +42,22 @@ export function ProductGallery({ images = [], mainImage, productName }: ProductG
     (item, index, self) =>
       item?.filePath && index === self.findIndex((i) => i.filePath === item.filePath),
   );
+
+  if (loading) {
+    return (
+      <div className="w-full rounded-lg">
+        <Skeleton className="aspect-square w-full rounded-xl border border-gray-300 bg-first-100" />
+        <div className="flex gap-2 overflow-hidden py-2">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <Skeleton
+              key={`gallery-loading-${index}`}
+              className="h-16 w-16 shrink-0 rounded-md bg-first-100"
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   if (!displayImages.length) {
     return (
