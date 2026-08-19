@@ -757,7 +757,7 @@ export default function PaymentPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-5 lg:grid-cols-12 lg:items-start xl:gap-6">
-            <div className="space-y-5 lg:col-span-8">
+            <div className="space-y-5 bg-white rounded-lg lg:col-span-8">
               <motion.section
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -1293,7 +1293,7 @@ export default function PaymentPage() {
 
             <div className="hidden lg:col-span-4 lg:block">
               <div className="lg:sticky lg:top-24">
-                <aside className="product-detail-panel relative overflow-hidden p-4 sm:p-5">
+                <aside className="product-detail-panel bg-white rounded-lg relative overflow-hidden p-4 sm:p-5">
                   <div
                     aria-hidden="true"
                     className="absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-first via-first to-secound"
