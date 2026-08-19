@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { Link2, MessageCircle, Send, Phone, Instagram } from 'lucide-react';
+import { Link2, MessageCircle, Phone, Send } from 'lucide-react';
+
 import copy from '@/assets/Images/Logo/copy.png';
 import Telegram from '@/assets/Images/Logo/Telegram.webp';
 import whatsapp from '@/assets/Images/Logo/whatsapp.png';
@@ -8,13 +9,17 @@ import instagram from '@/assets/Images/Logo/instagram.png';
 import rubika from '@/assets/Images/Logo/rubika.png';
 import etia from '@/assets/Images/Logo/etia.png';
 import soroush from '@/assets/Images/Logo/soroush.jpg';
+import bale from '@/assets/Images/Logo/bale.jpg';
 import chat from '@/assets/Images/Logo/chat.png';
+
+import { copyToClipboard } from '@/utils/url';
 
 export type ShareType =
   | 'copy'
   | 'telegram'
   | 'whatsapp'
   | 'instagram'
+  | 'bale'
   | 'rubika'
   | 'eitaa'
   | 'soroush'
@@ -28,6 +33,8 @@ export type ShareItemConfig = {
   displayMode?: 'icon' | 'image';
   className?: string;
   textClassName?: string;
+  imageClassName?: string;
+  copiedLabel?: string;
 };
 
 interface Props {
@@ -42,19 +49,12 @@ interface Props {
   textClassName?: string;
 }
 
-/* =========================
-   SSR SAFE URL
-========================= */
 const getCurrentUrl = () => (typeof window !== 'undefined' ? window.location.href : '');
-
-/* =========================
-   COMPONENT
-========================= */
 
 export function ShareSocialMedia({
   url = getCurrentUrl(),
   title = '',
-  options = ['rubika', 'eitaa', 'soroush', 'telegram', 'whatsapp'],
+  options = ['bale', 'telegram', 'whatsapp', 'rubika', 'eitaa', 'soroush'],
   customItems = {},
   liveChatUrl,
   className = '',
@@ -67,116 +67,117 @@ export function ShareSocialMedia({
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
 
-  /* =========================
-     DEFAULT CONFIG
-  ========================= */
   const base: Record<ShareType, ShareItemConfig> = {
     copy: {
-      label: 'کپی لینک',
+      label: 'Copy link',
       icon: <Link2 className="h-4 w-4" />,
       image: copy,
     },
 
+    bale: {
+      label: 'Bale',
+      icon: <Send className="h-4 w-4" />,
+      image: bale,
+    },
+
     telegram: {
-      label: 'تلگرام',
+      label: 'Telegram',
       icon: <Send className="h-4 w-4" />,
       image: Telegram,
     },
 
     whatsapp: {
-      label: 'واتساپ',
+      label: 'WhatsApp',
       icon: <MessageCircle className="h-4 w-4" />,
       image: whatsapp,
     },
 
     instagram: {
-      label: 'اینستاگرام',
-      icon: <Instagram className="h-4 w-4" />,
+      label: 'Instagram',
+      icon: <MessageCircle className="h-4 w-4" />,
       image: instagram,
     },
 
     rubika: {
-      label: 'روبیکا',
+      label: 'Rubika',
       icon: <Phone className="h-4 w-4" />,
       image: rubika,
     },
 
     eitaa: {
-      label: 'ایتا',
+      label: 'Eitaa',
       icon: <Send className="h-4 w-4" />,
       image: etia,
     },
 
     soroush: {
-      label: 'سروش',
+      label: 'Soroush',
       icon: <Send className="h-4 w-4" />,
       image: soroush,
     },
 
     livechat: {
-      label: 'چت آنلاین',
+      label: 'Live chat',
       icon: <MessageCircle className="h-4 w-4" />,
       image: chat,
     },
   };
 
-  /* =========================
-     ACTIONS
-  ========================= */
-  const actions: Record<ShareType, any> = {
-    copy: {
-      action: async () => {
-        await navigator.clipboard.writeText(url);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 1500);
-      },
+  const actions: Record<ShareType, () => void | Promise<void>> = {
+    copy: async () => {
+      const ok = await copyToClipboard(url);
+
+      if (!ok) return;
+
+      setCopied(true);
+
+      setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     },
 
-    telegram: {
-      action: () =>
-        window.open(`https://t.me/share/url?url=${encodedUrl}&text=${encodedTitle}`, '_blank'),
+    bale: () => {
+      window.open(`https://ble.ir/share?url=${encodedUrl}&text=${encodedTitle}`, '_blank');
     },
 
-    whatsapp: {
-      action: () => window.open(`https://wa.me/?text=${encodedTitle}%20${encodedUrl}`, '_blank'),
+    telegram: () => {
+      window.open(`https://t.me/share/url?url=${encodedUrl}&text=${encodedTitle}`, '_blank');
     },
 
-    instagram: {
-      action: () => window.open('https://instagram.com', '_blank'),
+    whatsapp: () => {
+      window.open(`https://wa.me/?text=${encodedTitle}%20${encodedUrl}`, '_blank');
     },
 
-    rubika: {
-      action: () => window.open(`https://rubika.ir/share?url=${encodedUrl}`, '_blank'),
+    instagram: () => {
+      window.open('https://instagram.com', '_blank');
     },
 
-    eitaa: {
-      action: () => window.open(`https://eitaa.com/share/url?url=${encodedUrl}`, '_blank'),
+    rubika: () => {
+      window.open(`https://rubika.ir/share?url=${encodedUrl}`, '_blank');
     },
 
-    soroush: {
-      action: () => window.open(`https://sapp.ir/share?url=${encodedUrl}`, '_blank'),
+    eitaa: () => {
+      window.open(`https://eitaa.com/share/url?url=${encodedUrl}`, '_blank');
     },
 
-    livechat: {
-      action: () => {
-        if (liveChatUrl) window.open(liveChatUrl, '_blank');
-      },
+    soroush: () => {
+      window.open(`https://sapp.ir/share?url=${encodedUrl}`, '_blank');
+    },
+
+    livechat: () => {
+      if (liveChatUrl) {
+        window.open(liveChatUrl, '_blank');
+      }
     },
   };
 
-  /* =========================
-     MERGE ITEMS
-  ========================= */
   const items = options.map((key) => ({
     key,
     ...base[key],
     ...customItems[key],
-    ...actions[key],
+    action: actions[key],
   }));
 
-  /* =========================
-     RENDER MEDIA
-  ========================= */
   const renderMedia = (item: ShareItemConfig) => {
     const mode = item.displayMode ?? 'image';
 
@@ -185,7 +186,7 @@ export function ShareSocialMedia({
         <img
           src={item.image}
           alt={item.alt || item.label || ''}
-          className={`h-5 w-5 object-contain ${iconClassName}`}
+          className={`${item.imageClassName || 'h-5 w-5'} object-contain ${iconClassName}`}
         />
       );
     }
@@ -193,30 +194,35 @@ export function ShareSocialMedia({
     return <span className={iconClassName}>{item.icon}</span>;
   };
 
-  /* =========================
-     UI
-  ========================= */
   return (
-    <div className={`flex flex-wrap gap-2 ${className}`}>
-      {items.map((item, idx) => {
+    <div className={className || 'flex flex-wrap gap-2'}>
+      {items.map((item) => {
         const isCopy = item.key === 'copy';
 
         return (
           <motion.button
-            key={idx}
-            whileTap={{ scale: 0.9 }}
+            key={item.key}
+            type="button"
+            whileTap={{
+              scale: 0.94,
+            }}
             onClick={item.action}
             aria-label={item.label}
             className={`
               ${buttonClassName}
               ${item.className || ''}
-              ${isCopy && copied ? 'bg-green-600 text-white' : ''}
+              ${isCopy && copied ? 'bg-first text-white' : ''}
             `}
           >
             {renderMedia(item)}
 
-            <span className={textClassName + ' ' + (item.textClassName || '')}>
-              {isCopy && copied ? 'کپی شد' : item.label}
+            <span
+              className={`
+              ${textClassName}
+              ${item.textClassName || ''}
+            `}
+            >
+              {isCopy && copied ? item.copiedLabel || 'Copied' : item.label}
             </span>
           </motion.button>
         );

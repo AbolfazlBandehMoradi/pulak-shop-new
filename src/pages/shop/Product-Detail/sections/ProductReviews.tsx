@@ -1,23 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  CalendarDays,
-  CheckCircle2,
-  Loader2,
-  MessageCircle,
-  PencilLine,
-  Star,
-  ThumbsUp,
-  UserRound,
-} from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Loader2, Star } from 'lucide-react';
 import { Button } from '@/components/ui/IconButton';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/AuthContext';
 import { useTranslation } from '@/i18n/useTranslation';
 import { cn } from '@/utils/cn';
-import { getProductReviews, createProductReview, type ProductReview } from '@/utils/shopApi';
+import { createProductReview, getProductReviews, type ProductReview } from '@/utils/shopApi';
 import { useToast } from '@/context/ToastContext';
 
 interface ProductReviewsProps {
@@ -27,26 +18,6 @@ interface ProductReviewsProps {
   initialReviewCount?: number;
   initialAverageRating?: number;
   initialRatingDistribution?: Array<{ rating: number; count: number }>;
-}
-
-const ratingValues = [5, 4, 3, 2, 1];
-
-function Stars({ rating, className }: { rating: number; className?: string }) {
-  return (
-    <div className={cn('flex items-center gap-1', className)}>
-      {Array.from({ length: 5 }).map((_, index) => (
-        <Star
-          key={`star-${index}`}
-          className={cn(
-            'h-4 w-4',
-            index < Math.round(rating)
-              ? 'fill-secound text-secound'
-              : 'fill-first-100 text-first-100 dark:fill-gray-700 dark:text-gray-700',
-          )}
-        />
-      ))}
-    </div>
-  );
 }
 
 export function ProductReviews({
@@ -69,13 +40,6 @@ export function ProductReviews({
   const [reviewerEmail, setReviewerEmail] = useState(user?.email || '');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-
-  const locale = languageCode === 'fa' ? 'fa-IR' : 'en-US';
-  const numberFormatter = new Intl.NumberFormat(locale);
-  const ratingFormatter = new Intl.NumberFormat(locale, {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-  });
 
   const reviewsQuery = useQuery({
     queryKey: ['product-reviews', productSlug, languageCode],
@@ -104,7 +68,6 @@ export function ProductReviews({
           'Review submitted successfully! It will be visible after approval.',
         5000,
       );
-
       setRating(0);
       setTitle('');
       setContent('');
@@ -122,7 +85,6 @@ export function ProductReviews({
 
   useEffect(() => {
     if (!user) return;
-
     setReviewerName((currentName) => currentName || user.firstName || '');
     setReviewerEmail((currentEmail) => currentEmail || user.email || '');
   }, [user]);
@@ -155,9 +117,7 @@ export function ProductReviews({
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    if (Number.isNaN(date.getTime())) return '';
-
-    return date.toLocaleDateString(locale, {
+    return date.toLocaleDateString(languageCode === 'fa' ? 'fa-IR' : 'en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -171,130 +131,114 @@ export function ProductReviews({
   const ratingDistribution = reviewsData?.ratingDistribution ?? [];
   const loading = reviewsQuery.isLoading && !reviewsData;
   const submitting = submitReviewMutation.isPending;
-  const selectedRating = hoveredRating || rating;
-  const reviewCountLabel =
-    reviewCount === 1 ? t('review.review') || 'review' : t('review.reviews') || 'reviews';
 
   return (
-    <section className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center rounded-lg bg-first/10 text-first">
-            <MessageCircle className="h-5 w-5" />
-          </span>
-          <div>
-            <h3 className="font-s-bold text-xl first-text-color">
-              {t('review.title') || 'Customer Reviews'}
-            </h3>
-            <p className="mt-1 text-sm first-text-color-for-paragraph">
-              {numberFormatter.format(reviewCount)} {reviewCountLabel}
-            </p>
-          </div>
+    <div className="rounded-2xl border border-first/10 bg-first/5 p-4 sm:p-6">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h3 className="text-lg font-s-medium first-text-color">
+            {t('review.title') || 'Customer Reviews'}
+          </h3>
+          <p className="mt-1 text-sm first-text-color-for-paragraph-low">
+            {reviewCount}{' '}
+            {reviewCount === 1 ? t('review.review') || 'review' : t('review.reviews') || 'reviews'}
+          </p>
         </div>
 
-        <Button
-          type="button"
-          onClick={() => setShowReviewForm((current) => !current)}
-          className="gap-2 rounded-lg bg-secound px-4 py-2 text-sm text-white hover:bg-secound-600"
-        >
-          <PencilLine className="h-4 w-4" />
-          {showReviewForm
-            ? t('common.cancel') || 'Cancel'
-            : t('review.writeReview') || 'Write a Review'}
-        </Button>
+        {!showReviewForm && (
+          <Button
+            onClick={() => setShowReviewForm(true)}
+            className="rounded-lg border border-first/10 bg-color-for-layer-on-body px-4 first-text-color transition hover:bg-first/10"
+          >
+            {t('review.writeReview') || 'Write a Review'}
+          </Button>
+        )}
       </div>
 
-      {loading ? (
-        <div className="grid gap-4 rounded-lg border border-first-100/70 bg-color-for-layer-sec p-4 lg:grid-cols-[0.8fr_1.2fr]">
-          <div className="space-y-3">
-            <Skeleton className="h-12 w-28 bg-first-100" />
-            <Skeleton className="h-5 w-36 bg-first-100" />
-            <Skeleton className="h-4 w-48 bg-first-100" />
-          </div>
-          <div className="space-y-3">
-            {ratingValues.map((value) => (
-              <div key={`review-summary-loading-${value}`} className="flex items-center gap-3">
-                <Skeleton className="h-4 w-12 bg-first-100" />
-                <Skeleton className="h-2 flex-1 rounded-full bg-first-100" />
-                <Skeleton className="h-4 w-8 bg-first-100" />
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : reviewCount > 0 ? (
-        <div className="grid gap-4 rounded-lg border border-first-100/70 bg-color-for-layer-sec p-4 lg:grid-cols-[0.8fr_1.2fr]">
-          <div className="flex flex-col justify-center">
-            <div className="flex items-end gap-2">
-              <motion.span
-                className="font-s-bold text-5xl leading-none first-text-color"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.25 }}
-              >
-                {ratingFormatter.format(averageRating)}
-              </motion.span>
-              <span className="pb-1 text-sm first-text-color-for-paragraph">
-                / {numberFormatter.format(5)}
-              </span>
+      {reviewCount > 0 && (
+        <div className="mt-4 grid grid-cols-1 gap-5 rounded-xl border border-first/10 bg-color-for-layer-on-body p-4 md:grid-cols-[minmax(0,0.38fr)_minmax(0,0.62fr)]">
+          <div className="text-center md:text-left">
+            <motion.div
+              className="mb-2 text-4xl font-bold first-text-color"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', delay: 0.1 }}
+            >
+              {averageRating.toFixed(1)}
+            </motion.div>
+            <div className="mb-2 flex items-center justify-center gap-1 md:justify-start">
+              {[...Array(5)].map((_, index) => (
+                <Star
+                  key={index}
+                  className={cn(
+                    'h-5 w-5',
+                    index < Math.round(averageRating)
+                      ? 'fill-yellow-400 text-yellow-400 dark:fill-yellow-500 dark:text-yellow-500'
+                      : 'text-gray-300 dark:text-gray-600',
+                  )}
+                />
+              ))}
             </div>
-            <Stars rating={averageRating} className="mt-3" />
-            <p className="mt-2 text-sm first-text-color-for-paragraph">
-              {t('review.basedOn') || 'Based on'} {numberFormatter.format(reviewCount)}{' '}
-              {reviewCountLabel}
+            <p className="text-sm first-text-color-for-paragraph-low">
+              {t('review.basedOn') || 'Based on'} {reviewCount}{' '}
+              {reviewCount === 1
+                ? t('review.review') || 'review'
+                : t('review.reviews') || 'reviews'}
             </p>
           </div>
 
-          <div className="space-y-3">
-            {ratingValues.map((starRating) => {
-              const dist = ratingDistribution.find((item) => item.rating === starRating);
-              const count = dist?.count || 0;
-              const percentage = reviewCount > 0 ? (count / reviewCount) * 100 : 0;
+          <div className="min-w-0">
+            <h4 className="mb-3 text-sm font-medium first-text-color">
+              {t('review.ratingBreakdown') || 'Rating Breakdown'}
+            </h4>
+            <div className="space-y-2">
+              {[5, 4, 3, 2, 1].map((starRating) => {
+                const dist = ratingDistribution.find((item) => item.rating === starRating);
+                const count = dist?.count || 0;
+                const percentage = reviewCount > 0 ? (count / reviewCount) * 100 : 0;
 
-              return (
-                <div
-                  key={starRating}
-                  className="grid grid-cols-[3.5rem_1fr_2rem] items-center gap-3"
-                >
-                  <span className="flex items-center gap-1 text-sm first-text-color-for-paragraph">
-                    {numberFormatter.format(starRating)}
-                    <Star className="h-3.5 w-3.5 fill-secound text-secound" />
-                  </span>
-                  <div className="h-2 overflow-hidden rounded-full bg-color-for-layer-on-body">
-                    <motion.div
-                      className="h-full rounded-full bg-first"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${percentage}%` }}
-                      transition={{ duration: 0.5, delay: 0.08 * (5 - starRating) }}
-                    />
+                return (
+                  <div
+                    key={starRating}
+                    className="grid grid-cols-[3rem_minmax(0,1fr)_2rem] items-center gap-2"
+                  >
+                    <span className="text-sm first-text-color-for-paragraph-low">
+                      {starRating} {t('review.stars') || 'stars'}
+                    </span>
+                    <div className="h-2 min-w-0 rounded-full bg-first/10">
+                      <motion.div
+                        className="h-2 rounded-full bg-first"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${percentage}%` }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                      />
+                    </div>
+                    <span className="text-right text-sm first-text-color-for-paragraph-low">
+                      {count}
+                    </span>
                   </div>
-                  <span className="text-end text-xs first-text-color-for-paragraph">
-                    {numberFormatter.format(count)}
-                  </span>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
-      ) : null}
+      )}
 
-      <AnimatePresence initial={false}>
+      <AnimatePresence>
         {showReviewForm && (
           <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2 }}
-            className="rounded-lg border border-first-100/70 bg-color-for-layer-sec p-4 sm:p-5"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="mt-4 space-y-4 overflow-hidden rounded-xl border border-first/10 bg-color-for-layer-on-body p-4 sm:p-6"
           >
-            <div className="mb-4 flex items-center justify-between gap-3">
-              <h4 className="font-s-medium first-text-color">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h4 className="font-f-sbold first-text-color">
                 {t('review.writeReview') || 'Write a Review'}
               </h4>
               <Button
-                type="button"
-                variant="ghost"
+                className="first-text-color-red"
                 size="sm"
-                className="first-text-color-for-paragraph hover:text-first"
                 onClick={() => {
                   setShowReviewForm(false);
                   setRating(0);
@@ -306,7 +250,7 @@ export function ProductReviews({
               </Button>
             </div>
 
-            <div className="grid gap-3 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div>
                 <label className="mb-2 block text-sm font-medium first-text-color-for-paragraph">
                   {t('review.name') || 'Name'}{' '}
@@ -317,10 +261,9 @@ export function ProductReviews({
                   onChange={(event) => setReviewerName(event.target.value)}
                   placeholder={t('review.namePlaceholder') || 'Your name'}
                   disabled={submitting}
-                  className="bg-color-for-layer-on-body"
+                  className="bg-first/5 first-text-color-for-paragraph placeholder:first-text-color-for-paragraph placeholder:opacity-50"
                 />
               </div>
-
               <div>
                 <label className="mb-2 block text-sm font-medium first-text-color-for-paragraph">
                   {t('review.email') || 'Email'}{' '}
@@ -332,10 +275,9 @@ export function ProductReviews({
                   onChange={(event) => setReviewerEmail(event.target.value)}
                   placeholder={t('review.emailPlaceholder') || 'your.email@example.com'}
                   disabled={submitting}
-                  className="bg-color-for-layer-on-body"
+                  className="bg-first/5 first-text-color-for-paragraph placeholder:first-text-color-for-paragraph placeholder:opacity-50"
                 />
               </div>
-
               <div>
                 <label className="mb-2 block text-sm font-medium first-text-color-for-paragraph">
                   {t('review.titleLabel') || 'Title'} ({t('review.optional') || 'optional'})
@@ -345,41 +287,12 @@ export function ProductReviews({
                   onChange={(event) => setTitle(event.target.value)}
                   placeholder={t('review.titlePlaceholder') || 'Review title'}
                   disabled={submitting}
-                  className="bg-color-for-layer-on-body"
+                  className="bg-first/5 first-text-color-for-paragraph placeholder:first-text-color-for-paragraph placeholder:opacity-50"
                 />
               </div>
             </div>
 
-            <div className="mt-4">
-              <label className="mb-2 block text-sm font-medium first-text-color-for-paragraph">
-                {t('review.rating') || 'Rating'}{' '}
-                <span className="first-text-color-red">({t('product.required')})</span>
-              </label>
-              <div className="flex items-center gap-1.5">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    type="button"
-                    onClick={() => setRating(star)}
-                    onMouseEnter={() => setHoveredRating(star)}
-                    onMouseLeave={() => setHoveredRating(0)}
-                    aria-label={`${t('review.rating') || 'Rating'} ${star}`}
-                    className="rounded-md p-1 transition hover:bg-color-for-layer-on-body focus:outline-none focus-visible:ring-2 focus-visible:ring-first"
-                  >
-                    <Star
-                      className={cn(
-                        'h-7 w-7 transition-colors',
-                        star <= selectedRating
-                          ? 'fill-secound text-secound'
-                          : 'text-first-100 hover:text-secound',
-                      )}
-                    />
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-4">
+            <div>
               <label className="mb-2 block text-sm font-medium first-text-color-for-paragraph">
                 {t('review.content') || 'Review'}{' '}
                 <span className="first-text-color-red">({t('product.required')})</span>
@@ -392,12 +305,43 @@ export function ProductReviews({
                 }
                 rows={5}
                 disabled={submitting}
-                className="min-h-28 w-full rounded-md border border-gray-300 bg-color-for-layer-on-body px-3 py-2 text-sm first-text-color-for-paragraph placeholder:first-text-color-for-paragraph placeholder:opacity-50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-first disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-500"
+                className="flex min-h-28 w-full resize-y rounded-md border border-gray-300 bg-first/5 px-3 py-2 text-sm first-text-color-for-paragraph placeholder:first-text-color-for-paragraph placeholder:opacity-50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-first disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600"
               />
             </div>
 
+            <div className="flex flex-wrap items-center gap-3">
+              <label className="block text-sm font-medium first-text-color-for-paragraph">
+                {t('review.rating') || 'Rating'}{' '}
+                <span className="first-text-color-red">({t('product.required')})</span>
+              </label>
+              <div className="flex flex-wrap items-center gap-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setRating(star)}
+                    onMouseEnter={() => setHoveredRating(star)}
+                    onMouseLeave={() => setHoveredRating(0)}
+                    aria-label={`${t('review.rating') || 'Rating'} ${star}`}
+                    className={cn(
+                      'flex h-11 w-11 items-center justify-center rounded-xl border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-first/30',
+                      star <= (hoveredRating || rating)
+                        ? 'border-third/40 bg-third/15 text-third shadow-[0_8px_18px_color-mix(in_srgb,var(--color-third)_18%,transparent)]'
+                        : 'border-first/10 bg-first/5 text-first/45 hover:border-third/30 hover:bg-third/10 hover:text-third',
+                    )}
+                  >
+                    <Star
+                      className={cn(
+                        'h-6 w-6 transition-colors',
+                        star <= (hoveredRating || rating) ? 'fill-current' : 'fill-transparent',
+                      )}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <Button
-              type="button"
               onClick={handleSubmitReview}
               disabled={
                 submitting ||
@@ -406,18 +350,15 @@ export function ProductReviews({
                 !reviewerName.trim() ||
                 !reviewerEmail.trim()
               }
-              className="mt-4 w-full gap-2 rounded-lg bg-first px-4 py-2.5 text-white hover:bg-first-600"
+              className="w-full bg-first text-white"
             >
               {submitting ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   {t('review.submitting') || 'Submitting...'}
                 </>
               ) : (
-                <>
-                  <PencilLine className="h-4 w-4" />
-                  {t('review.submit') || 'Submit Review'}
-                </>
+                t('review.submit') || 'Submit Review'
               )}
             </Button>
           </motion.div>
@@ -425,110 +366,87 @@ export function ProductReviews({
       </AnimatePresence>
 
       {loading ? (
-        <div className="grid gap-3">
-          {Array.from({ length: 3 }).map((_, index) => (
+        <div className="mt-4 space-y-4">
+          {[...Array(3)].map((_, index) => (
             <div
-              key={`review-loading-${index}`}
-              className="rounded-lg border border-first-100/70 bg-color-for-layer-sec p-4"
+              key={index}
+              className="space-y-2 rounded-xl border border-first/10 bg-color-for-layer-on-body p-4"
             >
-              <div className="mb-4 flex items-start justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <Skeleton className="h-10 w-10 rounded-lg bg-first-100" />
-                  <div className="space-y-2">
-                    <Skeleton className="h-4 w-32 bg-first-100" />
-                    <Skeleton className="h-3 w-24 bg-first-100" />
-                  </div>
-                </div>
-                <Skeleton className="h-4 w-24 bg-first-100" />
+              <div className="flex items-center justify-between gap-3">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-4 w-24" />
               </div>
-              <Skeleton className="mb-2 h-4 w-full bg-first-100" />
-              <Skeleton className="h-4 w-4/5 bg-first-100" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-3/4" />
             </div>
           ))}
         </div>
       ) : reviews.length === 0 && !showReviewForm ? (
-        <div className="rounded-lg border border-dashed border-first-100 bg-color-for-layer-sec px-4 py-8 text-center">
-          <MessageCircle className="mx-auto mb-3 h-8 w-8 text-first" />
-          <p className="mx-auto max-w-md text-sm first-text-color-for-paragraph">
+        <div className="mt-4 rounded-xl border border-dashed border-first/20 bg-color-for-layer-on-body px-4 py-8 text-center">
+          <p className="mb-4 first-text-color-for-paragraph">
             {t('review.noReviews') || 'No reviews yet. Be the first to review this product!'}
           </p>
-          <Button
-            type="button"
-            onClick={() => setShowReviewForm(true)}
-            className="mt-4 gap-2 rounded-lg bg-secound px-4 py-2 text-white hover:bg-secound-600"
-          >
-            <PencilLine className="h-4 w-4" />
+          <Button onClick={() => setShowReviewForm(true)} className="bg-first text-white">
             {t('review.writeReview') || 'Write a Review'}
           </Button>
         </div>
       ) : (
-        <div className="grid gap-3">
+        <div className="mt-4 space-y-3">
           {reviews.map((review, index) => (
-            <motion.article
+            <motion.div
               key={review.id}
-              className="rounded-lg border border-first-100/70 bg-color-for-layer-sec p-4 transition-colors hover:border-first-300"
-              initial={{ opacity: 0, y: 12 }}
+              className="rounded-xl border border-first/10 bg-color-for-layer-on-body p-4"
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.04 }}
+              transition={{ delay: index * 0.06 }}
             >
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="flex min-w-0 items-center gap-3">
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-color-for-layer-on-body text-first">
-                    <UserRound className="h-5 w-5" />
-                  </span>
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h4 className="truncate font-s-medium first-text-color">
-                        {review.reviewerName}
-                      </h4>
-                      {review.isVerifiedPurchase && (
-                        <span className="inline-flex items-center gap-1 rounded-md bg-third/10 px-2 py-0.5 text-xs text-third">
-                          <CheckCircle2 className="h-3 w-3" />
-                          {t('review.verifiedPurchase') || 'Verified Purchase'}
-                        </span>
-                      )}
-                    </div>
-                    <Stars rating={review.rating} className="mt-1" />
+              <div className="mb-2 flex flex-wrap items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <div className="mb-1 flex flex-wrap items-center gap-2">
+                    <span className="min-w-0 break-words font-medium first-text-color [overflow-wrap:anywhere]">
+                      {review.reviewerName}
+                    </span>
+
+                    {review.isVerifiedPurchase && (
+                      <span className="rounded bg-green-100 px-2 py-0.5 text-xs text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                        {t('review.verifiedPurchase') || 'Verified Purchase'}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="mb-2 flex items-center gap-1">
+                    {[...Array(5)].map((_, starIndex) => (
+                      <Star
+                        key={starIndex}
+                        className={cn(
+                          'h-4 w-4',
+                          starIndex < review.rating
+                            ? 'fill-yellow-400 text-yellow-400 dark:fill-yellow-500 dark:text-yellow-500'
+                            : 'text-gray-300 dark:text-gray-600',
+                        )}
+                      />
+                    ))}
                   </div>
                 </div>
 
-                <span className="inline-flex items-center gap-1 text-xs first-text-color-for-paragraph">
-                  <CalendarDays className="h-3.5 w-3.5" />
+                <span className="text-sm first-text-color-for-paragraph-low">
                   {formatDate(review.createdAt)}
                 </span>
               </div>
 
               {review.title && (
-                <h5 className="mt-4 font-s-medium first-text-color">{review.title}</h5>
+                <h4 className="mb-2 break-words font-medium first-text-color [overflow-wrap:anywhere]">
+                  {review.title}
+                </h4>
               )}
 
-              <p className="mt-2 whitespace-pre-wrap text-sm leading-7 first-text-color-for-paragraph">
+              <p className="mb-2 whitespace-pre-wrap break-words first-text-color-for-paragraph [overflow-wrap:anywhere]">
                 {review.content}
               </p>
-
-              <div className="mt-4 flex items-center justify-between border-t border-first-100 pt-3">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="gap-1.5 rounded-md px-2 first-text-color-for-paragraph hover:text-first"
-                  onClick={() => {
-                    showSuccess(t('review.helpful') || 'Thank you for your feedback!', 2000);
-                  }}
-                >
-                  <ThumbsUp className="h-3.5 w-3.5" />
-                  {t('review.helpful') || 'Helpful'}
-                </Button>
-                {review.helpfulVotes > 0 && (
-                  <span className="text-xs first-text-color-for-paragraph">
-                    {numberFormatter.format(review.helpfulVotes)}
-                  </span>
-                )}
-              </div>
-            </motion.article>
+            </motion.div>
           ))}
         </div>
       )}
-    </section>
+    </div>
   );
 }

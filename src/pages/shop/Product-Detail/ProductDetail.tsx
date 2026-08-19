@@ -19,10 +19,12 @@ import { useProductDetails } from '@/hooks/useProductDetails';
 import { ProductBreadcrumb } from './sections/ProductBreadcrumb';
 import { AddToCartSuccessModal } from './sections/AddToCartSuccessModal';
 import { useLocalizedNavigate } from '@/hooks/useLocalizedNavigate';
-import { AddToWishlistButton } from '@/components/ui/AddToWishlistButton';
-import { CompareButton } from '@/components/ui/CompareButton';
 import { CopyLinkButton } from '../../../components/ui/CopyLinkButton';
+import { ShareLinkButton } from '@/components/ui/ShareLinkButton';
 import OurValue from '@/components/reusable-components/OurValue/OurValue';
+import { resolveProductSaleOffer } from '@/utils/productOffer';
+import { ProductOfferBanner } from './sections/ProductOfferBanner';
+import { MediaFile, ProductImage } from '@/utils/shopApi';
 
 export default function ProductDetail() {
   const { slug } = useParams();
@@ -55,6 +57,30 @@ export default function ProductDetail() {
     return store.getSingleVariantInCart(productId);
   });
 
+  function normalizeGalleryImage(
+    image: MediaFile | ProductImage | null | undefined,
+  ): MediaFile | null {
+    if (!image) return null;
+
+    if ('mediaFile' in image) {
+      return image.mediaFile ?? null;
+    }
+
+    if ('filePath' in image && image.filePath) {
+      return image;
+    }
+
+    return null;
+  }
+
+  const galleryImages = useMemo(
+    () =>
+      (product?.images ?? [])
+        .map((image) => normalizeGalleryImage(image))
+        .filter((image): image is MediaFile => Boolean(image?.filePath)),
+    [product?.images],
+  );
+
   useEffect(() => {
     if (!product?.variants?.length) return;
     if (selectedVariant !== null) return;
@@ -73,11 +99,28 @@ export default function ProductDetail() {
     return product.translation ?? product.translations?.[0];
   }, [product]);
 
+  const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const saleOffer = useMemo(
+    () =>
+      resolveProductSaleOffer({
+        product,
+        currentPrice,
+        selectedVariant,
+        languageCode: lang,
+      }),
+    [currentPrice, lang, product, selectedVariant],
+  );
+
   return (
-    <section className="mx-auto mt-24 px-4 sm:container lg:mt-8">
-      <div className="rounded-3xl bg-color-for-layer-on-body p-4 lg:p-12">
-        <div className="flex flex-wrap">
-          <div className="lg:w-72/96 w-full">
+    <section className="page-container page-section">
+      <div
+        className={cn(
+          'rounded-3xl bg-color-for-layer-on-body p-4 shadow-dark-sm sm:p-6 lg:p-10',
+          saleOffer.isTimedOffer && 'ring-1 ring-third/25',
+        )}
+      >
+        <div className="flex flex-wrap items-start gap-4">
+          <div className="min-w-0 flex-1">
             <ProductBreadcrumb
               loading={loading}
               isRTL={isRTL}
@@ -85,16 +128,11 @@ export default function ProductDetail() {
               productName={translation?.name}
             />
           </div>
-          <div className="w-full mt-4 lg:mt-0 justify-between lg:justify-end lg:gap-2 flex flex-wrap lg:w-24/96">
-            <div className="w-31/96 lg:w-20/96 xl:w-15/96 2xl:w-12/96">
-              <AddToWishlistButton productId={''} />
-            </div>
-            <div className="w-31/96 lg:w-20/96 xl:w-15/96 2xl:w-12/96">
-              <CompareButton productId={''} />{' '}
-            </div>
-            <div className="w-31/96 lg:w-20/96 xl:w-15/96 2xl:w-12/96">
-              <CopyLinkButton url={typeof window !== 'undefined' ? window.location.href : ''} />
-            </div>
+          <div className="grid w-full grid-cols-2 gap-2 sm:max-w-xs lg:w-30">
+            {/* <AddToWishlistButton productId={productId ? String(productId) : ''} /> */}
+            {/* <CompareButton productId={productId ? String(productId) : ''} /> */}
+            <CopyLinkButton url={currentUrl} />
+            <ShareLinkButton url={currentUrl} title={translation?.name || ''} />
           </div>
         </div>
         <div className="mt-4">
@@ -102,7 +140,7 @@ export default function ProductDetail() {
             <ProductDetailSkeleton />
           ) : error || !product ? (
             <div className="flex min-h-[60vh] items-center justify-center">
-              <div className="text-center">
+              <div className="min-w-0 text-center">
                 <h2 className="mb-4 text-2xl font-bold first-text-color">
                   {t('product.notFound') || 'Product Not Found'}
                 </h2>
@@ -121,15 +159,16 @@ export default function ProductDetail() {
             </div>
           ) : (
             <>
-              <div className="mb-16 grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-6">
+              <ProductOfferBanner offer={saleOffer} languageCode={lang} className="mb-5" />
+              <div className="mb-12 grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-6">
                 <motion.section
-                  className="lg:col-span-3"
+                  className="min-w-0 lg:col-span-3"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: 0.1 }}
                 >
                   <ProductGallery
-                    images={(product.images || []).map((image) => image.mediaFile)}
+                    images={galleryImages}
                     mainImage={product.mainImage}
                     productName={translation?.name}
                     loading={loading}
@@ -138,7 +177,7 @@ export default function ProductDetail() {
                 </motion.section>
 
                 <motion.section
-                  className="lg:col-span-5"
+                  className="min-w-0 lg:col-span-5"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
@@ -152,7 +191,7 @@ export default function ProductDetail() {
                 </motion.section>
 
                 <motion.section
-                  className="hidden lg:col-span-4 lg:block"
+                  className="hidden min-w-0 lg:col-span-4 lg:block"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: 0.3 }}
@@ -171,7 +210,7 @@ export default function ProductDetail() {
                   />
                 </motion.section>
               </div>
-              <div className="mb-16">
+              <div className="mb-12">
                 <OurValue />
               </div>
               <motion.section
@@ -179,18 +218,7 @@ export default function ProductDetail() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.35 }}
               >
-                <ProductTabsSingle
-                  product={product}
-                  loading={loading}
-                  selectedVariant={selectedVariant}
-                  onVariantChange={setSelectedVariant}
-                  showAnimationOnAdd={setShowSuccessAnimation}
-                  cartItem={cartItem}
-                  currentPrice={currentPrice}
-                  currentInventory={currentInventory} // <--- این خیلی مهمه
-                  isInStock={isInStock} // <--- این هم مهمه
-                  languageCode={lang}
-                />
+                <ProductTabsSingle product={product} />
               </motion.section>
 
               <motion.section
@@ -216,7 +244,8 @@ export default function ProductDetail() {
                 transition={{ duration: 0.4, delay: 0.45 }}
               >
                 <RelatedProducts
-                  relatedProducts={product.relatedProducts}
+                  productSlug={product.slug}
+                  initialRelatedProducts={product.relatedProducts}
                   languageCode={lang}
                   loading={loading}
                 />

@@ -109,6 +109,7 @@ export interface GetProductsParams {
   pageSize?: number;
   search?: string;
   categoryIds?: string[];
+  showcaseIds?: string[];
   minPrice?: number;
   maxPrice?: number;
   hasOffer?: boolean;
@@ -141,6 +142,9 @@ export async function getProducts(params: GetProductsParams = {}): Promise<Produ
   if (params.categoryIds?.length) {
     params.categoryIds.forEach((id) => queryParams.append('categoryIds', id.toString()));
   }
+  if (params.showcaseIds?.length) {
+    params.showcaseIds.forEach((id) => queryParams.append('showcaseIds', id.toString()));
+  }
   if (params.minPrice !== undefined) queryParams.append('minPrice', params.minPrice.toString());
   if (params.maxPrice !== undefined) queryParams.append('maxPrice', params.maxPrice.toString());
   if (params.hasOffer !== undefined) queryParams.append('hasOffer', params.hasOffer.toString());
@@ -148,8 +152,7 @@ export async function getProducts(params: GetProductsParams = {}): Promise<Produ
   if (params.isFeatured !== undefined)
     queryParams.append('isFeatured', params.isFeatured.toString());
   if (params.sortBy) queryParams.append('sortBy', params.sortBy);
-  if (params.sortDescending !== undefined)
-    queryParams.append('sortDescending', params.sortDescending.toString());
+  if (params.sortDescending) queryParams.append('sortDescending', 'true');
 
   const response = (await apiRequest(
     `/api/ui/shop/products?${queryParams.toString()}`,
@@ -291,16 +294,22 @@ export interface ProductImage {
 }
 
 export interface ProductPrice {
-  id: number;
+  id?: number;
   productId?: number;
-  variantId?: number;
+  variantId?: number | null;
   languageCode: string;
   currencyCode: string;
   currencySymbol: string;
   price: number;
-  salePrice?: number;
+  salePrice?: number | null;
+  originalPrice?: number | null;
+  discountPercent?: number | null;
+  hasSalePrice?: boolean;
+  isSaleActive?: boolean;
   saleStartDate?: string;
-  saleEndDate?: string;
+  saleStartDateUtc?: string | null;
+  saleEndDate?: string | null;
+  saleEndDateUtc?: string | null;
   costPrice?: number;
   taxRate?: number;
   isTaxIncluded: boolean;
@@ -383,37 +392,6 @@ export interface ProductTag {
   }>;
 }
 
-export interface RelatedProductImage {
-  id?: number;
-  fileName?: string;
-  filePath?: string;
-  thumbnailPath?: string | null;
-  alt?: string | null;
-  title?: string | null;
-}
-
-export interface RelatedProductItem {
-  id: number;
-  slug: string;
-  sku?: string;
-  name: string;
-  isPublished?: boolean;
-  isFeatured?: boolean;
-  status?: string;
-  mainImage?: RelatedProductImage | null;
-  createdAt?: string;
-  updatedAt?: string;
-  price?: number | null;
-  salePrice?: number | null;
-  currencyCode?: string;
-  currencySymbol?: string;
-  discountPercent?: number | null;
-  isOnSale?: boolean;
-  stockQuantity?: number | null;
-  tracksInventory?: boolean;
-  attributeValues?: ProductAttributeValue[];
-}
-
 export interface RelatedProduct {
   id: number;
   productId: number;
@@ -421,10 +399,28 @@ export interface RelatedProduct {
   relationType: string;
   displayOrder: number;
   isBidirectional: boolean;
-  relatedProduct: RelatedProductItem;
+  relatedProduct: {
+    id: number;
+    slug: string;
+    sku: string;
+    name: string;
+    isPublished: boolean;
+    isFeatured: boolean;
+    status: string;
+    mainImage?: MediaFile;
+    createdAt: string;
+    updatedAt: string;
+    price?: number;
+    salePrice?: number | null;
+    currencyCode?: string;
+    currencySymbol?: string;
+    discountPercent?: number | null;
+    isOnSale: boolean;
+    saleEndDateUtc?: string | null;
+    saleEndDate?: string | null;
+    stockQuantity?: number | null;
+  };
 }
-
-export type ProductRelatedProduct = RelatedProduct | RelatedProductItem;
 
 export interface ProductReview {
   id: number;
@@ -471,7 +467,7 @@ export interface ProductDetail {
   variants?: ProductVariant[];
   attributeValues?: ProductAttributeValue[];
   tags?: ProductTag[];
-  relatedProducts?: ProductRelatedProduct[];
+  relatedProducts?: RelatedProduct[];
   reviews?: ProductReview[];
   reviewCount?: number;
   averageRating?: number;

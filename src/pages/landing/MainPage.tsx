@@ -66,7 +66,7 @@ const MainPage = () => {
       </div>
       <CategoriesSlider categories={index?.categories ?? []} />
       <ProductSlider showCase={showcases && showcases[0]} />
-      <section className="bg-color-for-layer-on-body  pt-8 lg:py-16 px-4 ">
+      {index?.discountProducts && index?.discountProducts.length > 0 && <section className="bg-color-for-layer-on-body  pt-8 lg:py-16 px-4 ">
         <div className="sm:container mx-auto   lg:px-4">
           <div className="flex  flex-wrap lg:flex-nowrap justify-between">
             <div className="w-full items-stretch  lg:w-31/48 xl:w-35/48 xxl:w-36/48 ">
@@ -79,7 +79,7 @@ const MainPage = () => {
             </aside>
           </div>
         </div>
-      </section>
+      </section>}
       <NewBlogs blogs={index?.blogs ?? []} />
       <ProductsSliderTwo showcase={showcases && showcases[1]} />
       <Banner banners={bannerGalleries} />

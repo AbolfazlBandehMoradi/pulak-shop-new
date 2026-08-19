@@ -27,6 +27,8 @@ import useCartStore from '@/stores/cartStore';
 import { useLangStore } from '@/stores/languageStore';
 import { Link } from 'react-router-dom';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import RemainingTime from '@/components/ui/RemainingTime';
+import { resolveProductSaleOffer } from '@/utils/productOffer';
 
 interface ProductBuyBoxProps {
   product?: ProductDetail | null;
@@ -90,6 +92,15 @@ export function ProductBuyBox({
     ? Number.POSITIVE_INFINITY
     : Math.max(currentInventory?.availableQuantity ?? Number.POSITIVE_INFINITY, 0);
   const canIncreaseQuantity = cartItem ? localQuantity < maxAvailableQuantity : false;
+  const saleOffer = resolveProductSaleOffer({
+    product,
+    currentPrice,
+    selectedVariant,
+    languageCode,
+  });
+  const saleEndDate = saleOffer.saleEndDate;
+  const showSalePrice = saleOffer.showSalePrice;
+  const discountPercent = saleOffer.discountPercent;
 
   const handleQuantityUpdate = (nextQuantity: number) => {
     if (!cartItem) return;
@@ -140,33 +151,33 @@ export function ProductBuyBox({
   return (
     <div className={cn('lg:sticky lg:top-24 lg:self-start')}>
       <motion.div
-        className={cn('bg-color-for-layer-sec p-6 rounded-xl relative', className)}
+        className={cn(
+          'relative rounded-xl bg-first/5 p-4 sm:p-6',
+          saleOffer.isTimedOffer &&
+            'border border-third/25 bg-third/10 shadow-[0_18px_45px_rgba(194,86,45,0.12)]',
+          className,
+        )}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
         {!isCompact && (
           <>
-            <div className="space-y-6 bg-color-for-layer-on-body p-4 rounded-lg">
+            <div className="space-y-6 rounded-lg bg-color-for-layer-on-body p-4">
               {product.vendorName && (
                 <div className="flex items-center justify-between ">
                   <span className="flex items-center gap-1 ">
-                    <Store
-                      className="h-4 w-4 text-secound dark:text-secound-600 "
-                      strokeWidth={1}
-                    />
+                    <Store className="h-4 w-4 text-first" strokeWidth={1} />
                     <span className="text-sm first-text-color-for-paragraph ">
                       {t('product.seller') || 'Seller'}
                     </span>
                   </span>
-                  <span className="text-sm text-secound dark:text-secound-600 ">
-                    {product.vendorName}
-                  </span>
+                  <span className="text-sm text-first">{product.vendorName}</span>
                 </div>
               )}
               <div className="flex items-center justify-between ">
                 <span className="flex items-center gap-1 text-muted-foreground">
-                  <Star className="h-4 w-4 text-secound dark:text-secound-600 " strokeWidth={1} />
+                  <Star className="h-4 w-4 text-first" strokeWidth={1} />
                   <span className="text-sm first-text-color-for-paragraph ">
                     {t('product.rating') || 'Seller'}
                   </span>
@@ -188,15 +199,12 @@ export function ProductBuyBox({
               <div>
                 <div className="flex items-center justify-between ">
                   <span className="flex items-center gap-1 text-muted-foreground">
-                    <MessageCircle
-                      className="h-4 w-4 text-secound dark:text-secound-600"
-                      strokeWidth={1}
-                    />
+                    <MessageCircle className="h-4 w-4 text-first" strokeWidth={1} />
                     <span className="text-sm first-text-color-for-paragraph ">
                       {t('product.reviews')}
                     </span>
                   </span>
-                  <span className="text-sm text-secound dark:text-secound-600">
+                  <span className="text-sm text-first">
                     {product.reviewCount && product.reviewCount > 0
                       ? `${product.reviewCount} ${t('product.reviews') || 'reviews'}`
                       : '0 نظر'}
@@ -206,16 +214,14 @@ export function ProductBuyBox({
               <div>
                 <div className="flex items-center justify-between ">
                   <span className="flex items-center gap-1 text-muted-foreground">
-                    <Award className="h-4 w-4 text-secound dark:text-secound-600" strokeWidth={1} />
+                    <Award className="h-4 w-4 text-first" strokeWidth={1} />
                     <span className="text-sm first-text-color-for-paragraph ">
                       {t('product.brand')}
                     </span>
                   </span>
                   {product.brand && (
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-secound dark:text-secound-600 text-sm">
-                        {product.brand?.name || '-'}
-                      </span>
+                      <span className="text-sm text-first">{product.brand?.name || '-'}</span>
                     </div>
                   )}
                 </div>
@@ -223,19 +229,14 @@ export function ProductBuyBox({
               <div>
                 <div className="flex items-center justify-between ">
                   <span className="flex items-center gap-1 text-muted-foreground">
-                    <Shield
-                      className="h-4 w-4 text-secound dark:text-secound-600"
-                      strokeWidth={1}
-                    />
+                    <Shield className="h-4 w-4 text-first" strokeWidth={1} />
                     <span className="text-sm first-text-color-for-paragraph ">
                       {t('product.warranty')}
                     </span>
                   </span>
                   {product.hasWarranty && product.warrantyType && (
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-secound dark:text-secound-600 text-sm">
-                        {product.warrantyType}
-                      </span>
+                      <span className="text-sm text-first">{product.warrantyType}</span>
                     </div>
                   )}
                 </div>
@@ -243,16 +244,14 @@ export function ProductBuyBox({
               <div>
                 <div className="flex items-center justify-between ">
                   <span className="flex items-center gap-1 text-muted-foreground">
-                    <Truck className="h-4 w-4 text-secound dark:text-secound-600" strokeWidth={1} />
+                    <Truck className="h-4 w-4 text-first" strokeWidth={1} />
                     <span className="text-sm first-text-color-for-paragraph ">
                       {t('product.shippingMethod')}
                     </span>
                   </span>
                   {product.postalMethod && (
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-secound dark:text-secound-600 text-sm">
-                        {product.postalMethod}
-                      </span>
+                      <span className="text-sm text-first">{product.postalMethod}</span>
                     </div>
                   )}
                 </div>
@@ -289,20 +288,24 @@ export function ProductBuyBox({
                 <label className="block text-sm font-medium mb-1.5">
                   {t('product.selectVariant') || 'Select Variant'}
                 </label>
-                <div className=" grid-cols-12 sm:grid-cols-3 grid flex-wrap  gap-2">
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                   {activeVariants.map((variant) => (
                     <motion.button
                       key={variant.id}
                       onClick={() => onVariantChange(variant.id)}
                       className={cn(
-                        ' bg-color-for-layer-on-body p-2 rounded-md transition-all text-start  ',
+                        'min-w-0 rounded-md bg-color-for-layer-on-body p-2 text-start transition-all',
                         selectedVariant === variant.id ? 'border-3 border-first ' : '',
                       )}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <div className="text-xs font-medium">{variant.name}</div>
-                      <div className="text-xs text-muted-foreground">{variant.name}</div>
+                      <div className="min-w-0 truncate text-xs font-medium first-text-color">
+                        {variant.name}
+                      </div>
+                      <div className="min-w-0 truncate text-xs first-text-color-for-paragraph-low">
+                        {variant.name}
+                      </div>
                     </motion.button>
                   ))}
                 </div>
@@ -310,31 +313,51 @@ export function ProductBuyBox({
             )}
             {currentPrice && (
               <div className={cn('', isRTL && 'text-right')}>
-                {currentPrice.isOnSale && currentPrice.salePrice ? (
-                  <div>
+                {showSalePrice && saleOffer.salePrice && saleOffer.regularPrice ? (
+                  <div className='py-4' >
+                    {!isCompact && (
+                      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                        <span className="rounded-full bg-third/15 px-3 py-1 text-xs font-s-bold text-third">
+                          {t('product.specialOffer') || 'Special Offer'}
+                        </span>
+                        {discountPercent ? (
+                          <span className="rounded-full bg-secound px-3 py-1 text-xs font-s-bold text-white">
+                            {isPersian ? toPersianNumbers(discountPercent) : discountPercent}%{' '}
+                            {t('product.discountBadge') || 'Discount'}
+                          </span>
+                        ) : null}
+                      </div>
+                    )}
                     <div
                       className={cn('justify-between flex my-2 flex-wrap', isRTL && 'items-end')}
                     >
                       <span
                         className={cn(
-                          'text-xl first-text-color-for-paragraph-low relative font-s-sbold',
+                          "relative text-xl font-s-sbold first-text-color-for-paragraph-low after:absolute after:inset-x-0 after:top-1/2 after:h-px after:bg-current after:content-['']",
                           isRTL && 'text-left',
                         )}
                       >
-                        <PriceDisplay amount={currentPrice.price} languageCode={languageCode} />
-                        <span className="w-full bg-red-500 opacity-50 absolute inset-0 top-1/2 translate-y-1/2 rotate-12 h-0.5"></span>
+                        <PriceDisplay amount={saleOffer.regularPrice} languageCode={languageCode} />
                       </span>
                       <span className={cn('flex items-center', isRTL && '')}>
-                        <span className="text-2xl first-text-color relative font-s-sbold">
-                          <PriceDisplay amount={currentPrice.salePrice} languageCode={languageCode} />
+                        <span className="relative text-2xl font-s-sbold first-text-color">
+                          <PriceDisplay amount={saleOffer.salePrice} languageCode={languageCode} />
                         </span>
                       </span>
                     </div>
+                    {saleEndDate && !isCompact && (
+                      <div className="mt-3 rounded-xl border border-first/10 bg-color-for-layer-on-body p-3">
+                        <p className="mb-2 text-xs font-s-medium first-text-color-for-paragraph-low">
+                          {t('product.offerEndsIn') || 'Offer ends in'}
+                        </p>
+                        <RemainingTime expireDate={saleEndDate} compact />
+                      </div>
+                    )}
                     <div>
-                      {!isCompact && (
+                      {!isCompact && discountPercent ? (
                         <motion.div
                           className={cn(
-                            'absolute -top-4 -right-4 flex justify-center items-center text-white rounded-sm w-7 h-7 bg-color-for-red ',
+                            'absolute -right-4 -top-4 flex h-7 w-7 items-center justify-center rounded-sm bg-third text-white',
                           )}
                           initial={{ opacity: 0, scale: 0.5 }}
                           animate={{
@@ -348,25 +371,15 @@ export function ProductBuyBox({
                             damping: 20,
                           }}
                         >
-                          <div className="absolute -top-1 -right-1 w-2 h-2 bg-color-for-red rounded-full soft-blink" />
+                          <div className="soft-blink absolute -right-1 -top-1 h-2 w-2 rounded-full bg-third" />
                           <span className="text-sm leading-none">
                             {isPersian
-                              ? toPersianNumbers(
-                                  Math.round(
-                                    ((currentPrice.price - currentPrice.salePrice) /
-                                      currentPrice.price) *
-                                      100,
-                                  ),
-                                )
-                              : Math.round(
-                                  ((currentPrice.price - currentPrice.salePrice) /
-                                    currentPrice.price) *
-                                    100,
-                                )}
+                              ? toPersianNumbers(discountPercent ?? 0)
+                              : (discountPercent ?? 0)}
                             %
                           </span>
                         </motion.div>
-                      )}
+                      ) : null}
                     </div>
                   </div>
                 ) : (

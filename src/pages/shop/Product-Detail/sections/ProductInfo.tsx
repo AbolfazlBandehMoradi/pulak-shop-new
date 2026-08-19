@@ -1,11 +1,5 @@
 import { motion } from 'framer-motion';
-import {
-  Zap,
-  Droplet,
-  Snowflake,
-  Box,
-  Info,
-} from 'lucide-react';
+import { Zap, Droplet, Snowflake, Box, Info } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslation } from '@/i18n/useTranslation';
 import type { ProductDetail, ProductAttributeValue } from '@/utils/shopApi';
@@ -33,6 +27,7 @@ const attributeIcons: Record<string, React.ComponentType<{ className?: string }>
 export function ProductInfo({ product, loading, languageCode: _languageCode }: ProductInfoProps) {
   const { t } = useTranslation();
   const translation = product?.translation || product?.translations?.[0];
+  const teaserDescription = translation?.shortDescription || translation?.description;
   // Get icon for attribute
   const getAttributeIcon = (attr: ProductAttributeValue) => {
     const code = attr.attributeCode?.toLowerCase() || '';
@@ -52,7 +47,7 @@ export function ProductInfo({ product, loading, languageCode: _languageCode }: P
     );
   }
   return (
-    <div>
+    <div className="min-w-0">
       {product?.categories?.length ? (
         <div className="flex flex-wrap font-s-light text-secound">
           <span className="text-sm">{product.categories[product.categories.length - 1]?.name}</span>
@@ -66,15 +61,15 @@ export function ProductInfo({ product, loading, languageCode: _languageCode }: P
       >
         {translation?.name}
       </motion.h1>
-      <div className="">
-        {translation?.description && (
+      <div className="min-w-0">
+        {teaserDescription && (
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <p className="w-full text-sm first-text-color-for-paragraph leading-7 mt-2  ">
-              {cleanText(translation.shortDescription)}
+            <p className="mt-2 w-full whitespace-normal break-words text-sm leading-7 first-text-color-for-paragraph [overflow-wrap:anywhere]">
+              {cleanText(teaserDescription)}
             </p>
           </motion.div>
         )}
@@ -84,24 +79,22 @@ export function ProductInfo({ product, loading, languageCode: _languageCode }: P
           <h2 className="w-full font-s-medium first-text-color text-lg mt-2">
             {t('product.keyFeatures')}
           </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 font-s-bold gap-2 mt-2">
+          <div className="mt-2 grid grid-cols-1 gap-2 font-s-bold xs:grid-cols-2 sm:grid-cols-3">
             {product.attributeValues.map((attr, index) => {
               const Icon = getAttributeIcon(attr);
               const value = attr.optionLabel || attr.customValue || attr.optionValue || '-';
               return (
                 <motion.div
                   key={attr.id}
-                  className="flex flex-col text-sm rounded-sm gap-1 bg-color-for-layer-sec px-2 py-2"
+                  className="flex min-w-0 flex-col gap-1 rounded-sm border border-first/10 bg-first/5 px-2 py-2 text-sm"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.03 }}
                 >
                   {/* ATTRIBUTE NAME */}
                   <div className="group relative flex items-center gap-1">
-                    {Icon && (
-                      <Icon className="h-4 w-4 shrink-0 text-first" />
-                    )}
-                    <span className="first-text-color-for-paragraph w-full truncate whitespace-nowrap overflow-hidden text-xs block">
+                    {Icon && <Icon className="h-4 w-4 shrink-0 text-first" />}
+                    <span className="block w-full overflow-hidden truncate whitespace-nowrap text-xs first-text-color-for-paragraph">
                       {attr.attributeName}
                     </span>
 
@@ -111,7 +104,7 @@ export function ProductInfo({ product, loading, languageCode: _languageCode }: P
                     </div>
                   </div>
                   <div className="group relative flex items-center gap-1">
-                    <span className="first-text-color w-full truncate whitespace-nowrap overflow-hidden block">
+                    <span className="block w-full overflow-hidden truncate whitespace-nowrap first-text-color">
                       {value}
                     </span>
                     <div className="absolute left-0 top-full mt-1 hidden group-hover:block z-50 bg-color-for-body-opposite  first-text-color-for-paragraph-opposite font-f-normal text-sm px-2 py-1 rounded ">
@@ -124,28 +117,18 @@ export function ProductInfo({ product, loading, languageCode: _languageCode }: P
           </div>
         </>
       )}
-      <div className=" mt-4  rounded-sm ">
+      <div className="mt-4 rounded-sm">
         <h2 className="w-full  font-s-medium first-text-color text-lg mb-2">
           {t('productDetail.consultation.title')}
         </h2>
         <ShareSocialMedia
-          options={['rubika', 'soroush', 'eitaa']}
+          options={['bale']}
           className="grid grid-cols-3 gap-2"
+          buttonClassName="flex min-h-11 items-center justify-center gap-2 rounded-md border border-first/10 bg-first/5 px-2 py-2 first-text-color transition hover:bg-first/10"
+          textClassName="hidden text-xs sm:inline"
           customItems={{
-            rubika: {
+            bale: {
               displayMode: 'image',
-              className:
-                'flex items-center justify-center text-color-first border border-secound-200 gap-2  first-text-color px-2 py-2 rounded-md transition hover:bg-secound-200',
-            },
-            soroush: {
-              displayMode: 'image',
-              className:
-                'flex items-center justify-center text-color-first border border-secound-200 gap-2  first-text-color px-2 py-2 rounded-md transition  hover:bg-secound-200',
-            },
-            eitaa: {
-              displayMode: 'image',
-              className:
-                'flex items-center justify-center text-color-first border border-secound-200 gap-2  first-text-color px-2 py-2 rounded-md transition  hover:bg-secound-200',
             },
           }}
         />

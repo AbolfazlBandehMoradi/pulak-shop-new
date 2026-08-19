@@ -1,46 +1,20 @@
 import { useMemo } from 'react';
 import { useTranslation } from '@/i18n/useTranslation';
-// تایپ‌های قیمت و موجودی رو اینجا اضافه کن
-import type { ProductDetail, ProductPrice, ProductInventory } from '@/utils/shopApi';
+import type { ProductDetail } from '@/utils/shopApi';
 import cleanText from '@/utils/cleanText';
-import { ProductBuyBox } from './ProductBuyBox';
 import { cn } from '@/utils/cn';
+
 interface ProductTabsProps {
   product: ProductDetail | null;
-  loading?: boolean;
-  selectedVariant: number | null;
-  onVariantChange: (variantId: number | null) => void;
-  showAnimationOnAdd: (arg: boolean) => void;
-  currentPrice: ProductPrice | null;
-  currentInventory: ProductInventory | null;
-  isInStock: boolean;
-  languageCode: string;
-  cartItem: { id: number; quantity: number } | undefined;
 }
 
-// پراپ‌ها رو از ورودی دریافت می‌کنیم
-export function ProductTabsSingle({
-  product,
-  loading,
-  selectedVariant,
-  onVariantChange,
-  showAnimationOnAdd,
-  currentPrice,
-  currentInventory,
-  isInStock,
-  languageCode,
-  cartItem,
-}: ProductTabsProps) {
+export function ProductTabsSingle({ product }: ProductTabsProps) {
   const { t } = useTranslation();
-
   const translation = product?.translation || product?.translations?.[0];
-
-  // Safe arrays
   const attributeValues = product?.attributeValues ?? [];
   const categories = product?.categories ?? [];
   const tags = product?.tags ?? [];
 
-  // Parse specifications safely
   const specificationEntries = useMemo(() => {
     if (!product?.specificationsJson) return [];
 
@@ -52,24 +26,20 @@ export function ProductTabsSingle({
     }
   }, [product?.specificationsJson]);
 
-  // ===== UI COMPONENTS =====
-
   const rows = useMemo(() => {
-    const base = [
+    return [
       ...attributeValues.map((attr) => ({
         label: attr.attributeName,
         value: attr.customValue ?? attr.optionLabel ?? attr.optionValue ?? '-',
       })),
-
       ...(categories.length > 0
         ? [
             {
               label: t('product.category') || 'Category',
-              value: categories.map((c) => c.name).join(' / '),
+              value: categories.map((category) => category.name).join(' / '),
             },
           ]
         : []),
-
       ...(product?.translation?.countryOfOriginDisplay
         ? [
             {
@@ -78,7 +48,6 @@ export function ProductTabsSingle({
             },
           ]
         : []),
-
       ...(product?.translation?.moneyBackPolicy
         ? [
             {
@@ -87,7 +56,6 @@ export function ProductTabsSingle({
             },
           ]
         : []),
-
       ...(product?.translation?.shippingLeadTime
         ? [
             {
@@ -96,7 +64,6 @@ export function ProductTabsSingle({
             },
           ]
         : []),
-
       ...(product?.vendorName
         ? [
             {
@@ -105,7 +72,6 @@ export function ProductTabsSingle({
             },
           ]
         : []),
-
       ...(product?.warrantyType
         ? [
             {
@@ -114,12 +80,10 @@ export function ProductTabsSingle({
             },
           ]
         : []),
-
       ...specificationEntries.map(([key, value]) => ({
         label: key,
         value: String(value),
       })),
-
       ...(product?.translation?.shippingMethodsDescription
         ? [
             {
@@ -128,7 +92,6 @@ export function ProductTabsSingle({
             },
           ]
         : []),
-
       ...(tags.length > 0
         ? [
             {
@@ -138,81 +101,47 @@ export function ProductTabsSingle({
           ]
         : []),
     ];
-
-    return base;
   }, [product, attributeValues, categories, tags, specificationEntries, t]);
+
   return (
-    <div className="flex justify-between flex-wrap">
-      <div
-        className={cn(
-          'w-full', // کلاسی که همیشه اعمال میشه
-          isInStock
-            ? 'lg:w-68/96' // کلاس‌هایی که وقتی کالا "موجود" هست اعمال میشه
-            : 'lg:w-full', // کلاس‌هایی که وقتی کالا "ناموجود" هست اعمال میشه
-        )}
-      >
-        <div className="mb-8 ">
-          <div>
-            <h2 className="w-full font-s-bold first-text-color text-xl ">
+    <div className="flex min-w-0 flex-wrap justify-between gap-y-6">
+      <div className="min-w-0 w-full">
+        <div className="mb-8 min-w-0">
+          <div className="min-w-0">
+            <h2 className="w-full text-xl font-s-bold first-text-color">
               {t('product.description')}
             </h2>
-            <p className="mt-2 leading-7 first-text-color-for-paragraph">
+            <p className="mt-2 whitespace-normal break-words leading-7 first-text-color-for-paragraph [overflow-wrap:anywhere]">
               {translation?.description
                 ? cleanText(translation.description)
                 : t('product.noDescription') || 'No description available.'}
             </p>
           </div>
-          <div>
-            <h3 className="w-full font-s-medium first-text-color text-lg mt-4 mb-2">
-              {t('product.specificationsProduct')}
-            </h3>
-          </div>
+
+          <h3 className="mb-2 mt-4 w-full text-lg font-s-medium first-text-color">
+            {t('product.specificationsProduct')}
+          </h3>
+
           <div className="overflow-hidden rounded-2xl border border-gray-200/70 dark:border-gray-800">
-            {rows.map((row, i) => {
-              const isEvenRow = i % 2 === 0;
-
-              return (
-                <div
-                  key={i}
-                  className={cn(
-                    'flex items-center justify-between px-4 py-3 transition-colors',
-                    isEvenRow
-                      ? 'bg-color-for-layer-on-body dark:bg-gray-800/20'
-                      : 'bg-color-for-layer-sec dark:bg-transparent',
-                  )}
-                >
-                  <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
-                    {row.label}
-                  </span>
-
-                  <span className="text-sm text-gray-900 dark:text-gray-100 text-right max-w-[60%]">
-                    {row.value ?? '-'}
-                  </span>
-                </div>
-              );
-            })}
+            {rows.map((row, index) => (
+              <div
+                key={`${row.label}-${index}`}
+                className={cn(
+                  'grid grid-cols-1 gap-1 px-4 py-3 transition-colors sm:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] sm:items-start',
+                  index % 2 === 0 ? 'bg-color-for-layer-on-body' : 'bg-first/5',
+                )}
+              >
+                <span className="min-w-0 break-words text-sm font-medium first-text-color-for-paragraph-low [overflow-wrap:anywhere]">
+                  {row.label}
+                </span>
+                <span className="min-w-0 break-words text-sm first-text-color sm:text-right [overflow-wrap:anywhere]">
+                  {row.value ?? '-'}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
-      {isInStock && (
-        <div className="hidden w-full rounded-xl border border-gray-300 p-4 lg:sticky lg:top-28 lg:block lg:w-26/96 lg:self-start">
-          <h2 className="text  first-text-color">{product?.translation?.name}</h2>
-          <ProductBuyBox
-            product={product}
-            loading={loading}
-            selectedVariant={selectedVariant}
-            onVariantChange={onVariantChange}
-            showAnimationOnAdd={showAnimationOnAdd}
-            cartItem={cartItem}
-            currentPrice={currentPrice}
-            currentInventory={currentInventory}
-            isInStock={isInStock}
-            languageCode={languageCode}
-            isCompact={true}
-            className="bg-transparent p-0"
-          ></ProductBuyBox>
-        </div>
-      )}
     </div>
   );
 }

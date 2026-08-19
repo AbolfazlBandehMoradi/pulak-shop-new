@@ -14,6 +14,8 @@ import useCartStore from '@/stores/cartStore';
 import type { ProductDetail, ProductPrice, ProductInventory } from '@/utils/shopApi';
 import { useLangStore } from '@/stores/languageStore';
 import { useLocalizedNavigate } from '@/hooks/useLocalizedNavigate';
+import RemainingTime from '@/components/ui/RemainingTime';
+import { resolveProductSaleOffer } from '@/utils/productOffer';
 
 interface MobileStickyBarProps {
   product: ProductDetail | null;
@@ -60,9 +62,17 @@ export function MobileStickyBar({
   const canIncreaseQuantity = cartItem ? localQuantity < maxAvailableQuantity : false;
   const hasLowStockWarning = Boolean(
     currentInventory &&
-      currentInventory.availableQuantity <= 5 &&
-      currentInventory.availableQuantity > 0,
+    currentInventory.availableQuantity <= 5 &&
+    currentInventory.availableQuantity > 0,
   );
+  const saleOffer = resolveProductSaleOffer({
+    product,
+    currentPrice,
+    selectedVariant,
+    languageCode,
+  });
+  const saleEndDate = saleOffer.saleEndDate;
+  const showSalePrice = saleOffer.showSalePrice;
 
   useEffect(() => {
     if (cartItem) {
@@ -137,7 +147,7 @@ export function MobileStickyBar({
           </p>
         )}
 
-        <div className="rounded-2xl border border-gray-200/70 bg-color-for-layer-sec p-3">
+        <div className="rounded-2xl border border-first/10 bg-first/5 p-3">
           {hasLowStockWarning && currentInventory && (
             <div className="mb-2 flex items-center gap-2 rounded-xl bg-orange-100 p-2 text-sm text-orange-700 dark:bg-orange-900/20 dark:text-orange-300">
               <AlertCircle className="h-4 w-4" />
@@ -159,14 +169,32 @@ export function MobileStickyBar({
           {currentPrice && (
             <div className="flex flex-col gap-3">
               <div className={cn('flex flex-col', isRTL && 'items-end')}>
-                {currentPrice.isOnSale && currentPrice.salePrice ? (
+                {showSalePrice && saleOffer.salePrice && saleOffer.regularPrice ? (
                   <>
-                    <span className="text-xs line-through first-text-color-for-paragraph-low">
-                      <PriceDisplay amount={currentPrice.price} languageCode={languageCode} />
+                    <div className="mb-1 flex w-full flex-wrap items-center justify-between gap-2">
+                      <span className="rounded-full bg-third/15 px-2 py-0.5 text-[0.65rem] font-s-bold text-third">
+                        {t('product.specialOffer') || 'Special Offer'}
+                      </span>
+                      {saleOffer.discountPercent ? (
+                        <span className="rounded-full bg-secound px-2 py-0.5 text-[0.65rem] font-s-bold text-white">
+                          {isPersian
+                            ? toPersianNumbers(saleOffer.discountPercent)
+                            : saleOffer.discountPercent}
+                          %
+                        </span>
+                      ) : null}
+                    </div>
+                    <span className="relative w-fit text-xs first-text-color-for-paragraph-low after:absolute after:inset-x-0 after:top-1/2 after:h-px after:bg-current after:content-['']">
+                      <PriceDisplay amount={saleOffer.regularPrice} languageCode={languageCode} />
                     </span>
-                    <span className="text-lg font-s-sbold text-first">
-                      <PriceDisplay amount={currentPrice.salePrice} languageCode={languageCode} />
+                    <span className="text-lg font-s-sbold first-text-color">
+                      <PriceDisplay amount={saleOffer.salePrice} languageCode={languageCode} />
                     </span>
+                    {saleEndDate && (
+                      <div className="mt-2 w-full max-w-xs">
+                        <RemainingTime expireDate={saleEndDate} compact />
+                      </div>
+                    )}
                   </>
                 ) : (
                   <span className="text-lg font-s-sbold first-text-color">
