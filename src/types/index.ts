@@ -9,8 +9,9 @@ export interface Product {
   originalPrice?: number;
   discount?: number;
   image: string;
-  saleStartDate?: string | null ,
-  saleEndDate?: string | null,
+  saleStartDate?: string | null;
+  saleEndDateUtc?: string | null;
+  saleEndDate?: string | null;
   images?: string[];
   category: string;
   categoryId: string;
@@ -28,7 +29,7 @@ export interface Category {
   image?: string;
   productCount?: number;
   subcategories?: Category[];
-  children?: Category[]
+  children?: Category[];
 }
 
 export interface Story {
@@ -116,4 +117,3 @@ export interface LoginSettings {
   Auth_EnableGoogle?: boolean;
   [key: string]: unknown;
 }
-

@@ -1,40 +1,40 @@
-import type { ReactNode } from 'react'
-import { motion } from 'framer-motion'
-import { cn } from '@/utils/cn'
-import { Button } from '@/components/ui/Button'
+import type { ReactNode } from 'react';
+import { motion } from 'framer-motion';
+import { cn } from '@/utils/cn';
+import { Button } from '@/components/ui/Button';
+import { t } from 'i18next';
 
-type ResultTone = 'success' | 'failure' | 'warning'
+type ResultTone = 'success' | 'failure' | 'warning';
 
 type ResultAction = {
-  label: string
-  onClick: () => void
-  icon?: ReactNode
-  variant?: 'primary' | 'outline' | 'ghost' | 'secondary'
-  className?: string
-}
+  label: string;
+  onClick: () => void;
+  icon?: ReactNode;
+  variant?: 'primary' | 'outline' | 'ghost' | 'custom' | 'secondary';
+  className?: string;
+};
 
 type PaymentResultShellProps = {
-  dir: string
-  tone: ResultTone
-  icon: ReactNode
-  eyebrow: string
-  title: string
-  message: string
-  primaryAction: ResultAction
-  secondaryAction?: ResultAction
-  children?: ReactNode
-  aside?: ReactNode
-}
+  dir: string;
+  tone: ResultTone;
+  icon: ReactNode;
+  eyebrow: string;
+  title: string;
+  message: string;
+  primaryAction: ResultAction;
+  children?: ReactNode;
+  aside?: ReactNode;
+};
 
 const toneStyles: Record<
   ResultTone,
   {
-    halo: string
-    iconWrap: string
-    iconRing: string
-    eyebrow: string
-    accent: string
-    primaryButton: string
+    halo: string;
+    iconWrap: string;
+    iconRing: string;
+    eyebrow: string;
+    accent: string;
+    primaryButton: string;
   }
 > = {
   success: {
@@ -45,7 +45,7 @@ const toneStyles: Record<
       'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-900/25 dark:text-emerald-200',
     accent: 'bg-emerald-500',
     primaryButton:
-      'bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500 dark:bg-emerald-500 dark:hover:bg-emerald-600',
+      'bg-emerald-600 text-white  w-full hover:bg-emerald-700 focus:ring-emerald-500 dark:bg-emerald-500 dark:hover:bg-emerald-600',
   },
   failure: {
     halo: 'from-red-500/16 via-secound/10 to-transparent',
@@ -67,7 +67,7 @@ const toneStyles: Record<
     primaryButton:
       'bg-amber-600 text-white hover:bg-amber-700 focus:ring-amber-500 dark:bg-amber-500 dark:hover:bg-amber-600',
   },
-}
+};
 
 function ActionButton({ action, isPrimary }: { action: ResultAction; isPrimary?: boolean }) {
   return (
@@ -75,12 +75,15 @@ function ActionButton({ action, isPrimary }: { action: ResultAction; isPrimary?:
       variant={action.variant ?? (isPrimary ? 'primary' : 'outline')}
       size="lg"
       onClick={action.onClick}
-      className={cn('w-full gap-2 rounded-xl text-base font-f-sbold sm:w-auto', action.className)}
+      className={cn(
+        'w-full gap-2 rounded-xl rounded-t-none text-base font-f-sbold ',
+        action.className,
+      )}
     >
       {action.icon}
       {action.label}
     </Button>
-  )
+  );
 }
 
 export function PaymentResultShell({
@@ -91,20 +94,17 @@ export function PaymentResultShell({
   title,
   message,
   primaryAction,
-  secondaryAction,
   children,
   aside,
 }: PaymentResultShellProps) {
-  const styles = toneStyles[tone]
+  const styles = toneStyles[tone];
 
   return (
     <main
       dir={dir}
-      className="relative isolate flex min-h-[calc(100vh-7rem)] items-center overflow-hidden px-4 sm:px-6"
+      className="relative isolate flex min-h-[calc(100vh)] items-center overflow-hidden "
     >
-      <div className="absolute left-1/2 top-12 -z-10 h-72 w-72 -translate-x-1/2 rounded-full bg-first/10 blur-3xl dark:bg-first/15" />
-
-      <div className="mx-auto grid w-full max-w-5xl gap-5 lg:grid-cols-[minmax(0,1fr)_22rem]">
+      <div className="mx-auto grid w-full max-w-5xl gap-5 ">
         <motion.section
           initial={{ opacity: 0, y: 18, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -114,59 +114,60 @@ export function PaymentResultShell({
           <span className={cn('absolute inset-x-0 top-0 h-1', styles.accent)} />
 
           <div className="flex flex-col items-center text-center sm:items-start sm:text-start">
-            <div className={cn('mb-6 rounded-full border p-2', styles.iconRing)}>
-              <div
-                className={cn(
-                  'flex h-20 w-20 items-center justify-center rounded-full',
-                  styles.iconWrap,
-                )}
-              >
-                {icon}
+            <div className="flex justify-between items-center flex-wrap w-full ">
+              <div className="flex  items-center w-full lg:w-80/96 gap-2">
+                <div className={cn('mb-6 rounded-full border p-2', styles.iconRing)}>
+                  <div
+                    className={cn(
+                      'flex h-20 w-20 items-center justify-center rounded-full',
+                      styles.iconWrap,
+                    )}
+                  >
+                    {icon}
+                  </div>
+                </div>
+                <div className="flex flex-col ">
+                  <span
+                    className={cn(
+                      ' mb-2 inline-flex w-fit items-center rounded-full border px-3 py-1 text-xs font-f-sbold',
+                      styles.eyebrow,
+                    )}
+                  >
+                    {message}
+                  </span>
+                  <p className=" max-w-2xl text-sm leading-7 first-text-color-for-paragraph sm:text-base">
+                    {t('payment.tnxSuccessMessage') || 'How to continue'}
+                  </p>
+                </div>
               </div>
-            </div>
-
-            <span
-              className={cn(
-                'mb-4 inline-flex items-center rounded-full border px-3 py-1 text-xs font-f-sbold',
-                styles.eyebrow,
-              )}
-            >
-              {eyebrow}
-            </span>
-
-            <h1 className="max-w-2xl text-2xl font-f-bold leading-tight first-text-color sm:text-3xl">
-              {title}
-            </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-7 first-text-color-for-paragraph sm:text-base">
-              {message}
-            </p>
-
-            <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-              <ActionButton
-                action={{
-                  ...primaryAction,
-                  className: cn(styles.primaryButton, primaryAction.className),
-                }}
-                isPrimary
-              />
-              {secondaryAction && <ActionButton action={secondaryAction} />}
+              <button className="text-nowrap w-full first-text-color-red mb-4 lg:mb-0 lg:w-16/96">
+                {t('payment.backToHome') || 'How to continue'}
+              </button>
             </div>
           </div>
 
           {children && <div className="mt-8 border-t border-gray-300/40 pt-6">{children}</div>}
+          {aside && (
+            <motion.aside
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: 0.08, ease: 'easeOut' }}
+              className="rounded-3xl border rounded-b-none border-first-100/80 bg-color-for-layer-on-body p-5 shadow-dark-sm"
+            >
+              {aside}
+            </motion.aside>
+          )}
+          <div className=" flex w-full  ">
+            <ActionButton
+              action={{
+                ...primaryAction,
+                className: cn('w-full', styles.primaryButton, primaryAction.className),
+              }}
+              isPrimary
+            />
+          </div>
         </motion.section>
-
-        {aside && (
-          <motion.aside
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, delay: 0.08, ease: 'easeOut' }}
-            className="rounded-3xl border border-first-100/80 bg-color-for-layer-on-body p-5 shadow-dark-sm"
-          >
-            {aside}
-          </motion.aside>
-        )}
       </div>
     </main>
-  )
+  );
 }

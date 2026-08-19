@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { CheckCircle2, Home, PackageCheck, ReceiptText, ShieldCheck } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from '@/i18n/useTranslation';
@@ -19,12 +18,8 @@ export default function PaymentSuccessPage() {
   const queryClient = useQueryClient();
   const setCart = useCartStore((state) => state.setCart);
   const effectiveLangCode = currentLanguage || 'fa';
-  const [searchParams] = useSearchParams();
-  const isCardToCardSuccess = searchParams.get('method') === 'cardToCard';
-  const orderNumber = searchParams.get('orderNumber') ?? '';
 
   useEffect(() => {
-
     if (!isAuthenticated) return;
 
     const cartScope = `user:${user?.id ?? 'authenticated'}`;
@@ -53,85 +48,35 @@ export default function PaymentSuccessPage() {
     };
   }, [effectiveLangCode, isAuthenticated, queryClient, setCart, user?.id]);
 
-  const nextSteps = isCardToCardSuccess
-    ? [
-        {
-          icon: <ReceiptText className="h-5 w-5" />,
-          title: t('payment.cardToCardSuccessReceiptTitle') || 'Receipt submitted',
-          description:
-            t('payment.cardToCardSuccessReceiptDescription') ||
-            'Your transfer details and receipt image were saved for review.',
-        },
-        {
-          icon: <ShieldCheck className="h-5 w-5" />,
-          title: t('payment.cardToCardSuccessSecureTitle') || 'Verification pending',
-          description:
-            t('payment.cardToCardSuccessSecureDescription') ||
-            'Our team will verify the bank transfer before confirming payment.',
-        },
-        {
-          icon: <PackageCheck className="h-5 w-5" />,
-          title: t('payment.cardToCardSuccessPreparationTitle') || 'Order received',
-          description:
-            t('payment.cardToCardSuccessPreparationDescription') ||
-            'You can follow the order status from your profile.',
-        },
-      ]
-    : [
-        {
-          icon: <ReceiptText className="h-5 w-5" />,
-          title: t('payment.successReceiptTitle') || 'Payment recorded',
-          description:
-            t('payment.successReceiptDescription') ||
-            'Your order receipt and payment status are saved in your profile.',
-        },
-        {
-          icon: <PackageCheck className="h-5 w-5" />,
-          title: t('payment.successPreparationTitle') || 'Order is being prepared',
-          description:
-            t('payment.successPreparationDescription') ||
-            'We will start processing your purchase and update your order history.',
-        },
-        {
-          icon: <ShieldCheck className="h-5 w-5" />,
-          title: t('payment.successSecureTitle') || 'Secure transaction',
-          description:
-            t('payment.successSecureDescription') ||
-            'Your payment confirmation has been received through the gateway.',
-        },
-      ];
+  const nextSteps = [
+    {
+      icon: <ReceiptText className="h-5 w-5" />,
+      title: t('payment.successReceiptTitle') || 'Payment recorded',
+      description:
+        t('payment.successReceiptDescription') ||
+        'Your order receipt and payment status are saved in your profile.',
+    },
+    {
+      icon: <PackageCheck className="h-5 w-5" />,
+      title: t('payment.successPreparationTitle') || 'Order is being prepared',
+      description:
+        t('payment.successPreparationDescription') ||
+        'We will start processing your purchase and update your order history.',
+    },
+  ];
 
   return (
     <PaymentResultShell
       dir={dir}
       tone="success"
       icon={<CheckCircle2 className="h-12 w-12" strokeWidth={1.8} />}
-      eyebrow={
-        isCardToCardSuccess
-          ? t('payment.cardToCardSuccessEyebrow') || 'Receipt submitted'
-          : t('payment.successEyebrow') || 'Payment confirmed'
-      }
-      title={
-        isCardToCardSuccess
-          ? t('payment.cardToCardSuccessTitle') || 'Receipt Submitted'
-          : t('payment.successTitle') || 'Payment Successful'
-      }
-      message={
-        isCardToCardSuccess
-          ? t('payment.cardToCardSuccessMessage') ||
-            'Your order was submitted and is waiting for transfer verification.'
-          : t('payment.successMessage') || 'Your payment was completed successfully.'
-      }
+      eyebrow={t('payment.successEyebrow') || 'Payment confirmed'}
+      title={t('payment.successTitle') || 'Payment Successful'}
+      message={t('payment.successMessage') || 'Your payment was completed successfully.'}
       primaryAction={{
         label: t('payment.viewOrders') || 'View orders',
         onClick: () => navigate('/profile'),
         icon: <ReceiptText className="h-5 w-5" />,
-      }}
-      secondaryAction={{
-        label: t('payment.backToHome') || 'Back to Home',
-        onClick: () => navigate('/'),
-        icon: <Home className="h-5 w-5" />,
-        variant: 'outline',
       }}
       aside={
         <div className="space-y-4">
@@ -140,42 +85,28 @@ export default function PaymentSuccessPage() {
               {t('payment.whatHappensNext') || 'What happens next'}
             </p>
             <p className="mt-1 text-xs leading-6 first-text-color-for-paragraph">
-              {isCardToCardSuccess
-                ? t('payment.cardToCardSuccessNextHint') ||
-                  'We will update your order once the receipt is verified.'
-                : t('payment.successNextHint') ||
-                  'You can follow the latest status from your profile whenever you need it.'}
+              {t('payment.successNextHint') ||
+                'You can follow the latest status from your profile whenever you need it.'}
             </p>
           </div>
 
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
             {nextSteps.map((step) => (
               <div key={step.title} className="flex gap-3 rounded-2xl bg-color-for-layer-sec p-3">
                 <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-300">
                   {step.icon}
                 </span>
-                <span className="min-w-0">
+                <span className="min-w-0 items-center  flex">
                   <span className="block text-sm font-f-sbold first-text-color">{step.title}</span>
-                  <span className="mt-1 block text-xs leading-5 first-text-color-for-paragraph">
+                  {/* <span className="mt-1 block text-xs leading-5 first-text-color-for-paragraph">
                     {step.description}
-                  </span>
+                  </span> */}
                 </span>
               </div>
             ))}
           </div>
         </div>
       }
-    >
-      {isCardToCardSuccess && orderNumber && (
-        <div className="rounded-2xl border rounded-b-none border-emerald-200/80 bg-emerald-50 px-4 py-3 text-start dark:border-emerald-500/30 dark:bg-emerald-900/20">
-          <p className="text-xs font-f-sbold text-emerald-700 dark:text-emerald-200">
-            {t('payment.cardToCardOrderNumber') || 'Order number'}
-          </p>
-          <p className="mt-1 font-mono text-sm text-emerald-900 dark:text-emerald-100">
-            #{orderNumber}
-          </p>
-        </div>
-      )}
-    </PaymentResultShell>
+    />
   );
 }

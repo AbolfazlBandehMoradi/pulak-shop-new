@@ -5,9 +5,11 @@ import { z } from 'zod';
 import {
   deleteAddress,
   getCities,
+  getDeliveryMethods,
   getProvinces,
   getUserAddresses,
   saveAddress,
+  type CheckoutDeliveryMethod,
   type City,
   type Province,
   type SaveAddressRequest,
@@ -34,6 +36,7 @@ export const DEFAULT_ADDRESS_FORM_VALUES: SaveAddressRequest = {
 interface UseCheckoutDataParams {
   languageCode: string;
   t: TranslateFn;
+  appliedDeliveryMethodId?: number | null;
 }
 
 const mapAddressToFormValues = (address: UserAddress): SaveAddressRequest => ({
@@ -45,7 +48,7 @@ const mapAddressToFormValues = (address: UserAddress): SaveAddressRequest => ({
   alternativePhoneNumber: address.alternativePhoneNumber || '',
   streetAddress1: address.streetAddress1,
   streetAddress2: address.streetAddress2 || '',
-  postalCode: address.postalCode,
+  postalCode: address.postalCode || '',
   provinceId: address.provinceId,
   cityId: address.cityId,
   additionalDetails: address.additionalDetails || '',
@@ -55,11 +58,11 @@ const mapAddressToFormValues = (address: UserAddress): SaveAddressRequest => ({
 const hasAnyOptionalAddressField = (address: UserAddress): boolean =>
   Boolean(
     address.title ||
-      address.firstName ||
-      address.lastName ||
-      address.phoneNumber ||
-      address.alternativePhoneNumber ||
-      address.streetAddress2,
+    address.firstName ||
+    address.lastName ||
+    address.phoneNumber ||
+    address.alternativePhoneNumber ||
+    address.streetAddress2,
   );
 
 const getPreferredAddressId = (
@@ -78,12 +81,39 @@ const getPreferredAddressId = (
   return defaultAddress ? defaultAddress.id : addresses[0].id;
 };
 
-export function useCheckoutData({ languageCode, t }: UseCheckoutDataParams) {
+const getPreferredDeliveryMethodId = (
+  deliveryMethods: CheckoutDeliveryMethod[],
+  currentSelection: number | null = null,
+  appliedDeliveryMethodId: number | null = null,
+): number | null => {
+  if (!deliveryMethods.length) {
+    return null;
+  }
+
+  const preferredDeliveryMethodId = [appliedDeliveryMethodId, currentSelection].find(
+    (deliveryMethodId): deliveryMethodId is number =>
+      deliveryMethodId !== null && deliveryMethods.some((method) => method.id === deliveryMethodId),
+  );
+
+  if (preferredDeliveryMethodId !== undefined) {
+    return preferredDeliveryMethodId;
+  }
+
+  return null;
+};
+
+export function useCheckoutData({
+  languageCode,
+  t,
+  appliedDeliveryMethodId = null,
+}: UseCheckoutDataParams) {
   const [reloadKey, setReloadKey] = useState(0);
   const [addresses, setAddresses] = useState<UserAddress[]>([]);
   const [provinces, setProvinces] = useState<Province[]>([]);
   const [cities, setCities] = useState<City[]>([]);
+  const [deliveryMethods, setDeliveryMethods] = useState<CheckoutDeliveryMethod[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
+  const [selectedDeliveryMethodId, setSelectedDeliveryMethodId] = useState<number | null>(null);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [editingAddress, setEditingAddress] = useState<UserAddress | null>(null);
   const [showOptionalFields, setShowOptionalFields] = useState(false);
@@ -116,9 +146,9 @@ export function useCheckoutData({ languageCode, t }: UseCheckoutDataParams) {
       postalCode: z
         .string()
         .trim()
-        .min(1, requiredMessage)
+        .optional()
         .refine(
-          (value) => /^\d{10}$/.test(toEnglishNumbers(value.replace(/\s/g, ''))),
+          (value) => !value || /^\d{10}$/.test(toEnglishNumbers(value.replace(/\s/g, ''))),
           postalCodeInvalidMessage,
         ),
       provinceId: z.number().refine((value) => value > 0, requiredMessage),
@@ -157,17 +187,22 @@ export function useCheckoutData({ languageCode, t }: UseCheckoutDataParams) {
         setLoading(true);
         setError(null);
 
-        const [provincesData, addressesData] = await Promise.all([
+        const [provincesData, addressesData, deliveryMethodsData] = await Promise.all([
           getProvinces(languageCode),
           getUserAddresses(languageCode),
+          getDeliveryMethods(languageCode),
         ]);
 
         if (!isMounted) return;
 
         setProvinces(provincesData);
         setAddresses(addressesData);
+        setDeliveryMethods(deliveryMethodsData);
         setSelectedAddressId((currentSelection) =>
           getPreferredAddressId(addressesData, currentSelection),
+        );
+        setSelectedDeliveryMethodId((currentSelection) =>
+          getPreferredDeliveryMethodId(deliveryMethodsData, currentSelection),
         );
       } catch (err) {
         if (!isMounted) return;
@@ -186,6 +221,12 @@ export function useCheckoutData({ languageCode, t }: UseCheckoutDataParams) {
       isMounted = false;
     };
   }, [languageCode, reloadKey]);
+
+  useEffect(() => {
+    setSelectedDeliveryMethodId((currentSelection) =>
+      getPreferredDeliveryMethodId(deliveryMethods, currentSelection, appliedDeliveryMethodId),
+    );
+  }, [appliedDeliveryMethodId, deliveryMethods]);
 
   useEffect(() => {
     let isMounted = true;
@@ -248,7 +289,7 @@ export function useCheckoutData({ languageCode, t }: UseCheckoutDataParams) {
       const addressData: SaveAddressRequest = {
         ...data,
         id: editingAddress?.id,
-        postalCode: toEnglishNumbers(data.postalCode),
+        postalCode: data.postalCode ? toEnglishNumbers(data.postalCode) : '',
         phoneNumber: data.phoneNumber ? toEnglishNumbers(data.phoneNumber) : '',
         alternativePhoneNumber: data.alternativePhoneNumber
           ? toEnglishNumbers(data.alternativePhoneNumber)
@@ -303,6 +344,10 @@ export function useCheckoutData({ languageCode, t }: UseCheckoutDataParams) {
     setSelectedAddressId(addressId);
   };
 
+  const selectDeliveryMethod = (deliveryMethodId: number) => {
+    setSelectedDeliveryMethodId(deliveryMethodId);
+  };
+
   const continueToPayment = async (): Promise<boolean> => {
     if (!selectedAddressId) {
       setError(t('checkout.validation.required') || 'Please select or add an address');
@@ -313,6 +358,11 @@ export function useCheckoutData({ languageCode, t }: UseCheckoutDataParams) {
 
     if (!selectedAddress) {
       setError(t('checkout.validation.required') || 'Please select or add an address');
+      return false;
+    }
+
+    if (!selectedDeliveryMethodId) {
+      setError(t('checkout.deliveryMethodRequired') || 'Please select a delivery method');
       return false;
     }
 
@@ -331,7 +381,9 @@ export function useCheckoutData({ languageCode, t }: UseCheckoutDataParams) {
     addresses,
     provinces,
     cities,
+    deliveryMethods,
     selectedAddressId,
+    selectedDeliveryMethodId,
     showAddressForm,
     editingAddress,
     showOptionalFields,
@@ -347,6 +399,7 @@ export function useCheckoutData({ languageCode, t }: UseCheckoutDataParams) {
     saveAddressForm,
     deleteAddressById,
     selectAddress,
+    selectDeliveryMethod,
     continueToPayment,
     toggleOptionalFields,
   };

@@ -1,9 +1,9 @@
-import { AlertTriangle, CreditCard, LifeBuoy, ShoppingCart, XCircle } from 'lucide-react'
-import { useSearchParams } from 'react-router-dom'
-import { useTranslation } from '@/i18n/useTranslation'
-import { useLangStore } from '@/stores/languageStore'
-import { useLocalizedNavigate } from '@/hooks/useLocalizedNavigate'
-import { PaymentResultShell } from './sections/PaymentResultShell'
+import { AlertTriangle, CreditCard, LifeBuoy, ShoppingCart, XCircle } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from '@/i18n/useTranslation';
+import { useLangStore } from '@/stores/languageStore';
+import { useLocalizedNavigate } from '@/hooks/useLocalizedNavigate';
+import { PaymentResultShell } from './sections/PaymentResultShell';
 
 const REASON_MESSAGE_KEYS: Record<string, string> = {
   gateway_callback: 'payment.failureReason.gatewayCallback',
@@ -13,13 +13,13 @@ const REASON_MESSAGE_KEYS: Record<string, string> = {
   verify_failed: 'payment.failureReason.verifyFailed',
   verify_error: 'payment.failureReason.verifyError',
   system_busy: 'payment.systemBusyMessage',
-}
+};
 
 const REASON_TITLE_KEYS: Record<string, string> = {
   system_busy: 'payment.systemBusyTitle',
-}
+};
 
-type DebugRow = { label: string; value: string }
+type DebugRow = { label: string; value: string };
 
 function buildDebugRows(searchParams: URLSearchParams): DebugRow[] {
   const keys = [
@@ -35,40 +35,42 @@ function buildDebugRows(searchParams: URLSearchParams): DebugRow[] {
     'verifyMessage',
     'verifyStatus',
     'detail',
-  ] as const
+  ] as const;
 
   return keys
     .map((key) => ({ label: key, value: searchParams.get(key) ?? '' }))
-    .filter((row) => row.value.length > 0)
+    .filter((row) => row.value.length > 0);
 }
 
 export default function PaymentFailurePage() {
-  const navigate = useLocalizedNavigate()
-  const { t } = useTranslation()
-  const dir = useLangStore((s) => s.dir)
-  const [searchParams] = useSearchParams()
+  const navigate = useLocalizedNavigate();
+  const { t } = useTranslation();
+  const dir = useLangStore((s) => s.dir);
+  const [searchParams] = useSearchParams();
 
-  const reason = searchParams.get('reason') ?? ''
-  const isSystemBusy = reason === 'system_busy'
-  const debugRows = buildDebugRows(searchParams)
-  const hasDebugInfo = debugRows.length > 0
+  const reason = searchParams.get('reason') ?? '';
+  const isSystemBusy = reason === 'system_busy';
+  const debugRows = buildDebugRows(searchParams);
+  const hasDebugInfo = debugRows.length > 0;
 
-  const titleKey = REASON_TITLE_KEYS[reason]
-  const messageKey = REASON_MESSAGE_KEYS[reason]
+  const titleKey = REASON_TITLE_KEYS[reason];
+  const messageKey = REASON_MESSAGE_KEYS[reason];
 
   const title = titleKey
-    ? (t(titleKey) || (isSystemBusy ? 'System Busy' : 'Payment Failed'))
-    : (t('payment.failureTitle') || 'Payment Failed')
+    ? t(titleKey) || (isSystemBusy ? 'System Busy' : 'Payment Failed')
+    : t('payment.failureTitle') || 'Payment Failed';
 
   const message = messageKey
-    ? (t(messageKey) || t('payment.failureMessage') || 'Your payment could not be completed. Please try again.')
-    : (t('payment.failureMessage') || 'Your payment could not be completed. Please try again.')
+    ? t(messageKey) ||
+      t('payment.failureMessage') ||
+      'Your payment could not be completed. Please try again.'
+    : t('payment.failureMessage') || 'Your payment could not be completed. Please try again.';
   const eyebrow = isSystemBusy
     ? t('payment.systemBusyEyebrow') || 'Temporary issue'
-    : t('payment.failureEyebrow') || 'Payment not completed'
+    : t('payment.failureEyebrow') || 'Payment not completed';
   const helpIconClass = isSystemBusy
     ? 'bg-amber-500/10 text-amber-600 dark:text-amber-300'
-    : 'bg-red-500/10 text-red-600 dark:text-red-300'
+    : 'bg-red-500/10 text-red-600 dark:text-red-300';
 
   const troubleshootingItems = [
     {
@@ -92,7 +94,7 @@ export default function PaymentFailurePage() {
         t('payment.failureSupportDescription') ||
         'If money was deducted, contact support with the payment details below.',
     },
-  ]
+  ];
 
   return (
     <PaymentResultShell
@@ -112,12 +114,6 @@ export default function PaymentFailurePage() {
         label: t('payment.tryAgain') || 'Try Again',
         onClick: () => navigate('/payment'),
         icon: <CreditCard className="h-5 w-5" />,
-      }}
-      secondaryAction={{
-        label: t('payment.reviewCart') || 'Review cart',
-        onClick: () => navigate('/cart'),
-        icon: <ShoppingCart className="h-5 w-5" />,
-        variant: 'outline',
       }}
       aside={
         <div className="space-y-4">
@@ -182,5 +178,5 @@ export default function PaymentFailurePage() {
         </div>
       )}
     </PaymentResultShell>
-  )
+  );
 }

@@ -1,8 +1,19 @@
-import { ArrowRight, CheckCircle, ReceiptText, ShoppingCart, Tag } from 'lucide-react';
+import type { ReactNode } from 'react';
+import {
+  ArrowRight,
+  CheckCircle,
+  ReceiptText,
+  ShoppingCart,
+  Store,
+  Tag,
+  Truck,
+} from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
-import { toPersianNumbers } from '@/utils/numberFormat';
+import { localizeDigits } from '@/utils/numberFormat';
+import getImageUrl from '@/utils/getImageUrl';
 import type { Cart } from '@/utils/cartApi';
+import { cn } from '@/utils/cn';
 
 type TranslateFn = (key: string) => string | undefined;
 
@@ -12,6 +23,39 @@ interface CheckoutSummaryProps {
   isRTL: boolean;
   t: TranslateFn;
   onContinue: () => void;
+  continueDisabled?: boolean;
+}
+
+interface SummaryLineProps {
+  label: string;
+  value: ReactNode;
+  icon?: ReactNode;
+  highlight?: boolean;
+}
+
+function SummaryLine({ label, value, icon, highlight = false }: SummaryLineProps) {
+  return (
+    <div className="product-detail-divider flex items-center justify-between gap-4 border-b py-3 last:border-b-0">
+      <span
+        className={cn(
+          'flex min-w-0 items-center gap-2',
+          highlight ? 'font-s-bold first-text-color' : 'text-sm first-text-color-for-paragraph',
+        )}
+      >
+        {icon}
+        <span className="min-w-0">{label}</span>
+      </span>
+      <span
+        className={
+          highlight
+            ? 'text-lg font-s-bold first-text-color'
+            : 'text-sm font-s-medium first-text-color'
+        }
+      >
+        {value}
+      </span>
+    </div>
+  );
 }
 
 export function CheckoutSummary({
@@ -20,115 +64,152 @@ export function CheckoutSummary({
   isRTL,
   t,
   onContinue,
+  continueDisabled = false,
 }: CheckoutSummaryProps) {
   const discountPercent =
     cart && cart.subtotal > 0 ? Math.round((cart.totalDiscount / cart.subtotal) * 100) : 0;
-  const isPersian = languageCode === 'fa';
+  const formattedDiscountPercent = localizeDigits(discountPercent, languageCode);
+  const previewItems = cart?.items.slice(0, 3) ?? [];
+  const remainingItems = cart ? Math.max(cart.items.length - previewItems.length, 0) : 0;
 
   return (
-    <div className="rounded-lg bg-color-for-layer-on-body  p-6 space-y-2">
-      {cart && cart.items.length > 0 && (
-        <>
-          <span className="flex w-full justify-center items-center gap-2">
-            <span className="first-text-color-svg">
-              <ReceiptText strokeWidth={1} className="w-6 h-6" />
+    <aside className="product-detail-panel  bg-white rounded-md relative overflow-hidden p-4 sm:p-5">
+      <div
+        aria-hidden="true"
+        className="absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-first via-first to-secound"
+      />
+
+      <div className="space-y-5 pt-1">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <span className="inline-flex items-center gap-2">
+              <ReceiptText className="h-5 w-5 text-first" strokeWidth={1.5} />
+              <h2 className="text-lg font-s-bold first-text-color">
+                {t('cart.orderSummary') || 'Order Summary'}
+              </h2>
             </span>
-            <h2 className="text-xl font-s-sbold first-text-color">{t('cart.orderSummary')}</h2>
-          </span>
-
-          <hr className="first-text-color-hr my-2" />
-
-          <div className={`flex justify-between items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
-            {isPersian ? (
-              <>
-                <span className="font-f-sbold te first-text-color-for-paragraph">
-                  {t('cart.priceOfItems') || 'Price of items'} ({cart.itemCount})
-                </span>
-                <span className="font-f-normal first-text-color">
-                  <PriceDisplay amount={cart.subtotal} languageCode={languageCode} />
-                </span>
-              </>
-            ) : (
-              <>
-                <span className="text-muted-foreground flex items-center gap-2">
-                  <ShoppingCart className="h-4 w-4" />
-                  {t('cart.priceOfItems') || 'Price of items'} ({cart.itemCount})
-                </span>
-                <span className="font-semibold">
-                  <PriceDisplay amount={cart.subtotal} languageCode={languageCode} />
-                </span>
-              </>
+            {cart && cart.items.length > 0 && (
+              <p className="mt-1 text-xs first-text-color-for-paragraph-low">
+                {cart.itemCount} {t('cart.shipment') || 'items'}
+              </p>
             )}
           </div>
+        </div>
 
-          {cart.totalDiscount > 0 && (
-            <div
-              className={`flex justify-between items-center p-2 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 ${
-                isRTL ? 'flex-row-reverse' : ''
-              }`}
-            >
-              {isPersian ? (
-                <>
-                  <span className="font-semibold text-green-600 dark:text-green-400">
+        {cart && previewItems.length > 0 && (
+          <div className="product-detail-soft-panel space-y-2 p-3">
+            {previewItems.map((item) => {
+              const imageUrl = getImageUrl(
+                item.productImage?.thumbnailPath || item.productImage?.filePath,
+              );
+
+              return (
+                <div
+                  key={item.id}
+                  className="grid grid-cols-[3rem_minmax(0,1fr)] items-center gap-3"
+                >
+                  <span className="flex aspect-square items-center justify-center overflow-hidden rounded-md bg-color-for-layer-on-body p-1.5">
+                    {imageUrl ? (
+                      <img
+                        src={imageUrl}
+                        alt={item.productName}
+                        loading="lazy"
+                        decoding="async"
+                        className="h-full w-full object-contain"
+                      />
+                    ) : (
+                      <Store className="h-5 w-5 first-text-color-svg" strokeWidth={1.5} />
+                    )}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-s-medium first-text-color">
+                      {item.productName}
+                    </span>
+                    <span className="mt-0.5 flex items-center justify-between gap-2 text-xs first-text-color-for-paragraph-low">
+                      <span>{localizeDigits(item.quantity, languageCode)} x</span>
+                      <PriceDisplay
+                        amount={item.lineFinalPrice}
+                        languageCode={languageCode}
+                        currency={item.currencyCode}
+                        currencyMode="none"
+                      />
+                    </span>
+                  </span>
+                </div>
+              );
+            })}
+
+            {remainingItems > 0 && (
+              <p className="pt-1 text-center text-xs first-text-color-for-paragraph-low">
+                +{localizeDigits(remainingItems, languageCode)} {t('cart.shipment') || 'more items'}
+              </p>
+            )}
+          </div>
+        )}
+
+        {cart && cart.items.length > 0 && (
+          <div>
+            <SummaryLine
+              icon={<ShoppingCart className="h-4 w-4 text-first" strokeWidth={1.5} />}
+              label={`${t('cart.priceOfItems') || 'Price of items'} (${cart.itemCount})`}
+              value={<PriceDisplay amount={cart.subtotal} languageCode={languageCode} />}
+            />
+
+            {cart.totalDiscount > 0 && (
+              <SummaryLine
+                icon={<Tag className="h-4 w-4 text-green-600 dark:text-green-400" />}
+                label={`${t('cart.yourProfit') || 'Your profit from purchase'} (${formattedDiscountPercent}%)`}
+                value={
+                  <span className="text-green-600 dark:text-green-400">
                     <PriceDisplay amount={cart.totalDiscount} languageCode={languageCode} />
                   </span>
-                  <span className="text-green-700 dark:text-green-300 flex items-center gap-2">
-                    <Tag className="h-4 w-4" />
-                    {t('cart.yourProfit') || 'Your profit from purchase'} (
-                    {toPersianNumbers(discountPercent)}%)
-                  </span>
-                </>
-              ) : (
-                <>
-                  <span className="text-green-700 dark:text-green-300 flex items-center gap-2">
-                    <Tag className="h-4 w-4" />
-                    {t('cart.yourProfit') || 'Your profit from purchase'} ({discountPercent}%)
-                  </span>
-                  <span className="font-semibold text-green-600 dark:text-green-400">
-                    -<PriceDisplay amount={cart.totalDiscount} languageCode={languageCode} />
-                  </span>
-                </>
-              )}
-            </div>
-          )}
+                }
+              />
+            )}
 
-          <div className={`flex justify-between items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
-            {isPersian ? (
-              <>
-                <span className="first-text-color font-f-bold">
-                  {t('cart.cartTotal') || 'Cart Total'}
-                </span>
-                <span className="font-bold text-lg text-red-600 dark:text-red-400">
-                  <PriceDisplay amount={cart.total} languageCode={languageCode} />
-                </span>
-              </>
-            ) : (
-              <>
-                <span className="text-foreground font-bold flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-red-500" />
-                  {t('cart.cartTotal') || 'Cart Total'}
-                </span>
-                <span className="font-bold text-lg text-red-600 dark:text-red-400">
-                  <PriceDisplay amount={cart.total} languageCode={languageCode} />
-                </span>
-              </>
+            {(cart.appliedDeliveryMethodId != null || cart.shippingAmount > 0) && (
+              <SummaryLine
+                icon={<Truck className="h-4 w-4 text-first" strokeWidth={1.5} />}
+                label={t('payment.shippingCost') || 'Shipping cost'}
+                value={<PriceDisplay amount={cart.shippingAmount} languageCode={languageCode} />}
+              />
+            )}
+
+            {cart.taxAmount > 0 && (
+              <SummaryLine
+                icon={<ReceiptText className="h-4 w-4 text-first" strokeWidth={1.5} />}
+                label={t('payment.tax') || 'Tax'}
+                value={<PriceDisplay amount={cart.taxAmount} languageCode={languageCode} />}
+              />
             )}
           </div>
-        </>
-      )}
+        )}
 
-      <div>
-        <Button onClick={onContinue} className="w-full font-s-sbold bg-first text-white" size="lg">
-          <span className="flex items-center justify-center gap-2">
-            {t('checkout.continue') || 'Continue'}
-            <ArrowRight className={`h-5 w-5 ${isRTL ? 'rotate-180' : ''}`} />
-          </span>
+        {cart && cart.items.length > 0 && (
+          <div className="product-detail-soft-panel p-4">
+            <SummaryLine
+              icon={<CheckCircle className="h-5 w-5 text-first" strokeWidth={1.5} />}
+              label={t('cart.cartTotal') || 'Cart Total'}
+              value={<PriceDisplay amount={cart.total} languageCode={languageCode} />}
+              highlight
+            />
+          </div>
+        )}
+
+        <Button
+          onClick={onContinue}
+          disabled={continueDisabled}
+          className="h-12 w-full gap-2 rounded-lg bg-first text-base font-s-bold text-white hover:bg-first-600"
+          size="lg"
+        >
+          {t('checkout.continue') || 'Continue'}
+          <ArrowRight className={`h-5 w-5 ${isRTL ? 'rotate-180' : ''}`} />
         </Button>
-      </div>
 
-      {cart && cart.items.length > 0 && (
-        <p className="text-xs first-text-color-for-paragraph-low">{t('cart.paymentNote')}</p>
-      )}
-    </div>
+        {cart && cart.items.length > 0 && (
+          <p className="text-xs first-text-color-for-paragraph-low">{t('cart.paymentNote')}</p>
+        )}
+      </div>
+    </aside>
   );
 }

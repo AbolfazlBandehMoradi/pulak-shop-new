@@ -21,7 +21,7 @@ const Cart = () => {
   const showMobileContinueBar = Boolean(cart && cart.items.length > 0);
 
   return (
-    <main className="mx-auto mt-20 px-4 pb-[11.5rem] lg:mt-8 lg:pb-0 sm:container">
+    <main className="page-container page-section">
       <CheckoutStepper currentStep={1} />
       <div className="mb-6">
         <div className="flex items-center justify-between  gap-3 mb-2">
@@ -133,7 +133,7 @@ const Cart = () => {
                 {t('cart.cartTotal') || 'Cart Total'}
               </span>
               <span className="text-lg font-s-bold text-first">
-                <PriceDisplay amount={cart.total} languageCode={effectiveLangCode} />
+                <PriceDisplay amount={cart?.total} languageCode={effectiveLangCode} />
               </span>
             </div>
             <Button

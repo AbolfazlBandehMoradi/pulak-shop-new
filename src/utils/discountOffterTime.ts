@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 export type DiscountOfferTime = {
   days: number;
@@ -31,15 +31,10 @@ const getRemainingTime = (endAtMs: number): DiscountOfferTime => {
   };
 };
 
-const useDiscountOfferTime = (
-  expireDate: string | null | undefined,
-): DiscountOfferTime => {
-  const endAtMs = useMemo(
-    () => (expireDate ? Date.parse(expireDate) : Number.NaN),
-    [expireDate],
-  );
+const useDiscountOfferTime = (expireDate: string | null | undefined): DiscountOfferTime => {
+  const endAtMs = useMemo(() => (expireDate ? Date.parse(expireDate) : Number.NaN), [expireDate]);
 
-  const intervalRef = useRef<ReturnType<typeof window.setInterval> | null>(null);
+  const intervalRef = useRef<number | null>(null);
   const [timeLeft, setTimeLeft] = useState<DiscountOfferTime>(() =>
     Number.isFinite(endAtMs) ? getRemainingTime(endAtMs) : EMPTY_TIME,
   );
