@@ -225,7 +225,7 @@ export const Footer = () => {
               </li>
               <li className="footer-link-row group">
                 <span className="footer-link-dot"></span>
-                <Link className="footer-link-anchor" to={localizedPath('/product-tracking')}>
+                <Link className="footer-link-anchor" to={localizedPath('/profile')}>
                   {t('footer.links.tracking')}
                 </Link>
               </li>
