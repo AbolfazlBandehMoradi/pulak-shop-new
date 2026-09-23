@@ -1,7 +1,6 @@
-
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import axios from "axios";
-import { motion } from "framer-motion";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import axios from 'axios';
+import { motion } from 'framer-motion';
 import {
   AlertCircle,
   CalendarDays,
@@ -9,27 +8,32 @@ import {
   ChevronRight,
   ClipboardList,
   Eye,
-  Mail,
+  Loader2,
+  // Mail, // Temporarily disabled with the profile email row.
   Package,
+  Pencil,
   Phone,
   RefreshCw,
   ShieldCheck,
   ShoppingBag,
   UserCircle2,
-} from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
-import apiClient from "@/services/apiClient";
-import { useTranslation } from "@/i18n/useTranslation";
-import { useLangStore } from "@/stores/languageStore";
-import { Button } from "@/components/ui/Button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { PriceDisplay } from "@/components/ui/PriceDisplay";
-import { OrderDetailModal } from "@/components/profile/OrderDetailModal";
-import { OrderInvoicePrintButton } from "@/components/prints";
-import type { OrderDetail } from "@/types/order.types";
-import { fetchProfileOrder } from "@/utils/profileOrderApi";
-import { orderStatusTone, translateOrderStatus } from "@/utils/orderDetailHelpers";
-import getImageUrl from "@/utils/getImageUrl";
+} from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import apiClient from '@/services/apiClient';
+import { useTranslation } from '@/i18n/useTranslation';
+import { useLangStore } from '@/stores/languageStore';
+import { getLocaleForLanguageCode } from '@/utils/langRouting';
+import { Button } from '@/components/ui/Button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { PriceDisplay } from '@/components/ui/PriceDisplay';
+import { OrderDetailModal } from './OrderDetailModal';
+import { OrderInvoicePrintButton } from '@/components/prints';
+import type { OrderDetail } from '@/types/order.types';
+import { fetchProfileOrder } from '@/utils/profileOrderApi';
+import { orderStatusTone, translateOrderStatus } from '@/utils/orderDetailHelpers';
+import getImageUrl from '@/utils/getImageUrl';
+import { updateProfileName } from '@/utils/profileApi';
+import { useToast } from '@/context/ToastContext';
 
 interface ProfileData {
   id?: number;
@@ -61,17 +65,17 @@ interface ProfileOrder {
 type OrdersResponse =
   | ProfileOrder[]
   | {
-    items?: ProfileOrder[];
-    orders?: ProfileOrder[];
-    data?: ProfileOrder[];
-    result?: ProfileOrder[];
-    totalCount?: number;
-    pageNumber?: number;
-    pageSize?: number;
-    totalPages?: number;
-    hasPreviousPage?: boolean;
-    hasNextPage?: boolean;
-  };
+      items?: ProfileOrder[];
+      orders?: ProfileOrder[];
+      data?: ProfileOrder[];
+      result?: ProfileOrder[];
+      totalCount?: number;
+      pageNumber?: number;
+      pageSize?: number;
+      totalPages?: number;
+      hasPreviousPage?: boolean;
+      hasNextPage?: boolean;
+    };
 
 interface OrdersMeta {
   totalCount: number;
@@ -92,16 +96,16 @@ const EMPTY_ORDERS_META: OrdersMeta = {
 };
 
 function normalizeEndpoint(endpoint: string): string {
-  const normalizedEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
-  const baseURL = (apiClient.defaults.baseURL || "").toLowerCase();
-  const isBaseApi = baseURL.endsWith("/api");
+  const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  const baseURL = (apiClient.defaults.baseURL || '').toLowerCase();
+  const isBaseApi = baseURL.endsWith('/api');
 
-  if (isBaseApi && normalizedEndpoint.startsWith("/api/")) {
+  if (isBaseApi && normalizedEndpoint.startsWith('/api/')) {
     return normalizedEndpoint.slice(4);
   }
 
-  if (isBaseApi && normalizedEndpoint === "/api") {
-    return "/";
+  if (isBaseApi && normalizedEndpoint === '/api') {
+    return '/';
   }
 
   return normalizedEndpoint;
@@ -153,20 +157,20 @@ function normalizeOrdersResponse(payload: OrdersResponse | null | undefined): {
 
   const items = extractOrders(payload);
   const pageSize =
-    typeof payload.pageSize === "number" && payload.pageSize > 0
+    typeof payload.pageSize === 'number' && payload.pageSize > 0
       ? payload.pageSize
       : EMPTY_ORDERS_META.pageSize;
   const pageNumber =
-    typeof payload.pageNumber === "number" && payload.pageNumber > 0
+    typeof payload.pageNumber === 'number' && payload.pageNumber > 0
       ? payload.pageNumber
       : EMPTY_ORDERS_META.pageNumber;
   const totalCount =
-    typeof payload.totalCount === "number" && payload.totalCount >= 0
+    typeof payload.totalCount === 'number' && payload.totalCount >= 0
       ? payload.totalCount
       : items.length;
   const fallbackTotalPages = totalCount > 0 ? Math.ceil(totalCount / pageSize) : 0;
   const totalPages =
-    typeof payload.totalPages === "number" && payload.totalPages >= 0
+    typeof payload.totalPages === 'number' && payload.totalPages >= 0
       ? payload.totalPages
       : fallbackTotalPages;
 
@@ -178,11 +182,9 @@ function normalizeOrdersResponse(payload: OrdersResponse | null | undefined): {
       pageSize,
       totalPages,
       hasPreviousPage:
-        typeof payload.hasPreviousPage === "boolean"
-          ? payload.hasPreviousPage
-          : pageNumber > 1,
+        typeof payload.hasPreviousPage === 'boolean' ? payload.hasPreviousPage : pageNumber > 1,
       hasNextPage:
-        typeof payload.hasNextPage === "boolean"
+        typeof payload.hasNextPage === 'boolean'
           ? payload.hasNextPage
           : totalPages > 0 && pageNumber < totalPages,
     },
@@ -190,11 +192,11 @@ function normalizeOrdersResponse(payload: OrdersResponse | null | undefined): {
 }
 
 function resolveOrderId(order: ProfileOrder): number | null {
-  if (typeof order.id === "number" && Number.isFinite(order.id)) {
+  if (typeof order.id === 'number' && Number.isFinite(order.id)) {
     return order.id;
   }
 
-  if (typeof order.id === "string" && /^\d+$/.test(order.id)) {
+  if (typeof order.id === 'string' && /^\d+$/.test(order.id)) {
     return Number.parseInt(order.id, 10);
   }
 
@@ -202,11 +204,11 @@ function resolveOrderId(order: ProfileOrder): number | null {
 }
 
 function toNumericValue(value: number | string | undefined): number {
-  if (typeof value === "number" && Number.isFinite(value)) {
+  if (typeof value === 'number' && Number.isFinite(value)) {
     return value;
   }
 
-  if (typeof value === "string") {
+  if (typeof value === 'string') {
     const parsed = Number(value);
     return Number.isFinite(parsed) ? parsed : 0;
   }
@@ -215,10 +217,11 @@ function toNumericValue(value: number | string | undefined): number {
 }
 
 const ProfilePage = () => {
-  const { token, user, logout } = useAuth();
+  const { token, user, logout, updateUser } = useAuth();
   const currentLanguage = useLangStore((s) => s.lang);
   const dir = useLangStore((s) => s.dir);
   const { t } = useTranslation();
+  const { success: showSuccessToast } = useToast();
 
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [orders, setOrders] = useState<ProfileOrder[]>([]);
@@ -227,6 +230,10 @@ const ProfilePage = () => {
   const [error, setError] = useState<string | null>(null);
   const [detailOrderId, setDetailOrderId] = useState<number | null>(null);
   const [orderCache, setOrderCache] = useState<Record<number, OrderDetail>>({});
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [isSavingName, setIsSavingName] = useState(false);
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [nameDraft, setNameDraft] = useState({ firstName: '', lastName: '' });
   const tRef = useRef(t);
   const logoutRef = useRef(logout);
 
@@ -243,7 +250,7 @@ const ProfilePage = () => {
       const translated = t(key);
       return translated && translated !== key ? translated : fallback;
     },
-    [t]
+    [t],
   );
 
   const translateRefOr = useCallback((key: string, fallback: string) => {
@@ -258,16 +265,14 @@ const ProfilePage = () => {
     try {
       const authToken = token;
       if (!authToken) {
-        throw new Error(
-          translateRefOr("login.error.unauthorized", "Authentication required")
-        );
+        throw new Error(translateRefOr('login.error.unauthorized', 'Authentication required'));
       }
 
       const headers = { Authorization: `Bearer ${authToken}` };
 
       const [profileResponse, ordersResponse] = await Promise.all([
-        apiClient.get<ProfileData>(normalizeEndpoint("/api/ui/profile"), { headers }),
-        apiClient.get<OrdersResponse>(normalizeEndpoint("/api/ui/profile/orders"), {
+        apiClient.get<ProfileData>(normalizeEndpoint('/api/ui/profile'), { headers }),
+        apiClient.get<OrdersResponse>(normalizeEndpoint('/api/ui/profile/orders'), {
           headers,
         }),
       ]);
@@ -277,7 +282,7 @@ const ProfilePage = () => {
       setOrders(normalizedOrders.items);
       setOrdersMeta(normalizedOrders.meta);
     } catch (err: unknown) {
-      console.error("Failed to load profile data:", err);
+      console.error('Failed to load profile data:', err);
 
       if (axios.isAxiosError(err) && err.response?.status === 401) {
         logoutRef.current();
@@ -287,7 +292,7 @@ const ProfilePage = () => {
       setError(
         err instanceof Error
           ? err.message
-          : translateRefOr("profile.error.loadFailed", "Failed to load profile data")
+          : translateRefOr('profile.error.loadFailed', 'Failed to load profile data'),
       );
     } finally {
       setLoading(false);
@@ -299,85 +304,98 @@ const ProfilePage = () => {
   }, [loadProfileData]);
 
   const displayName = useMemo(() => {
-    const firstName = (profile?.firstName || user?.firstName || "").trim();
-    const lastName = (profile?.lastName || user?.lastName || "").trim();
+    const firstName = (profile?.firstName || user?.firstName || '').trim();
+    const lastName = (profile?.lastName || user?.lastName || '').trim();
     const fullName = `${firstName} ${lastName}`.trim();
 
     if (fullName) {
       return fullName;
     }
 
-    return profile?.username || user?.username || translateOr("profile.defaultName", "User");
+    return profile?.username || user?.username || translateOr('profile.defaultName', 'User');
   }, [profile, translateOr, user]);
 
-  const rawEmail = (profile?.email || user?.email || "").trim();
-  const isGeneratedEmail = rawEmail.endsWith("@mobile.local");
+  /* Temporarily disabled together with the profile email row.
+  const rawEmail = (profile?.email || user?.email || '').trim();
+  const isGeneratedEmail = rawEmail.endsWith('@mobile.local');
   const email = rawEmail
     ? isGeneratedEmail
-      ? translateOr("profile.emailMissing", "No email added yet")
+      ? translateOr('profile.emailMissing', 'No email added yet')
       : rawEmail
-    : translateOr("profile.emailMissing", "No email added yet");
+    : translateOr('profile.emailMissing', 'No email added yet');
+  */
 
   const inferredPhoneFromUsername = useMemo(() => {
-    const username = (profile?.username || user?.username || "").trim();
-    return /^09\d{9}$/.test(username) ? username : "";
+    const username = (profile?.username || user?.username || '').trim();
+    return /^09\d{9}$/.test(username) ? username : '';
   }, [profile?.username, user?.username]);
 
-  const rawPhone =
-    (profile?.mobile || profile?.phoneNumber || inferredPhoneFromUsername || "").trim();
-  const phone = rawPhone || translateOr("profile.phoneMissing", "No phone number added yet");
+  const rawPhone = (
+    profile?.mobile ||
+    profile?.phoneNumber ||
+    inferredPhoneFromUsername ||
+    ''
+  ).trim();
+  const phone = rawPhone || translateOr('profile.phoneMissing', 'No phone number added yet');
 
+  /* Temporarily disabled together with the roles section in the profile card.
   const roles = useMemo(() => {
     const profileRoles = Array.isArray(profile?.roles) ? profile.roles : [];
     const userRoles = Array.isArray(user?.roles) ? user.roles : [];
     return (profileRoles.length > 0 ? profileRoles : userRoles).filter(
-      (role): role is string => typeof role === "string" && role.trim().length > 0
+      (role): role is string => typeof role === 'string' && role.trim().length > 0,
     );
   }, [profile?.roles, user?.roles]);
+  */
 
   const isNameMissing =
     !(profile?.firstName || user?.firstName) && !(profile?.lastName || user?.lastName);
   const hasNoOrders = ordersMeta.totalCount === 0;
-  const username = profile?.username || user?.username || "-";
+  const username = profile?.username || user?.username || '-';
   const accountInitials = displayName
     .split(/\s+/)
     .filter(Boolean)
     .map((part) => part.charAt(0))
-    .join("")
+    .join('')
     .slice(0, 2)
     .toUpperCase();
   const recentOrdersTotal = useMemo(
     () =>
       orders.reduce(
-        (sum, order) =>
-          sum + toNumericValue(order.finalAmount ?? order.totalAmount ?? order.total),
-        0
+        (sum, order) => sum + toNumericValue(order.finalAmount ?? order.totalAmount ?? order.total),
+        0,
       ),
-    [orders]
+    [orders],
   );
   const recentItemsCount = useMemo(
     () =>
       orders.reduce((sum, order) => sum + toNumericValue(order.itemsCount ?? order.itemCount), 0),
-    [orders]
+    [orders],
   );
   const completedVisibleOrders = useMemo(
     () =>
       orders.filter((order) =>
-        ["Completed", "Delivered"].includes(String(order.orderStatus || order.status || ""))
+        ['Completed', 'Delivered'].includes(String(order.orderStatus || order.status || '')),
       ).length,
-    [orders]
+    [orders],
   );
+  /* Temporarily disabled together with the profile-status section.
   const profileCompletionSteps = [
     !isNameMissing,
     Boolean(rawEmail && !isGeneratedEmail),
     Boolean(rawPhone),
   ].filter(Boolean).length;
+  */
 
-  const locale = currentLanguage === "fa" ? "fa-IR" : "en-US";
+  const locale = getLocaleForLanguageCode(currentLanguage);
   const resolveImageUrl = (path: string) => getImageUrl(path) ?? path;
 
   const cacheOrder = useCallback((order: OrderDetail) => {
     setOrderCache((prev) => ({ ...prev, [order.id]: order }));
+  }, []);
+
+  const closeOrderDetails = useCallback(() => {
+    setDetailOrderId(null);
   }, []);
 
   const fetchAndCacheOrder = useCallback(
@@ -395,16 +413,73 @@ const ProfilePage = () => {
         cacheOrder(data);
         return data;
       } catch (err) {
-        console.error("Failed to fetch order for print:", err);
+        console.error('Failed to fetch order for print:', err);
         return null;
       }
     },
-    [cacheOrder, orderCache, token]
+    [cacheOrder, orderCache, token],
   );
+
+  const startEditingName = () => {
+    setNameDraft({
+      firstName: (profile?.firstName || user?.firstName || '').trim(),
+      lastName: (profile?.lastName || user?.lastName || '').trim(),
+    });
+    setNameError(null);
+    setIsEditingName(true);
+  };
+
+  const cancelEditingName = () => {
+    setNameError(null);
+    setIsEditingName(false);
+  };
+
+  const handleNameSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const firstName = nameDraft.firstName.trim();
+    const lastName = nameDraft.lastName.trim();
+
+    if (!firstName || !lastName) {
+      setNameError(
+        translateOr('profile.editName.required', 'First name and last name are required.'),
+      );
+      return;
+    }
+
+    setIsSavingName(true);
+    setNameError(null);
+
+    try {
+      const updatedProfile = await updateProfileName({ firstName, lastName });
+      const savedFirstName = updatedProfile?.firstName?.trim() || firstName;
+      const savedLastName = updatedProfile?.lastName?.trim() || lastName;
+
+      setProfile((currentProfile) => ({
+        ...(currentProfile ?? {}),
+        ...(updatedProfile ?? {}),
+        firstName: savedFirstName,
+        lastName: savedLastName,
+      }));
+      updateUser({ firstName: savedFirstName, lastName: savedLastName });
+      setNameDraft({ firstName: savedFirstName, lastName: savedLastName });
+      setIsEditingName(false);
+      showSuccessToast(
+        translateOr('profile.editName.success', 'Your name was updated successfully.'),
+      );
+    } catch (err: unknown) {
+      console.error('Failed to update profile name:', err);
+      setNameError(
+        translateOr('profile.editName.error', 'We could not update your name. Please try again.'),
+      );
+    } finally {
+      setIsSavingName(false);
+    }
+  };
 
   const formatOrderDate = (value?: string) => {
     if (!value) {
-      return "-";
+      return '-';
     }
 
     const parsedDate = new Date(value);
@@ -412,16 +487,16 @@ const ProfilePage = () => {
       return value;
     }
 
-    return parsedDate.toLocaleDateString(currentLanguage === "fa" ? "fa-IR" : "en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
+    return parsedDate.toLocaleDateString(getLocaleForLanguageCode(currentLanguage), {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
     });
   };
 
   return (
-    <div className="min-h-screen">
-      <main dir={dir} className="mx-auto max-w-7xl px-3 py-4 sm:px-4 lg:py-10">
+    <>
+      <main dir={dir} className="page-container page-section">
         <motion.section
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -437,13 +512,13 @@ const ProfilePage = () => {
                 <div className="min-w-0">
                   <p className="mb-1 inline-flex items-center gap-2 rounded-full border border-first/20 bg-first/10 px-3 py-1 text-xs font-f-sbold text-first">
                     <ShieldCheck className="h-3.5 w-3.5" />
-                    {translateOr("profile.accountCenter", "Account center")}
+                    {translateOr('profile.accountCenter', 'Account center')}
                   </p>
                   <h1 className="truncate text-2xl font-s-sbold first-text-color sm:text-3xl">
-                    {translateOr("profile.title", "My Profile")}
+                    {translateOr('profile.title', 'My Profile')}
                   </h1>
                   <p className="mt-1 max-w-2xl text-sm first-text-color-for-paragraph sm:text-base">
-                    {translateOr("profile.subtitle", "Account details and recent orders")}
+                    {translateOr('profile.subtitle', 'Account details and recent orders')}
                   </p>
                 </div>
               </div>
@@ -455,7 +530,7 @@ const ProfilePage = () => {
                 className="w-full gap-2 rounded-xl border border-first/25 bg-color-for-layer-on-body px-4 text-first hover:bg-first hover:text-white sm:w-auto"
               >
                 <RefreshCw className="h-4 w-4" />
-                {translateOr("profile.refresh", "Refresh")}
+                {translateOr('profile.refresh', 'Refresh')}
               </Button>
             </div>
           </div>
@@ -483,7 +558,7 @@ const ProfilePage = () => {
               className="mt-5 gap-2 rounded-xl bg-red-600 text-white hover:bg-red-700"
             >
               <RefreshCw className="h-4 w-4" />
-              {translateOr("common.retry", "Retry")}
+              {translateOr('common.retry', 'Retry')}
             </Button>
           </section>
         ) : (
@@ -495,14 +570,12 @@ const ProfilePage = () => {
                     <ShoppingBag className="h-5 w-5" />
                   </span>
                   <span className="rounded-full bg-color-for-layer-sec px-2.5 py-1 text-xs first-text-color-for-paragraph-low">
-                    {translateOr("profile.totalOrders", "total orders")}
+                    {translateOr('profile.totalOrders', 'total orders')}
                   </span>
                 </div>
-                <p className="text-2xl font-s-sbold first-text-color">
-                  {ordersMeta.totalCount}
-                </p>
+                <p className="text-2xl font-s-sbold first-text-color">{ordersMeta.totalCount}</p>
                 <p className="mt-1 text-sm first-text-color-for-paragraph">
-                  {translateOr("profile.orderHistory", "Order history")}
+                  {translateOr('profile.orderHistory', 'Order history')}
                 </p>
               </div>
 
@@ -512,12 +585,12 @@ const ProfilePage = () => {
                     <ClipboardList className="h-5 w-5" />
                   </span>
                   <span className="rounded-full bg-color-for-layer-sec px-2.5 py-1 text-xs first-text-color-for-paragraph-low">
-                    {orders.length} {translateOr("profile.visible", "visible")}
+                    {orders.length} {translateOr('profile.visible', 'visible')}
                   </span>
                 </div>
                 <p className="text-2xl font-s-sbold first-text-color">{recentItemsCount}</p>
                 <p className="mt-1 text-sm first-text-color-for-paragraph">
-                  {translateOr("profile.itemsInRecentOrders", "Items in recent orders")}
+                  {translateOr('profile.itemsInRecentOrders', 'Items in recent orders')}
                 </p>
               </div>
 
@@ -527,7 +600,7 @@ const ProfilePage = () => {
                     <CheckCircle2 className="h-5 w-5" />
                   </span>
                   <span className="rounded-full bg-color-for-layer-sec px-2.5 py-1 text-xs first-text-color-for-paragraph-low">
-                    {completedVisibleOrders} {translateOr("profile.completed", "completed")}
+                    {completedVisibleOrders} {translateOr('profile.completed', 'completed')}
                   </span>
                 </div>
                 <p className="text-2xl font-s-sbold text-first">
@@ -539,7 +612,7 @@ const ProfilePage = () => {
                   />
                 </p>
                 <p className="mt-1 text-sm first-text-color-for-paragraph">
-                  {translateOr("profile.recentOrdersTotal", "Recent orders total")}
+                  {translateOr('profile.recentOrdersTotal', 'Recent orders total')}
                 </p>
               </div>
             </div>
@@ -552,7 +625,7 @@ const ProfilePage = () => {
               >
                 <section className="overflow-hidden rounded-3xl border border-first-100/80 bg-color-for-layer-on-body shadow-dark-sm">
                   <div className="bg-linear-to-br from-first/15 via-first-50/70 to-secound-50/80 p-5 dark:from-first-900/30 dark:via-first-950/20 dark:to-secound-950/20">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3 sm:gap-4">
                       <div className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-color-for-layer-on-body text-xl font-s-sbold text-first shadow-dark-sm">
                         {accountInitials || <UserCircle2 className="h-8 w-8" />}
                       </div>
@@ -564,30 +637,154 @@ const ProfilePage = () => {
                           {username}
                         </p>
                       </div>
+                      {!isEditingName && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={startEditingName}
+                          className="ms-auto shrink-0 gap-2 rounded-xl border border-first/25 bg-color-for-layer-on-body px-2.5 text-first hover:bg-first hover:text-white sm:px-3"
+                          aria-label={translateOr('profile.editName.action', 'Edit name')}
+                        >
+                          <Pencil className="h-4 w-4" />
+                          <span className="hidden sm:inline">
+                            {translateOr('profile.editName.action', 'Edit name')}
+                          </span>
+                        </Button>
+                      )}
                     </div>
                   </div>
 
                   <div className="space-y-5 p-5">
-                    {isNameMissing && (
+                    {isEditingName && (
+                      <form
+                        onSubmit={(event) => void handleNameSubmit(event)}
+                        className="space-y-4 rounded-2xl border border-first/20 bg-first/5 p-4"
+                        noValidate
+                      >
+                        <div>
+                          <h3 className="font-s-sbold first-text-color">
+                            {translateOr('profile.editName.title', 'Update your name')}
+                          </h3>
+                          <p className="mt-1 text-sm first-text-color-for-paragraph-low">
+                            {translateOr(
+                              'profile.editName.description',
+                              'Enter the name you want displayed on your account.',
+                            )}
+                          </p>
+                        </div>
+
+                        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                          <label className="block">
+                            <span className="mb-1.5 block text-sm font-f-sbold first-text-color">
+                              {translateOr('profile.editName.firstName', 'First name')}
+                            </span>
+                            <input
+                              type="text"
+                              name="firstName"
+                              autoComplete="given-name"
+                              autoFocus
+                              required
+                              maxLength={100}
+                              disabled={isSavingName}
+                              aria-invalid={Boolean(nameError)}
+                              aria-describedby={nameError ? 'profile-name-error' : undefined}
+                              value={nameDraft.firstName}
+                              onChange={(event) => {
+                                setNameDraft((current) => ({
+                                  ...current,
+                                  firstName: event.target.value,
+                                }));
+                                setNameError(null);
+                              }}
+                              className="h-11 w-full rounded-xl border border-gray-300/70 bg-color-for-layer-on-body px-3 text-sm first-text-color outline-none transition focus:border-first focus:ring-2 focus:ring-first/20 disabled:cursor-wait disabled:opacity-60"
+                            />
+                          </label>
+
+                          <label className="block">
+                            <span className="mb-1.5 block text-sm font-f-sbold first-text-color">
+                              {translateOr('profile.editName.lastName', 'Last name')}
+                            </span>
+                            <input
+                              type="text"
+                              name="lastName"
+                              autoComplete="family-name"
+                              required
+                              maxLength={100}
+                              disabled={isSavingName}
+                              aria-invalid={Boolean(nameError)}
+                              aria-describedby={nameError ? 'profile-name-error' : undefined}
+                              value={nameDraft.lastName}
+                              onChange={(event) => {
+                                setNameDraft((current) => ({
+                                  ...current,
+                                  lastName: event.target.value,
+                                }));
+                                setNameError(null);
+                              }}
+                              className="h-11 w-full rounded-xl border border-gray-300/70 bg-color-for-layer-on-body px-3 text-sm first-text-color outline-none transition focus:border-first focus:ring-2 focus:ring-first/20 disabled:cursor-wait disabled:opacity-60"
+                            />
+                          </label>
+                        </div>
+
+                        {nameError && (
+                          <p
+                            id="profile-name-error"
+                            role="alert"
+                            className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-300"
+                          >
+                            {nameError}
+                          </p>
+                        )}
+
+                        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end lg:flex-col-reverse xl:flex-row">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={cancelEditingName}
+                            disabled={isSavingName}
+                            className="rounded-xl border border-gray-300/70 px-4 first-text-color-for-paragraph"
+                          >
+                            {translateOr('common.cancel', 'Cancel')}
+                          </Button>
+                          <Button
+                            type="submit"
+                            size="sm"
+                            disabled={isSavingName}
+                            className="gap-2 rounded-xl bg-first px-4 text-white hover:bg-first-700"
+                          >
+                            {isSavingName && <Loader2 className="h-4 w-4 animate-spin" />}
+                            {isSavingName
+                              ? translateOr('profile.editName.saving', 'Saving...')
+                              : translateOr('profile.editName.save', 'Save changes')}
+                          </Button>
+                        </div>
+                      </form>
+                    )}
+
+                    {isNameMissing && !isEditingName && (
                       <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-800/70 dark:bg-amber-900/20 dark:text-amber-200">
                         {translateOr(
-                          "profile.nameMissing",
-                          "Your first and last name are not set yet."
+                          'profile.nameMissing',
+                          'Your first and last name are not set yet.',
                         )}
                       </div>
                     )}
 
                     <div>
                       <p className="mb-3 text-xs font-f-sbold uppercase tracking-wide first-text-color-for-paragraph-low">
-                        {translateOr("profile.contact", "Contact")}
+                        {translateOr('profile.contact', 'Contact')}
                       </p>
                       <div className="space-y-2">
+                        {/* Temporarily disabled: profile email.
                         <div className="flex items-start gap-3 rounded-2xl bg-color-for-layer-sec px-3 py-3">
                           <Mail className="mt-0.5 h-4 w-4 shrink-0 text-first" />
                           <span className="min-w-0 break-words text-sm first-text-color-for-paragraph">
                             {email}
                           </span>
                         </div>
+                        */}
                         <div className="flex items-start gap-3 rounded-2xl bg-color-for-layer-sec px-3 py-3">
                           <Phone className="mt-0.5 h-4 w-4 shrink-0 text-first" />
                           <span className="min-w-0 break-words text-sm first-text-color-for-paragraph">
@@ -597,10 +794,11 @@ const ProfilePage = () => {
                       </div>
                     </div>
 
+                    {/* Temporarily disabled: profile status and roles.
                     <div>
                       <div className="mb-2 flex items-center justify-between gap-3">
                         <p className="text-xs font-f-sbold uppercase tracking-wide first-text-color-for-paragraph-low">
-                          {translateOr("profile.profileStatus", "Profile status")}
+                          {translateOr('profile.profileStatus', 'Profile status')}
                         </p>
                         <span className="text-xs font-f-sbold text-first">
                           {profileCompletionSteps}/3
@@ -616,7 +814,7 @@ const ProfilePage = () => {
 
                     <div>
                       <p className="mb-3 text-xs font-f-sbold uppercase tracking-wide first-text-color-for-paragraph-low">
-                        {translateOr("profile.roles", "Roles")}
+                        {translateOr('profile.roles', 'Roles')}
                       </p>
                       <div className="flex flex-wrap gap-2">
                         {roles.length > 0 ? (
@@ -631,13 +829,14 @@ const ProfilePage = () => {
                         ) : (
                           <span className="text-sm first-text-color-for-paragraph-low">
                             {translateOr(
-                              "profile.noRoles",
-                              "No roles are assigned to this account yet."
+                              'profile.noRoles',
+                              'No roles are assigned to this account yet.',
                             )}
                           </span>
                         )}
                       </div>
                     </div>
+                    */}
                   </div>
                 </section>
               </motion.aside>
@@ -655,11 +854,10 @@ const ProfilePage = () => {
                     </span>
                     <div>
                       <h2 className="text-xl font-s-sbold first-text-color">
-                        {translateOr("profile.recentOrders", "Recent Orders")}
+                        {translateOr('profile.recentOrders', 'Recent Orders')}
                       </h2>
                       <p className="text-sm first-text-color-for-paragraph-low">
-                        {ordersMeta.totalCount}{" "}
-                        {translateOr("profile.totalOrders", "total orders")}
+                        {ordersMeta.totalCount} {translateOr('profile.totalOrders', 'total orders')}
                       </p>
                     </div>
                   </div>
@@ -672,21 +870,21 @@ const ProfilePage = () => {
                     </div>
                     <p className="mt-4 font-f-sbold first-text-color">
                       {hasNoOrders
-                        ? translateOr("profile.noOrders", "You have no orders yet.")
+                        ? translateOr('profile.noOrders', 'You have no orders yet.')
                         : translateOr(
-                            "profile.emptyOrdersPage",
-                            "No orders were found on this page."
+                            'profile.emptyOrdersPage',
+                            'No orders were found on this page.',
                           )}
                     </p>
                     <p className="mx-auto mt-2 max-w-md text-sm first-text-color-for-paragraph-low">
                       {hasNoOrders
                         ? translateOr(
-                            "profile.noOrdersHint",
-                            "After your first purchase, your order history will appear here."
+                            'profile.noOrdersHint',
+                            'After your first purchase, your order history will appear here.',
                           )
                         : translateOr(
-                            "profile.emptyOrdersPageHint",
-                            `There are ${ordersMeta.totalCount} orders in total.`
+                            'profile.emptyOrdersPageHint',
+                            `There are ${ordersMeta.totalCount} orders in total.`,
                           )}
                     </p>
                   </div>
@@ -694,12 +892,12 @@ const ProfilePage = () => {
                   <div className="space-y-3">
                     {orders.map((order, index) => {
                       const amount = toNumericValue(
-                        order.finalAmount ?? order.totalAmount ?? order.total
+                        order.finalAmount ?? order.totalAmount ?? order.total,
                       );
                       const count = toNumericValue(order.itemsCount ?? order.itemCount);
                       const orderId = resolveOrderId(order);
                       const cachedOrder = orderId ? orderCache[orderId] : undefined;
-                      const displayStatus = String(order.orderStatus || order.status || "");
+                      const displayStatus = String(order.orderStatus || order.status || '');
 
                       return (
                         <motion.article
@@ -709,61 +907,52 @@ const ProfilePage = () => {
                           transition={{ delay: index * 0.04 }}
                           className="group overflow-hidden rounded-2xl border border-first-100/80 bg-color-for-layer-sec transition-all duration-300 hover:border-first/35 hover:shadow-[0_16px_34px_-24px_rgba(27,126,251,0.65)]"
                         >
-                          <div className="grid gap-4 p-4 md:grid-cols-[1.2fr_1fr_auto] md:items-center">
-                            <div className="flex min-w-0 items-center gap-3">
-                              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-color-for-layer-on-body text-first shadow-dark-sm">
-                                <Package className="h-5 w-5" />
+                          <div className="hidden lg:flex items-center p-4 flex-wrap">
+                            <div className="flex w-full items-center  justify-between">
+                              <div className="flex  items-center gap-3 w-36/96 ">
+                                <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-color-for-layer-on-body text-first shadow-dark-sm">
+                                  <Package className="h-5 w-5" />
+                                </div>
+                                <div className="min-w-0">
+                                  <p className="text-xs first-text-color-for-paragraph-low">
+                                    {translateOr('profile.orderId', 'Order')}
+                                  </p>
+                                  <p className="truncate text-base font-s-sbold first-text-color">
+                                    {order.orderNumber || order.id || '-'}
+                                  </p>
+                                </div>
                               </div>
-                              <div className="min-w-0">
-                                <p className="text-xs first-text-color-for-paragraph-low">
-                                  {translateOr("profile.orderId", "Order")}
-                                </p>
-                                <p className="truncate text-base font-s-sbold first-text-color">
-                                  #{order.orderNumber || order.id || "-"}
-                                </p>
-                              </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-3">
-                              <div>
+                              <div className="w-36/96 ">
                                 <p className="mb-1 text-xs first-text-color-for-paragraph-low">
-                                  {translateOr("profile.status", "Status")}
+                                  {translateOr('profile.status', 'Status')}
                                 </p>
                                 <span
                                   className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-f-sbold ${
                                     displayStatus
                                       ? orderStatusTone(displayStatus)
-                                      : "border-gray-200 bg-gray-100 text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                                      : 'border-gray-200 bg-gray-100 text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300'
                                   }`}
                                 >
-                                  {displayStatus
-                                    ? translateOrderStatus(displayStatus, t)
-                                    : "-"}
+                                  {displayStatus ? translateOrderStatus(displayStatus, t) : '-'}
                                 </span>
                               </div>
-
-                              <div>
+                              <div className="w-36/96">
                                 <p className="mb-1 text-xs first-text-color-for-paragraph-low">
-                                  {translateOr("profile.date", "Date")}
+                                  {translateOr('profile.date', 'Date')}
                                 </p>
                                 <p className="flex items-center gap-1.5 text-sm font-f-sbold first-text-color">
-                                  <CalendarDays className="h-3.5 w-3.5 text-first" />
                                   {formatOrderDate(order.createdAt)}
                                 </p>
                               </div>
-
-                              <div>
+                              <div className="w-12/96">
                                 <p className="mb-1 text-xs first-text-color-for-paragraph-low">
-                                  {translateOr("profile.items", "Items")}
+                                  {translateOr('profile.items', 'Items')}
                                 </p>
                                 <p className="text-sm font-f-sbold first-text-color">{count}</p>
                               </div>
-                            </div>
-
-                            <div className="flex flex-col gap-3 border-t border-gray-300/40 pt-4 md:border-0 md:pt-0">
-                              <div className="text-start md:text-end">
+                              <div className="w-24/96">
                                 <p className="text-xs first-text-color-for-paragraph-low">
-                                  {translateOr("profile.total", "Total")}
+                                  {translateOr('profile.total', 'Total')}
                                 </p>
                                 <p className="text-lg font-s-sbold text-first">
                                   <PriceDisplay
@@ -775,9 +964,11 @@ const ProfilePage = () => {
                                   />
                                 </p>
                               </div>
+                            </div>
 
+                            <div className="flex  w-full gap-3 mt-4 border-t border-gray-300/40 pt-4 md:border-0 md:pt-0">
                               {orderId && (
-                                <div className="flex flex-col gap-2 sm:flex-row md:justify-end">
+                                <div className="flex w-full grid-cols-2  gap-2 flex-row ">
                                   <Button
                                     type="button"
                                     variant="outline"
@@ -786,9 +977,9 @@ const ProfilePage = () => {
                                     onClick={() => setDetailOrderId(orderId)}
                                   >
                                     <Eye className="h-4 w-4" />
-                                    {translateOr("profile.viewDetails", "View details")}
+                                    {translateOr('profile.viewDetails', 'View details')}
                                     <ChevronRight
-                                      className={`h-4 w-4 ${dir === "rtl" ? "rotate-180" : ""}`}
+                                      className={`h-4 w-4 ${dir === 'rtl' ? 'rotate-180' : ''}`}
                                     />
                                   </Button>
                                   <OrderInvoicePrintButton
@@ -798,7 +989,103 @@ const ProfilePage = () => {
                                     locale={locale}
                                     languageCode={currentLanguage}
                                     t={t}
-                                    label={translateOr("profile.printInvoice", "Print invoice")}
+                                    label={translateOr('profile.printInvoice', 'Print invoice')}
+                                    resolveImageUrl={resolveImageUrl}
+                                    className="w-full gap-2 rounded-xl border-first/30 text-first hover:bg-first hover:text-white sm:w-auto"
+                                    size="sm"
+                                    variant="outline"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          {/*  */}
+                          <div className="flex lg:hidden items-center p-4 flex-wrap">
+                            <div className="flex w-full items-center flex-wrap justify-between">
+                              <div className="flex justify-between items-center  w-full h-8  ">
+                                <div className="flex items-center gap-2">
+                                  <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-color-for-layer-on-body text-first shadow-dark-sm">
+                                    <Package className="h-4 w-4" />
+                                  </div>
+                                  <p className="text-xs first-text-color-for-paragraph-low">
+                                    {translateOr('profile.orderId', 'Order')}
+                                  </p>
+                                </div>
+                                <div className="min-w-0  flex items-center just ">
+                                  <p className="truncate text-base font-s-sbold first-text-color">
+                                    #{order.orderNumber || order.id || '-'}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="w-full flex justify-between h-8 items-center">
+                                <p className="mb-1 text-xs first-text-color-for-paragraph-low">
+                                  {translateOr('profile.status', 'Status')}
+                                </p>
+                                <span
+                                  className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-f-sbold ${
+                                    displayStatus
+                                      ? orderStatusTone(displayStatus)
+                                      : 'border-gray-200 bg-gray-100 text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300'
+                                  }`}
+                                >
+                                  {displayStatus ? translateOrderStatus(displayStatus, t) : '-'}
+                                </span>
+                              </div>
+                              <div className="w-full flex justify-between h-8 items-center">
+                                <p className="mb-1 text-xs first-text-color-for-paragraph-low">
+                                  {translateOr('profile.date', 'Date')}
+                                </p>
+                                <p className="flex items-center gap-1.5 text-sm font-f-sbold first-text-color">
+                                  <CalendarDays className="h-3.5 w-3.5 text-first" />
+                                  {formatOrderDate(order.createdAt)}
+                                </p>
+                              </div>
+                              <div className="w-full flex justify-between h-8 items-center">
+                                <p className="mb-1 text-xs first-text-color-for-paragraph-low">
+                                  {translateOr('profile.items', 'Items')}
+                                </p>
+                                <p className="text-sm font-f-sbold first-text-color">{count}</p>
+                              </div>
+                              <div className="w-full flex justify-between h-8 items-center">
+                                <p className="text-xs first-text-color-for-paragraph-low">
+                                  {translateOr('profile.total', 'Total')}
+                                </p>
+                                <p className="text-lg font-s-sbold text-first">
+                                  <PriceDisplay
+                                    amount={amount}
+                                    currency={order.currencySymbol}
+                                    currencyMode="none"
+                                    languageCode={currentLanguage}
+                                    valueClassName="font-s-sbold"
+                                  />
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="flex  w-full gap-3 mt-4 border-t border-gray-300/40 pt-4 md:border-0 md:pt-0">
+                              {orderId && (
+                                <div className="flex w-full grid-cols-2  gap-2 flex-row ">
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    className="w-full gap-2 rounded-xl border-first/40 text-first hover:bg-first hover:text-white sm:w-auto"
+                                    onClick={() => setDetailOrderId(orderId)}
+                                  >
+                                    <Eye className="h-4 w-4" />
+                                    {translateOr('profile.viewDetails', 'View details')}
+                                    <ChevronRight
+                                      className={`h-4 w-4 ${dir === 'rtl' ? 'rotate-180' : ''}`}
+                                    />
+                                  </Button>
+                                  <OrderInvoicePrintButton
+                                    order={cachedOrder ?? null}
+                                    onRequestOrder={() => fetchAndCacheOrder(orderId)}
+                                    dir={dir}
+                                    locale={locale}
+                                    languageCode={currentLanguage}
+                                    t={t}
+                                    label={translateOr('profile.printInvoice', 'Print invoice')}
                                     resolveImageUrl={resolveImageUrl}
                                     className="w-full gap-2 rounded-xl border-first/30 text-first hover:bg-first hover:text-white sm:w-auto"
                                     size="sm"
@@ -822,12 +1109,12 @@ const ProfilePage = () => {
       <OrderDetailModal
         orderId={detailOrderId}
         isOpen={detailOrderId != null}
-        onClose={() => setDetailOrderId(null)}
+        onClose={closeOrderDetails}
         authToken={token}
         cachedOrder={detailOrderId ? orderCache[detailOrderId] : null}
         onOrderLoaded={cacheOrder}
       />
-    </div>
+    </>
   );
 };
 

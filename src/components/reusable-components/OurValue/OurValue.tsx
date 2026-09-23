@@ -32,7 +32,7 @@ function OurValue() {
           </span>
         </div>
         <div className="flex h-full items-start flex-col justify-around">
-          <h5 className="font-s-sbold text-base first-text-color">ارسال رایگان کالا</h5>
+          <h5 className="font-s-sbold text-base first-text-color">ارسال سریع کالا</h5>
           <p className="text-sm first-text-color-for-paragraph">به تمام نقاط کشور</p>
         </div>
       </div>
