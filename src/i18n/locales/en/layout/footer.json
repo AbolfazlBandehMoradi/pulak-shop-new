@@ -37,6 +37,8 @@
       "terms": "Terms and conditions"
     },
     "sealAlt": "E-commerce trust seal",
-    "copyright": "© {{year}} Pulak Beauty Store. All rights reserved."
+    "copyright": "© {{year}} Pulak Beauty Store. All rights reserved.",
+    "designerPrefix": "Designed by",
+    "designerCompany": "Modern Horizon Innovation Company"
   }
 }

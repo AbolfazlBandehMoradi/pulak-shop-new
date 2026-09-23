@@ -256,7 +256,17 @@ export const Footer = () => {
       </div>
 
       <p className="footer-copyright text-center text-sm first-text-color-for-paragraph">
-        {t('footer.copyright', { year: new Date().getFullYear() })}
+        <span className="block">{t('footer.copyright', { year: new Date().getFullYear() })}</span>
+        <span className="footer-designer">
+          {t('footer.designerPrefix')}{' '}
+          <a
+            href="https://adrin-innovation.ir/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t('footer.designerCompany')}
+          </a>
+        </span>
       </p>
     </footer>
   );

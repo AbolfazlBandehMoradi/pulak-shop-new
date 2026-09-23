@@ -673,6 +673,21 @@ html {
     background-color: color-mix(in srgb, var(--bg-color-for-layer-sec) 45%, transparent);
   }
 
+  .footer-designer {
+    display: block;
+    margin-top: 6px;
+  }
+
+  .footer-designer a {
+    color: #1b7efb;
+    font-weight: 600;
+    transition: opacity 0.2s ease;
+  }
+
+  .footer-designer a:hover {
+    opacity: 0.75;
+  }
+
   @media (min-width: 640px) {
     .footer-highlights {
       grid-template-columns: repeat(2, minmax(0, 1fr));
