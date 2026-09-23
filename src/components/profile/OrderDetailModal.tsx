@@ -34,6 +34,7 @@ import { Button } from "@/components/ui/Button";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import { Skeleton } from "@/components/ui/skeleton";
 import { OrderInvoicePrintButton } from "@/components/prints";
+import { usePageScrollLock } from "@/hooks/usePageScrollLock";
 
 interface OrderDetailModalProps {
   orderId: number | null;
@@ -168,6 +169,7 @@ export function OrderDetailModal({
   const [order, setOrder] = useState<OrderDetail | null>(cachedOrder ?? null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  usePageScrollLock(isOpen);
 
   const locale = currentLanguage === "fa" ? "fa-IR" : "en-US";
   const notAvailable = "-";

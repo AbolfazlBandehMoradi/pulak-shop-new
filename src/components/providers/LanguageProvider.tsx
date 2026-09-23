@@ -6,11 +6,12 @@ interface LanguageProviderProps {
 }
 
 export function LanguageProvider({ children }: LanguageProviderProps) {
-  const { lang } = useLangStore();
+  const { dir, lang } = useLangStore();
 
   useEffect(() => {
     document.documentElement.lang = lang;
-  }, [lang]);
+    document.documentElement.dir = dir;
+  }, [dir, lang]);
 
   return <>{children}</>;
 }

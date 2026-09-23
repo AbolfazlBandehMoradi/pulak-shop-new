@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Autoplay } from 'swiper/modules';
 import { Story as StoryInterface } from '@/types/index';
 import 'swiper/swiper.css';
 import cleanText from '@/utils/cleanText';
+import { usePageScrollLock } from '@/hooks/usePageScrollLock';
 
 interface Props {
   stories: StoryInterface[];
@@ -13,13 +14,7 @@ interface Props {
 const Story = ({ stories }: Props) => {
   const [isVideoOpen, setIsVideoOpen] = useState<number | null>(null);
   const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    document.body.style.overflow = isVideoOpen !== null ? 'hidden' : 'auto';
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
-  }, [isVideoOpen]);
+  usePageScrollLock(isVideoOpen !== null);
 
   const toggleVideo = (index: number) => {
     if (isVideoOpen === index) {

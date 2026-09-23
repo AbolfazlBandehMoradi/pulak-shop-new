@@ -6,6 +6,7 @@ import { MobileBottomNav } from '@/components/layout/mobile-bottom-nav/MobileBot
 import { ReactNode, useEffect } from 'react';
 import { useLangStore } from '@/stores/languageStore';
 import { isSupportedLang, stripLangPrefix } from '@/utils/langRouting';
+import { SeoManager } from '@/seo/SeoManager';
 
 interface LayoutProps {
   children?: ReactNode;
@@ -34,6 +35,7 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <>
+      <SeoManager />
       {!hideNavAndFooter && <NavbarWithDrawer />}
       <div>
         {children ?? <Outlet />}

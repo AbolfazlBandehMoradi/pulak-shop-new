@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Share2, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { ShareSocialMedia } from '@/components/reusable-components/ShareSocialMedia/ShareSocialMedia';
+import { usePageScrollLock } from '@/hooks/usePageScrollLock';
 import { getCleanUrl } from '@/utils/url';
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
 export function ShareLinkButton({ url, title = '' }: Props) {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  usePageScrollLock(isOpen);
   const shareUrl = getCleanUrl(url || (typeof window !== 'undefined' ? window.location.href : ''));
 
   return (

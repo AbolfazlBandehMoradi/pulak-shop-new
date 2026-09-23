@@ -66,6 +66,40 @@ export function CheckoutAddressForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
             <label className="text-xs mb-2 flex items-center first-text-color-for-paragraph">
+              <span className="me-1">{t('checkout.firstName') || 'First Name'}</span>(
+              <span className="first-text-color-red">{t('checkout.required') || 'required'}</span>)
+            </label>
+            <Input
+              {...register('firstName')}
+              required
+              aria-invalid={!!errors.firstName}
+              placeholder={t('checkout.firstNamePlaceholder') || 'Enter first name'}
+              className={errors.firstName ? 'border-red-500' : ''}
+            />
+            {errors.firstName?.message && (
+              <p className="text-xs text-red-500 mt-1">{String(errors.firstName.message)}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="text-xs mb-2 flex items-center first-text-color-for-paragraph">
+              <span className="me-1">{t('checkout.lastName') || 'Last Name'}</span>(
+              <span className="first-text-color-red">{t('checkout.required') || 'required'}</span>)
+            </label>
+            <Input
+              {...register('lastName')}
+              required
+              aria-invalid={!!errors.lastName}
+              placeholder={t('checkout.lastNamePlaceholder') || 'Enter last name'}
+              className={errors.lastName ? 'border-red-500' : ''}
+            />
+            {errors.lastName?.message && (
+              <p className="text-xs text-red-500 mt-1">{String(errors.lastName.message)}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="text-xs mb-2 flex items-center first-text-color-for-paragraph">
               <span className="me-1">{t('checkout.province') || 'Province'}</span>(
               <span className="first-text-color-red">{t('checkout.required') || 'required'})</span>
             </label>
@@ -218,26 +252,6 @@ export function CheckoutAddressForm({
                     placeholder={
                       t('checkout.addressTitlePlaceholder') || 'e.g., Home, Work, Office'
                     }
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs mt-4 mb-2 flex items-center first-text-color-for-paragraph">
-                    {t('checkout.firstName') || 'First Name'}
-                  </label>
-                  <Input
-                    {...register('firstName')}
-                    placeholder={t('checkout.firstNamePlaceholder') || 'Enter first name'}
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs mt-4 mb-2 flex items-center first-text-color-for-paragraph">
-                    {t('checkout.lastName') || 'Last Name'}
-                  </label>
-                  <Input
-                    {...register('lastName')}
-                    placeholder={t('checkout.lastNamePlaceholder') || 'Enter last name'}
                   />
                 </div>
 

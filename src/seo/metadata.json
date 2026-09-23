@@ -1,0 +1,314 @@
+{
+  "site": {
+    "url": "https://pulakshop.ir",
+    "image": "/og-image.png",
+    "imageWidth": 1700,
+    "imageHeight": 630,
+    "logo": "/logo.png",
+    "themeColor": "#1b7efb",
+    "defaultLanguage": "fa",
+    "languages": ["fa", "en"],
+    "name": {
+      "fa": "بهشت زیبایی پولک",
+      "en": "Pulak Beauty Shop"
+    }
+  },
+  "routes": [
+    {
+      "id": "home",
+      "path": "",
+      "sitemap": true,
+      "priority": 1,
+      "changefreq": "weekly",
+      "meta": {
+        "fa": {
+          "title": "بهشت زیبایی پولک | فروشگاه آنلاین لوازم آرایشی و بهداشتی",
+          "description": "محصولات آرایشی، مراقبت پوست و مو و بهداشتی از برندهای معتبر را با تضمین اصالت، قیمت مناسب، ارسال سریع و پشتیبانی حرفه‌ای از فروشگاه پولک بخرید."
+        },
+        "en": {
+          "title": "Pulak Beauty Shop | Cosmetics & Personal Care",
+          "description": "Shop authentic cosmetics, skin care, hair care, and personal care products from trusted brands with fair prices, fast delivery, and expert support."
+        }
+      }
+    },
+    {
+      "id": "products",
+      "path": "products",
+      "sitemap": true,
+      "priority": 0.9,
+      "changefreq": "daily",
+      "meta": {
+        "fa": {
+          "title": "خرید محصولات آرایشی و بهداشتی | فروشگاه پولک",
+          "description": "محصولات آرایشی، مراقبت پوست و مو و لوازم بهداشتی فروشگاه پولک را جستجو و مقایسه کنید و با فیلترهای کاربردی، محصول مناسب خود را پیدا کنید."
+        },
+        "en": {
+          "title": "Shop Cosmetics & Personal Care Products | Pulak",
+          "description": "Browse and compare Pulak cosmetics, skin care, hair care, and personal care products, then use practical filters to find the right products for you."
+        }
+      }
+    },
+    {
+      "id": "product-detail",
+      "path": "products/:slug",
+      "sitemap": false,
+      "priority": 0.8,
+      "changefreq": "weekly",
+      "meta": {
+        "fa": {
+          "title": "جزئیات محصول آرایشی و بهداشتی | فروشگاه پولک",
+          "description": "تصاویر، مشخصات، قیمت، تخفیف، موجودی و نظر خریداران این محصول را در فروشگاه پولک بررسی کنید و با اطمینان سفارش دهید."
+        },
+        "en": {
+          "title": "Beauty Product Details | Pulak Beauty Shop",
+          "description": "Review this product's photos, specifications, price, offers, availability, and customer feedback before ordering from Pulak Beauty Shop."
+        }
+      }
+    },
+    {
+      "id": "categories",
+      "path": "categories",
+      "sitemap": true,
+      "priority": 0.8,
+      "changefreq": "weekly",
+      "meta": {
+        "fa": {
+          "title": "دسته‌بندی محصولات آرایشی و بهداشتی | پولک",
+          "description": "دسته‌بندی‌های محصولات آرایشی، مراقبت پوست، مراقبت مو و بهداشت فردی فروشگاه پولک را ببینید و سریع‌تر به محصول مورد نیاز خود برسید."
+        },
+        "en": {
+          "title": "Beauty & Personal Care Categories | Pulak",
+          "description": "Explore Pulak categories for cosmetics, skin care, hair care, and personal care to find the products that fit your needs more quickly."
+        }
+      }
+    },
+    {
+      "id": "blogs",
+      "path": "blogs",
+      "sitemap": true,
+      "priority": 0.7,
+      "changefreq": "weekly",
+      "meta": {
+        "fa": {
+          "title": "مجله زیبایی پولک | راهنمای مراقبت پوست و مو",
+          "description": "در مجله پولک، راهنماها و نکات کاربردی درباره مراقبت پوست و مو، محصولات آرایشی و بهداشتی و انتخاب آگاهانه محصولات زیبایی را بخوانید."
+        },
+        "en": {
+          "title": "Pulak Beauty Journal | Skin & Hair Care Guides",
+          "description": "Read practical Pulak guides about skin care, hair care, cosmetics, personal care, and choosing beauty products with greater confidence."
+        }
+      }
+    },
+    {
+      "id": "blog-detail",
+      "path": "blogs/:slug",
+      "sitemap": false,
+      "priority": 0.65,
+      "changefreq": "monthly",
+      "meta": {
+        "fa": {
+          "title": "مقاله زیبایی و مراقبت شخصی | مجله پولک",
+          "description": "راهنماها و نکات تخصصی مجله پولک درباره مراقبت پوست و مو، زیبایی و استفاده بهتر از محصولات آرایشی و بهداشتی را بخوانید."
+        },
+        "en": {
+          "title": "Beauty & Personal Care Article | Pulak Journal",
+          "description": "Read Pulak's practical advice on skin care, hair care, beauty, and getting better results from cosmetics and personal care products."
+        }
+      }
+    },
+    {
+      "id": "about-us",
+      "path": "about-us",
+      "sitemap": true,
+      "priority": 0.7,
+      "changefreq": "monthly",
+      "meta": {
+        "fa": {
+          "title": "درباره فروشگاه بهشت زیبایی پولک",
+          "description": "با فروشگاه بهشت زیبایی پولک، تعهد ما به عرضه محصولات اصل و باکیفیت و خدماتی مانند مشاوره تخصصی، پشتیبانی و ارسال سریع آشنا شوید."
+        },
+        "en": {
+          "title": "About Pulak Beauty Shop",
+          "description": "Learn about Pulak Beauty Shop, our commitment to authentic quality products, and services including expert guidance, responsive support, and fast delivery."
+        }
+      }
+    },
+    {
+      "id": "contact-us",
+      "path": "contact-us",
+      "sitemap": true,
+      "priority": 0.6,
+      "changefreq": "yearly",
+      "meta": {
+        "fa": {
+          "title": "تماس با فروشگاه پولک | پشتیبانی خرید",
+          "description": "برای راهنمایی انتخاب محصول، پیگیری سفارش و دریافت پشتیبانی با فروشگاه زیبایی پولک در زاهدان تماس بگیرید یا از راه‌های ارتباطی ما استفاده کنید."
+        },
+        "en": {
+          "title": "Contact Pulak | Shopping Support",
+          "description": "Contact Pulak Beauty Shop in Zahedan for product guidance, order follow-up, and shopping support through our available contact channels."
+        }
+      }
+    },
+    {
+      "id": "faq",
+      "path": "faq",
+      "sitemap": true,
+      "priority": 0.6,
+      "changefreq": "monthly",
+      "meta": {
+        "fa": {
+          "title": "سوالات متداول فروشگاه پولک | خرید، ارسال و بازگشت",
+          "description": "پاسخ سوالات متداول درباره ثبت و پیگیری سفارش، پرداخت، هزینه و زمان ارسال، تخفیف‌ها، ضمانت، تعویض و بازگشت محصولات فروشگاه پولک را ببینید."
+        },
+        "en": {
+          "title": "Pulak FAQ | Orders, Delivery & Returns",
+          "description": "Find answers about ordering, tracking, payment, delivery times and costs, discounts, warranties, exchanges, and returns at Pulak Beauty Shop."
+        }
+      }
+    },
+    {
+      "id": "return-policy",
+      "path": "return-policy",
+      "sitemap": true,
+      "priority": 0.55,
+      "changefreq": "yearly",
+      "meta": {
+        "fa": {
+          "title": "سیاست بازگشت کالا | فروشگاه زیبایی پولک",
+          "description": "شرایط بازگشت و تعویض کالا، مهلت هفت‌روزه، الزامات بسته‌بندی، نحوه گزارش کالای آسیب‌دیده و زمان بازپرداخت در فروشگاه پولک را بخوانید."
+        },
+        "en": {
+          "title": "Return Policy | Pulak Beauty Shop",
+          "description": "Review Pulak's return and exchange conditions, seven-day return window, packaging requirements, damaged-item reporting, and refund processing times."
+        }
+      }
+    },
+    {
+      "id": "auth",
+      "path": "auth",
+      "noIndex": true,
+      "sitemap": false,
+      "priority": 0,
+      "changefreq": "never",
+      "meta": {
+        "fa": {
+          "title": "ورود یا ثبت‌نام | فروشگاه پولک",
+          "description": "برای ورود به حساب کاربری یا ساخت حساب جدید در فروشگاه پولک، شماره موبایل یا اطلاعات حساب خود را وارد کنید."
+        },
+        "en": {
+          "title": "Sign In or Register | Pulak",
+          "description": "Sign in to your Pulak account or create a new account to manage orders, addresses, and account details."
+        }
+      }
+    },
+    {
+      "id": "cart",
+      "path": "cart",
+      "noIndex": true,
+      "sitemap": false,
+      "priority": 0,
+      "changefreq": "never",
+      "meta": {
+        "fa": {
+          "title": "سبد خرید | فروشگاه پولک",
+          "description": "محصولات انتخاب‌شده، تعداد و مبلغ سفارش خود را در سبد خرید فروشگاه پولک بررسی کنید."
+        },
+        "en": {
+          "title": "Shopping Cart | Pulak",
+          "description": "Review your selected products, quantities, and order total in your Pulak shopping cart."
+        }
+      }
+    },
+    {
+      "id": "checkout",
+      "path": "checkout",
+      "noIndex": true,
+      "sitemap": false,
+      "priority": 0,
+      "changefreq": "never",
+      "meta": {
+        "fa": {
+          "title": "تکمیل سفارش | فروشگاه پولک",
+          "description": "آدرس تحویل، روش ارسال و خلاصه سفارش خود را برای تکمیل خرید از فروشگاه پولک بررسی کنید."
+        },
+        "en": {
+          "title": "Checkout | Pulak",
+          "description": "Review your delivery address, shipping method, and order summary to complete your Pulak purchase."
+        }
+      }
+    },
+    {
+      "id": "payment",
+      "path": "payment",
+      "noIndex": true,
+      "sitemap": false,
+      "priority": 0,
+      "changefreq": "never",
+      "meta": {
+        "fa": {
+          "title": "پرداخت سفارش | فروشگاه پولک",
+          "description": "روش پرداخت سفارش خود را انتخاب و فرایند خرید از فروشگاه پولک را تکمیل کنید."
+        },
+        "en": {
+          "title": "Order Payment | Pulak",
+          "description": "Choose an order payment method and complete your purchase from Pulak Beauty Shop."
+        }
+      }
+    },
+    {
+      "id": "payment-success",
+      "path": "payment/success",
+      "noIndex": true,
+      "sitemap": false,
+      "priority": 0,
+      "changefreq": "never",
+      "meta": {
+        "fa": {
+          "title": "پرداخت موفق | فروشگاه پولک",
+          "description": "پرداخت سفارش شما با موفقیت انجام شد و نتیجه ثبت سفارش در این صفحه نمایش داده می‌شود."
+        },
+        "en": {
+          "title": "Payment Successful | Pulak",
+          "description": "Your order payment was successful. The order confirmation details are shown on this page."
+        }
+      }
+    },
+    {
+      "id": "payment-failure",
+      "path": "payment/failure",
+      "noIndex": true,
+      "sitemap": false,
+      "priority": 0,
+      "changefreq": "never",
+      "meta": {
+        "fa": {
+          "title": "پرداخت ناموفق | فروشگاه پولک",
+          "description": "پرداخت سفارش تکمیل نشد. جزئیات خطا و گزینه‌های ادامه فرایند خرید در این صفحه نمایش داده می‌شود."
+        },
+        "en": {
+          "title": "Payment Unsuccessful | Pulak",
+          "description": "Your order payment was not completed. Error details and available next steps are shown on this page."
+        }
+      }
+    },
+    {
+      "id": "profile",
+      "path": "profile",
+      "noIndex": true,
+      "sitemap": false,
+      "priority": 0,
+      "changefreq": "never",
+      "meta": {
+        "fa": {
+          "title": "حساب کاربری | فروشگاه پولک",
+          "description": "اطلاعات حساب، نشانی‌ها و سفارش‌های خود را در حساب کاربری فروشگاه پولک مدیریت کنید."
+        },
+        "en": {
+          "title": "Your Account | Pulak",
+          "description": "Manage your account details, addresses, and orders in your Pulak customer account."
+        }
+      }
+    }
+  ]
+}

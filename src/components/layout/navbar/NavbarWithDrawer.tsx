@@ -9,6 +9,7 @@ import { useShopStore } from '@/stores/productsFilterStore';
 import { useLangStore } from '@/stores/languageStore';
 import useCategories from '@/hooks/useCategories';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import { usePageScrollLock } from '@/hooks/usePageScrollLock';
 import { useTranslation } from 'react-i18next';
 import { ThemeToggleButton } from '@/components/ui/ThemeToggleButton';
 import { ShoppingBag, User2, Phone } from 'lucide-react';
@@ -28,6 +29,7 @@ export const NavbarWithDrawer: React.FC = () => {
   const [openSubMenu, setOpenSubMenu] = useState<CategoryId>(null);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isMobileCategoryOpen, setIsMobileCategoryOpen] = useState(false);
+  usePageScrollLock(isDrawerOpen);
 
   const desktopCategoryRef = useRef<HTMLLIElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);

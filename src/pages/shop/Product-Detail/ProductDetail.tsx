@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChevronLeft } from 'lucide-react';
 import { useTranslation } from '@/i18n/useTranslation';
@@ -25,9 +25,12 @@ import OurValue from '@/components/reusable-components/OurValue/OurValue';
 import { resolveProductSaleOffer } from '@/utils/productOffer';
 import { ProductOfferBanner } from './sections/ProductOfferBanner';
 import { MediaFile, ProductImage } from '@/utils/shopApi';
+import { createProductSeoMeta } from '@/seo/contentSeo';
+import { useSeoMeta } from '@/seo/useSeoMeta';
 
 export default function ProductDetail() {
   const { slug } = useParams();
+  const location = useLocation();
   const navigate = useLocalizedNavigate();
   const lang = useLangStore((state) => state.lang);
   const isRTL = lang === 'fa';
@@ -110,6 +113,21 @@ export default function ProductDetail() {
       }),
     [currentPrice, lang, product, selectedVariant],
   );
+  const seoMeta = useMemo(
+    () =>
+      product
+        ? createProductSeoMeta({
+            pathname: location.pathname,
+            lang,
+            product,
+            price: currentPrice,
+            isInStock,
+          })
+        : null,
+    [currentPrice, isInStock, lang, location.pathname, product],
+  );
+
+  useSeoMeta(seoMeta);
 
   return (
     <section className="page-container page-section">

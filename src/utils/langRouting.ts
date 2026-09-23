@@ -1,4 +1,4 @@
-export const SUPPORTED_LANGS = ['fa', 'en', 'ar'] as const;
+export const SUPPORTED_LANGS = ['fa', 'en'] as const;
 export type SupportedLang = (typeof SUPPORTED_LANGS)[number];
 export type LanguageDirection = 'rtl' | 'ltr';
 
@@ -7,13 +7,11 @@ export const DEFAULT_LANG: SupportedLang = 'fa';
 const LANGUAGE_DIRECTIONS: Record<SupportedLang, LanguageDirection> = {
   fa: 'rtl',
   en: 'ltr',
-  ar: 'rtl',
 };
 
 const LANGUAGE_LOCALES: Record<SupportedLang, string> = {
   fa: 'fa-IR',
   en: 'en-US',
-  ar: 'ar',
 };
 
 export function getLanguageDirection(lang: SupportedLang): LanguageDirection {

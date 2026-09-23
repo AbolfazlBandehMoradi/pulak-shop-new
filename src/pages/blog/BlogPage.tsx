@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { ArrowLeft, Calendar, Clock3, Copy, Facebook, Linkedin, Twitter } from 'lucide-react';
 import { Button } from '@/components/ui/IconButton';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -14,6 +14,8 @@ import { CommentSection } from '../shop/Product-Detail/sections/CommentSection';
 import { CommentResourceType } from '@/utils/commentApi';
 import type { RelatedProduct as ProductRelatedProduct } from '@/utils/shopApi';
 import cleanHtml from '@/utils/cleanHtml';
+import { createBlogSeoMeta } from '@/seo/contentSeo';
+import { useSeoMeta } from '@/seo/useSeoMeta';
 
 type TableOfContentsItem = {
   id: string;
@@ -117,6 +119,7 @@ function mapRelatedProducts(blog: BlogDetail | null): ProductRelatedProduct[] {
 
 export default function BlogPage() {
   const { slug } = useParams<{ slug: string }>();
+  const location = useLocation();
   const { t } = useTranslation();
   const navigate = useLocalizedNavigate();
   const lang = useLangStore((state) => state.lang);
@@ -138,6 +141,7 @@ export default function BlogPage() {
       try {
         setLoading(true);
         setError(null);
+        setBlog(null);
 
         const response = await getBlogBySlug(slug, lang);
         setBlog(response);
@@ -163,6 +167,15 @@ export default function BlogPage() {
     [translation?.content],
   );
   const relatedProducts = useMemo(() => mapRelatedProducts(blog), [blog]);
+  const seoMeta = useMemo(
+    () =>
+      blog && blog.slug === slug
+        ? createBlogSeoMeta({ pathname: location.pathname, lang, blog })
+        : null,
+    [blog, lang, location.pathname, slug],
+  );
+
+  useSeoMeta(seoMeta);
 
   const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
   const encodedUrl = encodeURIComponent(currentUrl);

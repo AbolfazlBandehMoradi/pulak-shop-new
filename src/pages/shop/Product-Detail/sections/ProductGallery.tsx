@@ -7,6 +7,7 @@ import type { Swiper as SwiperType } from 'swiper';
 import { cn } from '@/utils/cn';
 import type { MediaFile } from '@/utils/shopApi';
 import { useTranslation } from '@/i18n/useTranslation';
+import { usePageScrollLock } from '@/hooks/usePageScrollLock';
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import 'swiper/css/thumbs';
@@ -30,6 +31,7 @@ export function ProductGallery({ images = [], mainImage, productName }: ProductG
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
+  usePageScrollLock(isLightboxOpen);
 
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5299';
 

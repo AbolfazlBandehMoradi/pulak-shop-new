@@ -5,7 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "predev": "npm run seo:generate",
+    "seo:generate": "node scripts/generate-seo.mjs",
+    "prebuild": "npm run seo:generate",
     "build": "vite build",
+    "postbuild": "node scripts/prerender-seo.mjs",
     "preview": "vite preview",
     "i18n:audit": "node scripts/i18n-audit.mjs"
   },

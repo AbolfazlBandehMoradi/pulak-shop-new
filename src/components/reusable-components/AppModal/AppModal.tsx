@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { ReactNode } from 'react';
+import { usePageScrollLock } from '@/hooks/usePageScrollLock';
 
 interface ModalButton {
   label: string;
@@ -27,6 +28,8 @@ export function AppModal({
   description,
   buttons = [],
 }: AppModalProps) {
+  usePageScrollLock(isOpen);
+
   return (
     <AnimatePresence>
       {isOpen && (

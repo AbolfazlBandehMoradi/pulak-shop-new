@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { CheckCircle2 } from 'lucide-react';
 import { useTranslation } from '@/i18n/useTranslation';
 import { Button } from '@/components/ui/Button';
+import { usePageScrollLock } from '@/hooks/usePageScrollLock';
 
 interface AddToCartSuccessModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface AddToCartSuccessModalProps {
 
 export function AddToCartSuccessModal({ isOpen, onClose, onViewCart }: AddToCartSuccessModalProps) {
   const { t } = useTranslation();
+  usePageScrollLock(isOpen);
 
   return (
     <AnimatePresence>

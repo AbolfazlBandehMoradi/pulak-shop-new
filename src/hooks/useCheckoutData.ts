@@ -58,8 +58,6 @@ const mapAddressToFormValues = (address: UserAddress): SaveAddressRequest => ({
 const hasAnyOptionalAddressField = (address: UserAddress): boolean =>
   Boolean(
     address.title ||
-    address.firstName ||
-    address.lastName ||
     address.phoneNumber ||
     address.alternativePhoneNumber ||
     address.streetAddress2,
@@ -131,8 +129,8 @@ export function useCheckoutData({
     return z.object({
       id: z.number().optional(),
       title: z.string().optional(),
-      firstName: z.string().optional(),
-      lastName: z.string().optional(),
+      firstName: z.string().trim().min(1, requiredMessage),
+      lastName: z.string().trim().min(1, requiredMessage),
       phoneNumber: z
         .string()
         .optional()
