@@ -68,9 +68,12 @@ export function ProductInfo({ product, loading, languageCode: _languageCode }: P
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <p className="mt-2 w-full whitespace-normal break-words text-sm leading-7 first-text-color-for-paragraph [overflow-wrap:anywhere]">
-              {cleanText(teaserDescription)}
-            </p>
+            <p
+              className="mt-2 w-full whitespace-normal break-words text-sm leading-7 first-text-color-for-paragraph [overflow-wrap:anywhere]"
+              dangerouslySetInnerHTML={{
+                __html: cleanText(teaserDescription, true),
+              }}
+            />
           </motion.div>
         )}
       </div>
