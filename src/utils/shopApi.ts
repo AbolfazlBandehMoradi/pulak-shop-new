@@ -437,9 +437,17 @@ export interface ProductReview {
   createdAt: string;
   updatedAt?: string;
 }
-
+export interface ProductFaq {
+  question: string;
+  answer: string;
+  displayOrder: number;
+  isActive: boolean;
+  videoUrl?: string | null;
+}
 export interface ProductDetail {
   id: number;
+  faqs?: ProductFaq[];
+
   slug: string;
   sku: string;
   isPublished: boolean;

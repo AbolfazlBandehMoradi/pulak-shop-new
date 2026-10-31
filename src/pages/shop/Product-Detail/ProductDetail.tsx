@@ -128,7 +128,7 @@ export default function ProductDetail() {
   );
 
   useSeoMeta(seoMeta);
-
+  console.log(product);
   return (
     <section className="page-container page-section">
       <div
