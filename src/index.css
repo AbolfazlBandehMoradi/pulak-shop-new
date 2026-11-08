@@ -450,7 +450,7 @@ html {
 }
 
 @layer components {
-   .landing-container {
+  .landing-container {
     width: min(100%, 94rem);
     margin-inline: auto;
     padding-inline: 1rem;
@@ -497,6 +497,7 @@ html {
       padding-block: 2.5rem 3rem;
     }
   }
+
   .no-clear-button::-webkit-search-cancel-button {
     display: none;
     -webkit-appearance: none;

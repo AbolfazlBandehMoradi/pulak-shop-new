@@ -2,8 +2,9 @@ import { useMemo } from 'react';
 import { useTranslation } from '@/i18n/useTranslation';
 import type { ProductDetail } from '@/utils/shopApi';
 import cleanText from '@/utils/cleanText';
+import cleanFaqHtml from '@/utils/cleanFaqHtml';
 import { cn } from '@/utils/cn';
-
+import '../../../../assets/styles/tiptap-content.css';
 interface ProductTabsProps {
   product: ProductDetail | null;
 }
@@ -134,22 +135,6 @@ export function ProductTabsSingle({ product }: ProductTabsProps) {
           {product?.faqs?.some((faq) => faq.isActive) && (
             <section className="mt-12">
               <div className="mb-6 flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                  <svg
-                    className="h-6 w-6"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M9.6 9a2.4 2.4 0 1 1 4.2 1.6c-1.1 1-1.8 1.4-1.8 2.9M12 17h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                    />
-                  </svg>
-                </div>
-
                 <div>
                   <h3 className="text-lg font-bold first-text-color">
                     {t('product.faq') || 'Frequently Asked Questions'}
@@ -160,26 +145,26 @@ export function ProductTabsSingle({ product }: ProductTabsProps) {
                 </div>
               </div>
 
-              <div>
+              <div className="p-4 bg-first rounded-2xl">
                 {[...product.faqs]
                   .filter((faq) => faq.isActive)
                   .sort((a, b) => a.displayOrder - b.displayOrder)
                   .map((faq, index) => (
                     <details
                       key={`${faq.question}-${index}`}
-                      className="group overflow-hidden first:rounded-t-2xl last:rounded-b-2xl  border border-gray-200/70 bg-color-for-layer-on-body transition-all duration-300 hover:border-primary/30 hover:shadow-md hover:shadow-primary/5 dark:border-gray-800"
+                      className="group overflow-hidden first:rounded-t-2xl last:rounded-b-2xl border-b   border-gray-200/70  bg-white last:border-none transition-all duration-300 hover:border-primary/30 hover:shadow-md hover:shadow-primary/5 dark:border-gray-800"
                     >
-                      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 [&::-webkit-details-marker]:hidden">
+                      <summary className="flex cursor-pointer dark:bg-first-300 bg-first-950 list-none items-center justify-between gap-4 px-5 py-4 [&::-webkit-details-marker]:hidden">
                         <div className="flex min-w-0 items-center gap-3">
-                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-xs font-bold text-gray-500 transition-colors group-open:bg-primary/10 group-open:text-primary dark:bg-gray-800 dark:text-gray-400">
+                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl  bg-gray-100 text-xs font-bold text-gray-500 dark:text-black transition-colors group-open:bg-primary/10 group-open:text-primary dark:bg-white ">
                             {String(index + 1).padStart(2, '0')}
                           </span>
-                          <span className="text-sm font-semibold leading-7 first-text-color">
+                          <span className="text-sm font-semibold leading-7 dark:text-gray-950 text-gray-50 ">
                             {faq.question}
                           </span>
                         </div>
 
-                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition-all duration-300 group-open:rotate-180 group-open:bg-primary group-open:text-first dark:bg-gray-800">
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition-all duration-300 group-open:rotate-180 group-open:bg-primary group-open:text-first dark:bg-white">
                           <svg
                             className="h-4 w-4"
                             viewBox="0 0 24 24"
@@ -193,13 +178,11 @@ export function ProductTabsSingle({ product }: ProductTabsProps) {
                       </summary>
                       <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 group-open:grid-rows-[1fr]">
                         <div className="overflow-hidden">
-                          <div className="mx-5 border-t border-dashed border-gray-200 pt-4 pb-5 dark:border-gray-800">
+                          <div className=" p-8 border-t border-dashed border-gray-200  dark:border-gray-800">
                             <div
-                              className="break-words text-sm leading-8 first-text-color-for-paragraph [overflow-wrap:anywhere]"
+                              className="tiptap-content"
                               dangerouslySetInnerHTML={{
-                                __html: cleanText(faq.answer, true)
-                                  .replace(/&nbsp;/gi, ' ')
-                                  .replace(/\u00A0/g, ' '),
+                                __html: cleanFaqHtml(faq.answer),
                               }}
                             />
 
